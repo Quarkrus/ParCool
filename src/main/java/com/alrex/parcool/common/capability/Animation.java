@@ -98,17 +98,21 @@ public class Animation {
 		if (animator != null) {
             animator.tick(player);
 		}
-        {
-			ParCoolAnimationInfoEvent animationEvent = new ParCoolAnimationInfoEvent(player, animator);
-            MinecraftForge.EVENT_BUS.post(animationEvent);
-            option = animationEvent.getOption();
-        }
 	}
 
 	public void onRenderTick(TickEvent.RenderTickEvent event, Player player, Parkourability parkourability) {
 		if (animator != null) {
 			animator.onRenderTick(event, player, parkourability);
 		}
+		if (event.phase == TickEvent.Phase.START) {
+			updateAnimationInfo((AbstractClientPlayer) player);
+		}
+	}
+
+	public void updateAnimationInfo(AbstractClientPlayer player) {
+		ParCoolAnimationInfoEvent animationEvent = new ParCoolAnimationInfoEvent(player, animator);
+		MinecraftForge.EVENT_BUS.post(animationEvent);
+		option = animationEvent.getOption();
 	}
 
 	public boolean hasAnimator() {
