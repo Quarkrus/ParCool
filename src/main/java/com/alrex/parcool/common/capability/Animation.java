@@ -105,11 +105,11 @@ public class Animation {
 			animator.onRenderTick(event, player, parkourability);
 		}
 		if (event.phase == TickEvent.Phase.START) {
-			updateAnimationInfo((AbstractClientPlayerEntity) player);
+			updateAnimationInfo((AbstractClientPlayer) player);
 		}
 	}
 
-	public void updateAnimationInfo(AbstractClientPlayerEntity player) {
+	public void updateAnimationInfo(AbstractClientPlayer player) {
 		ParCoolAnimationInfoEvent animationEvent = new ParCoolAnimationInfoEvent(player, animator);
 		MinecraftForge.EVENT_BUS.post(animationEvent);
 		option = animationEvent.getOption();
