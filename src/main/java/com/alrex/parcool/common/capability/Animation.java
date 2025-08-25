@@ -71,7 +71,7 @@ public class Animation {
 	public void rotatePost(AbstractClientPlayerEntity player, PlayerModelRotator rotator) {
 		Parkourability parkourability = Parkourability.get(player);
 		if (parkourability == null) return;
-		if (option.isCanceled(AnimationPart.ROTATION)) return;
+		if (shouldCancelAnimation(player) || option.isCanceled(AnimationPart.ROTATION)) return;
 		if (animator == null) {
 			passiveAnimation.rotate(player, parkourability, rotator);
 			return;
@@ -81,7 +81,7 @@ public class Animation {
 
     public void cameraSetup(EntityViewRenderEvent.CameraSetup event, ClientPlayerEntity player, Parkourability parkourability) {
 		if (animator == null) return;
-		if (shouldCancelAnimation(player) || option.isCanceled(AnimationPart.CAMERA)) return;
+		if (option.isCanceled(AnimationPart.CAMERA)) return;
 		if (animator.shouldRemoved(player, parkourability)) {
 			animator = null;
 			return;
