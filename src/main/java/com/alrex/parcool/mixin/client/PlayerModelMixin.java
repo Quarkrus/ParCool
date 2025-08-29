@@ -50,13 +50,8 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 
 	@Inject(method = "Lnet/minecraft/client/model/PlayerModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("HEAD"), cancellable = true)
 	protected void onSetupAnimHead(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo info) {
-		if (!(entity instanceof Player)) return;
+		if (!(entity instanceof Player player)) return;
 		PlayerModel model = (PlayerModel) (Object) this;
-		Player player = (Player) entity;
-		if (player.isLocalPlayer()
-				&& Minecraft.getInstance().options.getCameraType().isFirstPerson()
-				&& !ParCoolConfig.Client.Booleans.EnableFPVAnimation.get()
-		) return;
 
         parCool$transformer = new PlayerModelTransformer(
 				player,
@@ -83,14 +78,9 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 
 	@Inject(method = "Lnet/minecraft/client/model/PlayerModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("TAIL"))
 	protected void onSetupAnimTail(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo info) {
-		if (!(entity instanceof Player)) return;
-		Player player = (Player) entity;
-		if (player.isLocalPlayer()
-				&& Minecraft.getInstance().options.getCameraType().isFirstPerson()
-				&& !ParCoolConfig.Client.Booleans.EnableFPVAnimation.get()
-		) return;
+		if (!(entity instanceof Player player)) return;
 
-		Animation animation = Animation.get(player);
+        Animation animation = Animation.get(player);
 		if (animation == null) {
             parCool$transformer = null;
 			return;
