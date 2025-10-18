@@ -89,6 +89,7 @@ public class LightStaminaHUD extends GuiComponent {
 		staminaScale *= 10f;
 		float statusScale = showStatus ? MathUtil.lerp(oldStatusValue, statusValue, partialTick) * 10f : 0f;
 
+		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 		RenderSystem.setShaderTexture(0, StaminaHUD.STAMINA);
 		int baseX = width / 2 + 91 + ParCoolConfig.Client.Integers.HorizontalOffsetOfLightStaminaHUD.get();
 		int baseY = height - gui.right_height + ParCoolConfig.Client.Integers.VerticalOffsetOfLightStaminaHUD.get();
