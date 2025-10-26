@@ -1,6 +1,7 @@
 package com.alrex.parcool.client.hud;
 
 import com.alrex.parcool.client.hud.impl.StaminaHUDController;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,7 +19,7 @@ public class HUDRegistry {
 
 	@SubscribeEvent
 	public void onSetup(RegisterGuiOverlaysEvent event) {
-		event.registerAboveAll("hud.stamina.host", staminaHUD);
+		event.registerAbove(new ResourceLocation("minecraft", "food_level"), "hud.stamina.host", staminaHUD);
 	}
 
 	@SubscribeEvent
