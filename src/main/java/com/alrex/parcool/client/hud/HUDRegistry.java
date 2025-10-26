@@ -1,6 +1,7 @@
 package com.alrex.parcool.client.hud;
 
 import com.alrex.parcool.client.hud.impl.StaminaHUDController;
+import net.minecraftforge.client.gui.ForgeIngameGui;
 import net.minecraftforge.client.gui.IIngameOverlay;
 import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.event.TickEvent;
@@ -21,7 +22,7 @@ public class HUDRegistry {
 
 	@SubscribeEvent
 	public void onSetup(FMLClientSetupEvent event) {
-		Stamina_HUD = OverlayRegistry.registerOverlayTop("ParCool Stamina", staminaHUD);
+		Stamina_HUD = OverlayRegistry.registerOverlayAbove(ForgeIngameGui.FOOD_LEVEL_ELEMENT, "ParCool Stamina", staminaHUD);
 	}
 
 	@SubscribeEvent
