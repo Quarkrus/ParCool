@@ -15,6 +15,7 @@ import com.alrex.parcool.utilities.WorldUtil;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
@@ -166,9 +167,9 @@ public class HideInBlock extends Action {
         player.playSound(player.level()
                         .getBlockState(
                                 new BlockPos(
-                                        (int) Math.floor(hidingPoint.x()),
-                                        (int) Math.floor(hidingPoint.y() + 0.2),
-                                        (int) Math.floor(hidingPoint.z())
+                                        Mth.floor(hidingPoint.x()),
+                                        Mth.floor(hidingPoint.y() + 0.2),
+                                        Mth.floor(hidingPoint.z())
                                 )
                         )
                         .getSoundType().getBreakSound(),
@@ -230,9 +231,9 @@ public class HideInBlock extends Action {
         player.playSound(player.level()
                         .getBlockState(
                                 new BlockPos(
-                                        (int) Math.floor(hidingPoint.x()),
-                                        (int) Math.floor(hidingPoint.y() + 0.2),
-                                        (int) Math.floor(hidingPoint.z())
+                                        Mth.floor(hidingPoint.x()),
+                                        Mth.floor(hidingPoint.y() + 0.2),
+                                        Mth.floor(hidingPoint.z())
                                 )
                         )
                         .getSoundType().getBreakSound(),
@@ -246,9 +247,9 @@ public class HideInBlock extends Action {
         player.playSound(player.level()
                         .getBlockState(
                                 new BlockPos(
-                                        (int) Math.floor(hidingPoint.x()),
-                                        (int) Math.floor(hidingPoint.y() + 0.2),
-                                        (int) Math.floor(hidingPoint.z())
+                                        Mth.floor(hidingPoint.x()),
+                                        Mth.floor(hidingPoint.y() + 0.2),
+                                        Mth.floor(hidingPoint.z())
                                 )
                         )
                         .getSoundType().getBreakSound(),
