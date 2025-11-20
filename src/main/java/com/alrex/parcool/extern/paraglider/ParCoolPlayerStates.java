@@ -11,42 +11,49 @@ import tictim.paraglider.api.movement.ParagliderPlayerStates;
 import tictim.paraglider.api.movement.PlayerStateCondition;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class ParCoolPlayerStates {
-    public static final Entry FAST_RUN = new Entry(FastRun.class)
-            .parentID(ParagliderPlayerStates.IDLE)
-            .priority(3);
-    public static final Entry FAST_SWIM = new Entry(FastSwim.class).parentID(ParagliderPlayerStates.SWIMMING);
-    public static final Entry CLING_TO_CLIFF = new Entry(ClingToCliff.class);
-    public static final Entry BREAKFALL = new Entry(BreakfallReady.class)
-            .condition(
-                    (p, s, b, f) -> !p.isFallFlying()
+    public static final Entry FAST_RUN = Entry.constant(FastRun.class)
+            .parentID(
+                    ParagliderPlayerStates.IDLE,
+                    ParagliderPlayerStates.RUNNING
+            )
+            .relativePriority(-1);
+    public static final Entry FAST_SWIM = Entry.constant(FastSwim.class)
+            .parentID(
+                    ParagliderPlayerStates.IDLE,
+                    ParagliderPlayerStates.SWIMMING
+            )
+            .relativePriority(-1);
+    public static final Entry CLING_TO_CLIFF = Entry.constant(ClingToCliff.class).parentID(ParagliderPlayerStates.MIDAIR);
+    public static final Entry DODGE = Entry.instant(Dodge.class);
+    public static final Entry CLIMB_UP = Entry.instant(ClimbUp.class)
+            .parentID(
+                    ParagliderPlayerStates.IDLE,
+                    ParagliderPlayerStates.MIDAIR
             );
-    public static final Entry DODGE = new Entry(Dodge.class).priority(4).parentID(ParagliderPlayerStates.IDLE, ParagliderPlayerStates.RUNNING);
-    public static final Entry CLIMB_UP = new Entry(ClimbUp.class).parentID(CLING_TO_CLIFF.stateID());
-    public static final Entry ROLL = new Entry(Roll.class).parentID(BREAKFALL.stateID())
-            .condition(
-                    (p, s, b, f) -> !p.isFallFlying()
-            );
-    public static final Entry HORIZONTAL_WALL_RUN = new Entry(HorizontalWallRun.class).parentID(ParagliderPlayerStates.MIDAIR);
-    public static final Entry VERTICAL_WALL_RUN = new Entry(VerticalWallRun.class).parentID(ParagliderPlayerStates.MIDAIR);
-    public static final Entry VAULT = new Entry(Vault.class).parentID(FAST_RUN.stateID());
-    public static final Entry CATLEAP = new Entry(CatLeap.class).parentID(FAST_RUN.stateID());
-    public static final Entry CHARGE_JUMP = new Entry(ChargeJump.class).parentID(ParagliderPlayerStates.MIDAIR);
-    public static final Entry RIDE_ZIPLINE = new Entry(RideZipline.class).parentID(ParagliderPlayerStates.MIDAIR);
+    public static final Entry TAP = Entry.constant(Tap.class);
+    public static final Entry ROLL = Entry.instant(Roll.class);
+    public static final Entry HORIZONTAL_WALL_RUN = Entry.constant(HorizontalWallRun.class);
+    public static final Entry VERTICAL_WALL_RUN = Entry.instant(VerticalWallRun.class);
+    public static final Entry WALL_JUMP = Entry.instant(WallJump.class);
+    public static final Entry VAULT = Entry.instant(Vault.class);
+    public static final Entry CATLEAP = Entry.instant(CatLeap.class);
+    public static final Entry CHARGE_JUMP = Entry.instant(ChargeJump.class);
+    public static final Entry RIDE_ZIPLINE = Entry.constant(RideZipline.class);
 
     public static final List<Entry> ENTRIES = Arrays.asList(
             FAST_RUN,
             FAST_SWIM,
             CLING_TO_CLIFF,
-            BREAKFALL,
             DODGE,
             CLIMB_UP,
+            TAP,
             ROLL,
             HORIZONTAL_WALL_RUN,
             VERTICAL_WALL_RUN,
+            WALL_JUMP,
             VAULT,
             CATLEAP,
             CHARGE_JUMP,
@@ -61,18 +68,46 @@ public class ParCoolPlayerStates {
             double priority,
             PlayerStateCondition condition
     ) {
-        private Entry(Class<? extends Action> clazz) {
-            this(
+        private static Entry constant(Class<? extends Action> clazz) {
+            return new Entry(
                     clazz,
                     new ResourceLocation(ParCool.MOD_ID, clazz.getSimpleName().toLowerCase()),
-                    Collections.singletonList(ParagliderPlayerStates.IDLE),
+                    Arrays.asList(
+                            ParagliderPlayerStates.IDLE,
+                            ParagliderPlayerStates.RUNNING,
+                            ParagliderPlayerStates.SWIMMING,
+                            ParagliderPlayerStates.MIDAIR
+                    ),
                     -Math.min(15, ActionList.ACTION_REGISTRIES.get(ActionList.getIndexOf(clazz)).getDefaultStaminaConsumption()),
-                    0,
+                    5,
                     (p, s, b, f) -> {
                         var parkourability = Parkourability.get(p);
                         if (parkourability == null) return false;
                         return parkourability.getClientInfo().getStaminaType() == IStamina.Type.Paraglider
                                 && parkourability.get(clazz).isDoing();
+                    }
+            );
+        }
+
+        private static Entry instant(Class<? extends Action> clazz) {
+            return new Entry(
+                    clazz,
+                    new ResourceLocation(ParCool.MOD_ID, clazz.getSimpleName().toLowerCase()),
+                    Arrays.asList(
+                            ParagliderPlayerStates.IDLE,
+                            ParagliderPlayerStates.RUNNING,
+                            ParagliderPlayerStates.SWIMMING,
+                            ParagliderPlayerStates.MIDAIR
+                    ),
+                    -Math.min(25, ActionList.ACTION_REGISTRIES.get(ActionList.getIndexOf(clazz)).getDefaultStaminaConsumption() / 6),
+                    5,
+                    (p, s, b, f) -> {
+                        var parkourability = Parkourability.get(p);
+                        if (parkourability == null) return false;
+                        if (parkourability.getClientInfo().getStaminaType() != IStamina.Type.Paraglider) return false;
+                        var action = parkourability.get(clazz);
+                        var tickFromStarted = action.getTickFromLastStarted();
+                        return 0 <= tickFromStarted && tickFromStarted < 11;
                     }
             );
         }
@@ -83,6 +118,10 @@ public class ParCoolPlayerStates {
 
         public Entry priority(double value) {
             return new Entry(clazz, stateID, parentID, staminaDelta, value, condition);
+        }
+
+        public Entry relativePriority(double value) {
+            return new Entry(clazz, stateID, parentID, staminaDelta, priority + value, condition);
         }
 
         public Entry staminaDelta(int value) {

@@ -63,7 +63,7 @@ public class SyncActionStateMessage {
 				Action action = item.getAction();
 				switch (item.getType()) {
 					case Start:
-						action.setDoing(true);
+						action.start();
                         ByteBuffer startData = item.getBuffer();
                         action.onStart(player, parkourability, startData);
                         startData.rewind();
@@ -71,7 +71,7 @@ public class SyncActionStateMessage {
 						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.StartEvent(player, action));
 						break;
 					case Finish:
-						action.setDoing(false);
+						action.finish();
 						action.onStopInServer(player);
 						action.onStop(player);
 						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.StopEvent(player, action));
@@ -113,7 +113,7 @@ public class SyncActionStateMessage {
 				Action action = item.getAction();
 				switch (item.getType()) {
 					case Start:
-						action.setDoing(true);
+						action.start();
                         ByteBuffer startData = item.getBuffer();
                         action.onStart(player, parkourability, startData);
                         startData.rewind();
@@ -125,7 +125,7 @@ public class SyncActionStateMessage {
 						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.StartEvent(player, action));
 						break;
 					case Finish:
-						action.setDoing(false);
+						action.finish();
 						if (clientSide) {
 							action.onStopInOtherClient(player);
 						} else {
