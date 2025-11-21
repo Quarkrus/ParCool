@@ -58,16 +58,17 @@ public class SyncStaminaMessage {
 			ParCool.CHANNEL_INSTANCE.send(PacketDistributor.ALL.noArg(), this);
 			if (player == null) return;
 			IStamina stamina = IStamina.get(player);
-			if (stamina == null) return;
-			if (stamina instanceof OtherStamina) {
-				((OtherStamina) stamina).setMax(this.max);
-				((OtherStamina) stamina).setImposingPenalty(imposingPenalty);
-			}
+			if (!(stamina instanceof OtherStamina)) return;
+			OtherStamina otherStamina = (OtherStamina) stamina;
+			otherStamina.setMax(this.max);
+			otherStamina.set(this.stamina);
+			otherStamina.setImposingPenalty(imposingPenalty);
+			otherStamina.setExhaustion(exhausted);
 			if (staminaType != -1 && consumeOnServer > 0) {
 				IStamina.Type.values()[staminaType].handleConsumeOnServer(player, consumeOnServer);
 			}
-			stamina.set(this.stamina);
-			stamina.setExhaustion(exhausted);
+
+			SyncStaminaToClientMessage.requestSync(player.getUUID(), otherStamina);
 		});
 		contextSupplier.get().setPacketHandled(true);
 	}
@@ -77,27 +78,29 @@ public class SyncStaminaMessage {
 		contextSupplier.get().enqueueWork(() -> {
 			ServerPlayer serverPlayer = null;
 			Player player;
-			if (contextSupplier.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-                Level level = Minecraft.getInstance().level;
-                if (level == null) return;
-                player = level.getPlayerByUUID(playerID);
-				if (player == null || player.isLocalPlayer()) return;
-			} else {
+			boolean isInLogicalServer = contextSupplier.get().getDirection().getReceptionSide() == LogicalSide.SERVER;
+			if (isInLogicalServer) {
 				player = serverPlayer = contextSupplier.get().getSender();
-				ParCool.CHANNEL_INSTANCE.send(PacketDistributor.ALL.noArg(), this);
 				if (player == null) return;
+			} else {
+				Level world = Minecraft.getInstance().level;
+				if (world == null) return;
+				player = world.getPlayerByUUID(playerID);
+				if (player == null || player.isLocalPlayer()) return;
 			}
 			IStamina stamina = IStamina.get(player);
-			if (stamina == null) return;
-			if (stamina instanceof OtherStamina) {
-				((OtherStamina) stamina).setMax(this.max);
-				((OtherStamina) stamina).setImposingPenalty(imposingPenalty);
-			}
+			if (!(stamina instanceof OtherStamina)) return;
+			OtherStamina otherStamina = (OtherStamina) stamina;
+			otherStamina.setMax(this.max);
+			otherStamina.set(this.stamina);
+			otherStamina.setImposingPenalty(imposingPenalty);
+			otherStamina.setExhaustion(exhausted);
 			if (serverPlayer != null && staminaType != -1 && consumeOnServer > 0) {
 				IStamina.Type.values()[staminaType].handleConsumeOnServer(serverPlayer, consumeOnServer);
 			}
-			stamina.set(this.stamina);
-			stamina.setExhaustion(exhausted);
+			if (isInLogicalServer) {
+				SyncStaminaToClientMessage.requestSync(player.getUUID(), otherStamina);
+			}
 		});
 		contextSupplier.get().setPacketHandled(true);
 	}
