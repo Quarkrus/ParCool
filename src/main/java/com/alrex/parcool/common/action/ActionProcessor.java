@@ -7,6 +7,7 @@ import com.alrex.parcool.common.capability.IStamina;
 import com.alrex.parcool.common.capability.Parkourability;
 import com.alrex.parcool.common.network.SyncActionStateMessage;
 import com.alrex.parcool.common.network.SyncStaminaMessage;
+import com.alrex.parcool.common.network.SyncStaminaToClientMessage;
 import com.alrex.parcool.config.ParCoolConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -171,6 +172,10 @@ public class ActionProcessor {
 			if (stamina.isImposingExhaustionPenalty() && parkourability.getClientInfo().get(ParCoolConfig.Client.Booleans.EnableStaminaExhaustionPenalty)) {
 				player.setSprinting(false);
 			}
+		}
+
+		if (event.side == LogicalSide.SERVER) {
+			SyncStaminaToClientMessage.tick();
 		}
 	}
 
