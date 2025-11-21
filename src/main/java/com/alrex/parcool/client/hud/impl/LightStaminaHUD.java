@@ -91,6 +91,7 @@ public class LightStaminaHUD {
         staminaScale *= 10f;
 		float statusScale = showStatus ? MathUtil.lerp(oldStatusValue, statusValue, partialTick) * 10f : 0f;
 
+		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, StaminaHUD.STAMINA);
 		final int width = graphics.guiWidth();
 		final int height = graphics.guiHeight();
