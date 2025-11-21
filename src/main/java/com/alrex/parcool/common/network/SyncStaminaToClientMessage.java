@@ -4,14 +4,14 @@ import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.capability.IStamina;
 import com.alrex.parcool.common.capability.stamina.OtherStamina;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,13 +22,13 @@ import java.util.function.Supplier;
 
 public class SyncStaminaToClientMessage {
     // Please access these request and tick methods from only server's main thread, cuz it's not thread safe
-    public static void requestSync(ServerPlayerEntity player) {
+    public static void requestSync(ServerPlayer player) {
         IStamina stamina = IStamina.get(player);
         if (!(stamina instanceof OtherStamina)) return;
         requestSync(player, (OtherStamina) stamina);
     }
 
-    public static void requestSync(ServerPlayerEntity player, OtherStamina stamina) {
+    public static void requestSync(ServerPlayer player, OtherStamina stamina) {
         requestSync(player.getUUID(), stamina);
     }
 
@@ -91,14 +91,14 @@ public class SyncStaminaToClientMessage {
             this.imposingPenalty = imposingPenalty;
         }
 
-        public void encode(PacketBuffer buffer) {
+        public void encode(FriendlyByteBuf buffer) {
             buffer.writeInt(this.staminaValue);
             buffer.writeInt(this.maxValue);
             buffer.writeBoolean(this.exhausted);
             buffer.writeBoolean(this.imposingPenalty);
         }
 
-        public static SynchronizedState load(PacketBuffer buffer) {
+        public static SynchronizedState load(FriendlyByteBuf buffer) {
             return new SynchronizedState(buffer.readInt(), buffer.readInt(), buffer.readBoolean(), buffer.readBoolean());
         }
 
@@ -120,7 +120,7 @@ public class SyncStaminaToClientMessage {
         idAndStateMap = stateMap;
     }
 
-    public void encode(PacketBuffer packet) {
+    public void encode(FriendlyByteBuf packet) {
         this.idAndStateMap.forEach((id, state) -> {
             packet.writeLong(id.getMostSignificantBits());
             packet.writeLong(id.getLeastSignificantBits());
@@ -128,7 +128,7 @@ public class SyncStaminaToClientMessage {
         });
     }
 
-    public static SyncStaminaToClientMessage decode(PacketBuffer packet) {
+    public static SyncStaminaToClientMessage decode(FriendlyByteBuf packet) {
         TreeMap<UUID, SynchronizedState> map = new TreeMap<>();
         while (packet.isReadable()) {
             map.put(
@@ -142,10 +142,10 @@ public class SyncStaminaToClientMessage {
     @OnlyIn(Dist.CLIENT)
     public void handleClient(Supplier<NetworkEvent.Context> contextSupplier) {
         contextSupplier.get().enqueueWork(() -> {
-            World world = Minecraft.getInstance().level;
+            Level world = Minecraft.getInstance().level;
             if (world == null) return;
             this.idAndStateMap.forEach((id, state) -> {
-                PlayerEntity player = world.getPlayerByUUID(id);
+                Player player = world.getPlayerByUUID(id);
                 if (player == null) return;
                 if (player.isLocalPlayer()) return;
 
