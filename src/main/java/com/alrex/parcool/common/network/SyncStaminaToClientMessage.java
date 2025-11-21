@@ -128,7 +128,6 @@ public class SyncStaminaToClientMessage {
         });
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static SyncStaminaToClientMessage decode(PacketBuffer packet) {
         TreeMap<UUID, SynchronizedState> map = new TreeMap<>();
         while (packet.isReadable()) {
