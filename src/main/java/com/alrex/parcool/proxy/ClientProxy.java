@@ -50,5 +50,12 @@ public class ClientProxy extends CommonProxy {
 				SyncClientInformationMessage::decode,
 				SyncClientInformationMessage::handleClient
 		);
+		instance.registerMessage(
+				18,
+				SyncStaminaToClientMessage.class,
+				SyncStaminaToClientMessage::encode,
+				SyncStaminaToClientMessage::decode,
+				SyncStaminaToClientMessage::handleClient
+		);
 	}
 }
