@@ -64,6 +64,7 @@ public class PlayerDamageHandler {
 				if (hideInBlock.isStandbyInAir(parkourability)
 						&& parkourability.getActionInfo().can(HideInBlock.class)
 						&& !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, hideInBlock))
+						&& !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(player, hideInBlock))
 				) {
 					Tuple<BlockPos, BlockPos> area = WorldUtil.getHideAbleSpace(player, new BlockPos(player.blockPosition().below()));
 					if (area != null) {
