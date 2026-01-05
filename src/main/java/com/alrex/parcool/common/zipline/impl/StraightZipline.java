@@ -1,7 +1,6 @@
 package com.alrex.parcool.common.zipline.impl;
 
 import com.alrex.parcool.common.zipline.Zipline;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -62,12 +61,5 @@ public class StraightZipline extends Zipline {
         double zOffset = mostNearPoint.z - position.z;
         double yOffset = (mostNearPoint.y - position.y) * yDistanceScale;
         return xOffset * xOffset + zOffset * zOffset + yOffset * yOffset;
-    }
-
-    @Override
-    public boolean isPossiblyHangable(Vector3d position) {
-        return new AxisAlignedBB(getStartPos().x(), getStartPos().y(), getStartPos().z(), getEndPos().x(), getEndPos().y(), getEndPos().z())
-                .inflate(1d)
-                .contains(position);
     }
 }
