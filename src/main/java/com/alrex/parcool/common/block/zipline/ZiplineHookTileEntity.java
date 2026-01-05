@@ -133,9 +133,10 @@ public class ZiplineHookTileEntity extends TileEntity implements ITickableTileEn
         ListNBT connections = new ListNBT();
         for (Map.Entry<BlockPos, ZiplineInfo> infoEntry : getConnectionInfo().entrySet()) {
             CompoundNBT entryTag = new CompoundNBT();
-            entryTag.putInt("X", infoEntry.getKey().getX());
-            entryTag.putInt("Y", infoEntry.getKey().getY());
-            entryTag.putInt("Z", infoEntry.getKey().getZ());
+            BlockPos pos = getBlockPos();
+            entryTag.putInt("rX", infoEntry.getKey().getX() - pos.getX());
+            entryTag.putInt("rY", infoEntry.getKey().getY() - pos.getY());
+            entryTag.putInt("rZ", infoEntry.getKey().getZ() - pos.getZ());
             entryTag.put("Info", infoEntry.getValue().save());
             connections.add(entryTag);
         }
@@ -155,9 +156,17 @@ public class ZiplineHookTileEntity extends TileEntity implements ITickableTileEn
                 continue;
 
             CompoundNBT cTag = (CompoundNBT) entry;
-            if (!(cTag.contains("X") && cTag.contains("Y") && cTag.contains("Z")))
+            BlockPos pos;
+            if (cTag.contains("rX") && cTag.contains("rY") && cTag.contains("rZ")) {
+                pos = getBlockPos().offset(
+                        cTag.getInt("rX"),
+                        cTag.getInt("rY"),
+                        cTag.getInt("rZ")
+                );
+            } else if (cTag.contains("X") && cTag.contains("Y") && cTag.contains("Z")) {
+                pos = new BlockPos(cTag.getInt("X"), cTag.getInt("Y"), cTag.getInt("Z"));
+            } else
                 continue;
-            BlockPos pos = new BlockPos(cTag.getInt("X"), cTag.getInt("Y"), cTag.getInt("Z"));
             ZiplineInfo info = ZiplineInfo.load(cTag.get("Info"));
             getConnectionInfo().put(pos, info);
         }
