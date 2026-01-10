@@ -13,7 +13,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.CompoundTagArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
 public class ZiplineCommand {
@@ -49,20 +49,20 @@ public class ZiplineCommand {
 
         double horizontalDistSqr = Mth.square(hook1.getX() - hook2.getX()) + Mth.square(hook1.getZ() - hook2.getZ());
         if (horizontalDistSqr > Zipline.MAXIMUM_HORIZONTAL_DISTANCE * Zipline.MAXIMUM_HORIZONTAL_DISTANCE) {
-            context.getSource().sendFailure(new TranslatableComponent("parcool.command.message.hookTooFar"));
+            context.getSource().sendFailure(Component.translatable("parcool.command.message.hookTooFar"));
         }
         double verticalDist = Math.abs(hook2.getY() - hook1.getY());
         if (verticalDist * Mth.fastInvSqrt(horizontalDistSqr) > 1. || verticalDist > Zipline.MAXIMUM_VERTICAL_DISTANCE) {
-            context.getSource().sendFailure(new TranslatableComponent("parcool.command.message.ziplineTooSteep"));
+            context.getSource().sendFailure(Component.translatable("parcool.command.message.ziplineTooSteep"));
         }
         var entity = level.getBlockEntity(hook1);
         if (!(entity instanceof ZiplineHookTileEntity)) {
-            context.getSource().sendFailure(new TranslatableComponent("parcool.command.message.hookNotFound", hook1.toShortString()));
+            context.getSource().sendFailure(Component.translatable("parcool.command.message.hookNotFound", hook1.toShortString()));
             return 1;
         }
         var entity2 = level.getBlockEntity(hook2);
         if (!(entity2 instanceof ZiplineHookTileEntity)) {
-            context.getSource().sendFailure(new TranslatableComponent("parcool.command.message.hookNotFound", hook2.toShortString()));
+            context.getSource().sendFailure(Component.translatable("parcool.command.message.hookNotFound", hook2.toShortString()));
             return 1;
         }
 
@@ -77,7 +77,7 @@ public class ZiplineCommand {
         if (!((ZiplineHookTileEntity) entity).connectTo((ZiplineHookTileEntity) entity2, info)) {
             return 1;
         }
-        context.getSource().sendSuccess(new TranslatableComponent("parcool.command.message.success.setZipline", hook1.toShortString(), hook2.toShortString()), true);
+        context.getSource().sendSuccess(Component.translatable("parcool.command.message.success.setZipline", hook1.toShortString(), hook2.toShortString()), true);
         return 0;
     }
 }
