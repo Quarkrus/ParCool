@@ -71,7 +71,7 @@ public class ParCoolActionEvent extends Event {
             return true;
         }
 
-        public TryToStart(PlayerEntity player, Action action) {
+        public TryToStart(Player player, Action action) {
             super(player, action);
         }
     }
@@ -84,60 +84,60 @@ public class ParCoolActionEvent extends Event {
             return true;
         }
 
-        public TryToContinue(PlayerEntity player, Action action) {
+        public TryToContinue(Player player, Action action) {
             super(player, action);
         }
     }
 
     public static class Start extends ParCoolActionEvent {
-        private Start(PlayerEntity player, Action action) {
+        private Start(Player player, Action action) {
             super(player, action);
         }
 
         public static class Pre extends Start {
-            public Pre(PlayerEntity player, Action action) {
+            public Pre(Player player, Action action) {
                 super(player, action);
             }
         }
 
         public static class Post extends Start {
-            public Post(PlayerEntity player, Action action) {
+            public Post(Player player, Action action) {
                 super(player, action);
             }
         }
     }
 
     public static class Finish extends ParCoolActionEvent {
-        private Finish(PlayerEntity player, Action action) {
+        private Finish(Player player, Action action) {
             super(player, action);
         }
 
         public static class Pre extends Finish {
-            public Pre(PlayerEntity player, Action action) {
+            public Pre(Player player, Action action) {
                 super(player, action);
             }
         }
 
         public static class Post extends Finish {
-            public Post(PlayerEntity player, Action action) {
+            public Post(Player player, Action action) {
                 super(player, action);
             }
         }
     }
 
     public static class Tick extends ParCoolActionEvent {
-        private Tick(PlayerEntity player, Action action) {
+        private Tick(Player player, Action action) {
             super(player, action);
         }
 
         public static class Pre extends Tick {
-            public Pre(PlayerEntity player, Action action) {
+            public Pre(Player player, Action action) {
                 super(player, action);
             }
         }
 
         public static class Post extends Tick {
-            public Post(PlayerEntity player, Action action) {
+            public Post(Player player, Action action) {
                 super(player, action);
             }
         }

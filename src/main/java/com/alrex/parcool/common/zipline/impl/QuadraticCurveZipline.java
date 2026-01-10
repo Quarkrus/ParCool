@@ -1,7 +1,6 @@
 package com.alrex.parcool.common.zipline.impl;
 
 import com.alrex.parcool.common.zipline.Zipline;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public class QuadraticCurveZipline extends Zipline {
@@ -75,7 +74,7 @@ public class QuadraticCurveZipline extends Zipline {
         return xOffset * xOffset + zOffset * zOffset + yOffset * yOffset;
     }
 
-    public double getAccurateDistance(Vector3d position) {
+    public double getAccurateDistance(Vec3 position) {
         /*
         // calculate by minimalize squared distance for t
 

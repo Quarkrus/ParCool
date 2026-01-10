@@ -453,7 +453,7 @@ public class WorldUtil {
 						blockX, entity.getBoundingBox().minY + baseLine - 0.3, blockZ
 				);
 			}
-			slipperiness = entity.level.getBlockState(blockPos).getSlipperiness(entity.level, blockPos, entity);
+			slipperiness = entity.level.getBlockState(blockPos).getFriction(entity.level, blockPos, entity);
 		}
 		return slipperiness <= 0.9 ? new Vec3(xDirection, 0, zDirection) : null;
 	}

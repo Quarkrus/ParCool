@@ -46,7 +46,7 @@ public abstract class Action {
 		}
 	}
 
-	public void start(PlayerEntity player, Parkourability parkourability, ByteBuffer startInfo, @Nullable IStamina stamina) {
+	public void start(Player player, Parkourability parkourability, ByteBuffer startInfo, @Nullable IStamina stamina) {
 		doing = true;
 		tickFromStarted = 0;
 		onStart(player, parkourability, startInfo);
@@ -68,7 +68,7 @@ public abstract class Action {
 		startInfo.rewind();
 	}
 
-	public void finish(PlayerEntity player) {
+	public void finish(Player player) {
 		doing = false;
 		if (player.isLocalPlayer()) {
 			onStopInLocalClient(player);
@@ -125,7 +125,7 @@ public abstract class Action {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void onWorkingTickInOtherClient(PlayerEntity player, Parkourability parkourability, IStamina stamina) {
+	public void onWorkingTickInOtherClient(Player player, Parkourability parkourability, IStamina stamina) {
 	}
 
 	@OnlyIn(Dist.CLIENT)
