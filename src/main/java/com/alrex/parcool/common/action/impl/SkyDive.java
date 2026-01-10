@@ -40,12 +40,12 @@ public class SkyDive extends Action {
 		clientPlayer.setDeltaMovement(clientPlayer.getDeltaMovement()
 				.multiply(
 						1,
-						Math.max(
-								parkourability.getClientInfo().get(ParCoolConfig.Client.Doubles.SkyDiveSpeedDecreaseRate),
-								parkourability.getServerLimitation().get(ParCoolConfig.Server.Doubles.MinSkyDiveSpeedDecreaseRate)
+						parkourability.getLimitedValue(
+								ParCoolConfig.Client.Doubles.SkyDiveSpeedDecreaseRate,
+								ParCoolConfig.Server.Doubles.MinSkyDiveSpeedDecreaseRate
 						),
-						1)
-				.add(
+						1
+				).add(
 						forwardVec.add(leftVec)
 				));
 	}

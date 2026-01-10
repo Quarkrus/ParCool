@@ -295,6 +295,13 @@ public class ParCoolConfig {
 			MaxSuccessiveDodgeCount(
 					ConfigGroup.Control, "Max number of times of successive Dodge action",
 					"successive_dodge_count", 3, 1, Integer.MAX_VALUE
+			),
+			JustTimeBreakfallTick(
+					ConfigGroup.Control, "Window time of just time breakfall",
+					"justtime_breakfall_tick",
+					Server.Integers.MaxJustTimeBreakfallTick.DefaultValue,
+					Server.Integers.MaxJustTimeBreakfallTick.Min,
+					Server.Integers.MaxJustTimeBreakfallTick.Max
 			);
 			public final ConfigGroup Group;
 			@Nullable
@@ -321,6 +328,21 @@ public class ParCoolConfig {
 				DefaultValue = defaultValue;
 				Min = min;
 				Max = max;
+				Translation = "parcool.config.c." + path;
+			}
+
+			Integers(
+					ConfigGroup group,
+					@Nullable String comment,
+					String path,
+					Server.Integers defaultValues
+			) {
+				Group = group;
+				Comment = comment;
+				Path = path;
+				DefaultValue = defaultValues.DefaultValue;
+				Min = defaultValues.Min;
+				Max = defaultValues.Max;
 				Translation = "parcool.config.c." + path;
 			}
 
@@ -384,7 +406,15 @@ public class ParCoolConfig {
 			),
 			LowestFallDistanceForBreakfall(
 					ConfigGroup.Control, "Lowest fall distance needed to trigger breakfall movements",
-					"lowest_fall_distance_for_breakfall", 2, 0, 10
+					"lowest_fall_distance_for_breakfall", Server.Doubles.MinLowestFallDistanceForBreakfall
+			),
+			DamageCompleteRemovableHeightBreakfall(
+					ConfigGroup.Control, "How long distance breakfall can remove damage",
+					"max_breakfall_damage_remove_height", Server.Doubles.MaxDamageCompleteRemovableHeightBreakfall
+			),
+			DamageReductionRateBreakfall(
+					ConfigGroup.Control, "Damage reduction rate of Breakfall",
+					"max_breakfall_damage_reduction_rate", Server.Doubles.MaxDamageReductionRateBreakfall
 			);
 			public final ConfigGroup Group;
 			@Nullable
@@ -411,6 +441,21 @@ public class ParCoolConfig {
 				DefaultValue = defaultValue;
 				Min = min;
 				Max = max;
+				Translation = "parcool.config.c." + path;
+			}
+
+			Doubles(
+					ConfigGroup group,
+					@Nullable String comment,
+					String path,
+					ParCoolConfig.Server.Doubles defaultValues
+			) {
+				Group = group;
+				Comment = comment;
+				Path = path;
+				DefaultValue = defaultValues.DefaultValue;
+				Min = defaultValues.Min;
+				Max = defaultValues.Max;
 				Translation = "parcool.config.c." + path;
 			}
 
@@ -660,6 +705,10 @@ public class ParCoolConfig {
 			MaxSlidingContinuableTick(
 					ConfigGroup.Modifier, "How long you can do Slide",
 					"sliding_continuable_tick", 30, 10, 60, AdvantageousDirection.Higher
+			),
+			MaxJustTimeBreakfallTick(
+					ConfigGroup.Control, "Window time of just time breakfall",
+					"justtime_breakfall_tick", 5, 0, Integer.MAX_VALUE, AdvantageousDirection.Higher
 			);
 			public final ConfigGroup Group;
 			@Nullable
@@ -746,6 +795,18 @@ public class ParCoolConfig {
 			MinSkyDiveSpeedDecreaseRate(
 					ConfigGroup.Modifier, "SkyDive speed decrease rate",
 					"min_sky-dive_speed_decrease", 0.98, 0.001, 1, AdvantageousDirection.Lower
+			),
+			MinLowestFallDistanceForBreakfall(
+					ConfigGroup.Control, "Lowest fall distance needed to trigger breakfall movements",
+					"lowest_fall_distance_for_breakfall", 2, 0, 10, AdvantageousDirection.Lower
+			),
+			MaxDamageCompleteRemovableHeightBreakfall(
+					ConfigGroup.Control, "How long breakfall can remove damage",
+					"max_breakfall_damage_remove_height", 6, 0, Double.MAX_VALUE, AdvantageousDirection.Higher
+			),
+			MaxDamageReductionRateBreakfall(
+					ConfigGroup.Control, "Damage reduction rate of Breakfall",
+					"max_breakfall_damage_reduction_rate", 0.6, 0, 1, AdvantageousDirection.Higher
 			);
 			public final ConfigGroup Group;
 			@Nullable

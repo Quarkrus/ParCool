@@ -47,17 +47,31 @@ public class PlayerDamageHandler {
 					&& (parkourability.getActionInfo().can(Tap.class)
 					|| parkourability.getActionInfo().can(Roll.class))
 			) {
-				boolean justTime = parkourability.get(BreakfallReady.class).getDoingTick() < 5;
+				boolean justTime = parkourability.get(BreakfallReady.class).getDoingTick() < parkourability.getLimitedValue(
+						ParCoolConfig.Client.Integers.JustTimeBreakfallTick,
+						ParCoolConfig.Server.Integers.MaxJustTimeBreakfallTick
+				);
 				float distance = event.getDistance();
-				if (distance > parkourability.getClientInfo().get(ParCoolConfig.Client.Doubles.LowestFallDistanceForBreakfall)) {
+				if (distance > parkourability.getLimitedValue(
+						ParCoolConfig.Client.Doubles.LowestFallDistanceForBreakfall,
+						ParCoolConfig.Server.Doubles.MinLowestFallDistanceForBreakfall
+				)) {
 					StartBreakfallMessage.send(player, justTime);
 				} else {
 					return;
 				}
-				if (distance < 6 || (justTime && distance < 8)) {
+				double damageRemoveHeight = parkourability.getLimitedValue(
+						ParCoolConfig.Client.Doubles.DamageCompleteRemovableHeightBreakfall,
+						ParCoolConfig.Server.Doubles.MaxDamageCompleteRemovableHeightBreakfall
+				);
+				if (distance < damageRemoveHeight || (justTime && distance < damageRemoveHeight * 1.34)) {
 					event.setCanceled(true);
 				} else {
-					event.setDamageMultiplier(event.getDamageMultiplier() * (justTime ? 0.4f : 0.6f));
+					float damageReductionRate = (float) parkourability.getLimitedValue(
+							ParCoolConfig.Client.Doubles.DamageReductionRateBreakfall,
+							ParCoolConfig.Server.Doubles.MaxDamageReductionRateBreakfall
+					);
+					event.setDamageMultiplier(event.getDamageMultiplier() * (justTime ? 0.66f * damageReductionRate : damageReductionRate));
 				}
 			} else {
 				HideInBlock hideInBlock = parkourability.get(HideInBlock.class);

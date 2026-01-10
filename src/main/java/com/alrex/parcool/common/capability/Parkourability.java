@@ -9,6 +9,7 @@ import com.alrex.parcool.common.info.ActionInfo;
 import com.alrex.parcool.common.info.ClientSetting;
 import com.alrex.parcool.common.info.ServerLimitation;
 import com.alrex.parcool.common.network.SyncClientInformationMessage;
+import com.alrex.parcool.config.ParCoolConfig;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
@@ -92,6 +93,30 @@ public class Parkourability {
 
 	public boolean isDoingNothing() {
 		return actions.stream().noneMatch(Action::isDoing);
+	}
+
+	public boolean getLimitedValue(ParCoolConfig.Client.Booleans client, ParCoolConfig.Server.Booleans server) {
+		if (server.AdvantageousValue) {
+			return (getClientInfo().get(client) && getServerLimitation().get(server));
+		} else {
+			return !(getClientInfo().get(client) || getServerLimitation().get(server));
+		}
+	}
+
+	public int getLimitedValue(ParCoolConfig.Client.Integers client, ParCoolConfig.Server.Integers server) {
+		if (server.Advantageous == ParCoolConfig.AdvantageousDirection.Higher) {
+			return Math.min(getClientInfo().get(client), getServerLimitation().get(server));
+		} else {
+			return Math.max(getClientInfo().get(client), getServerLimitation().get(server));
+		}
+	}
+
+	public double getLimitedValue(ParCoolConfig.Client.Doubles client, ParCoolConfig.Server.Doubles server) {
+		if (server.Advantageous == ParCoolConfig.AdvantageousDirection.Higher) {
+			return Math.min(getClientInfo().get(client), getServerLimitation().get(server));
+		} else {
+			return Math.max(getClientInfo().get(client), getServerLimitation().get(server));
+		}
 	}
 
 	@OnlyIn(Dist.CLIENT)
