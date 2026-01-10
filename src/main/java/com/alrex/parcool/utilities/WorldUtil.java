@@ -435,12 +435,21 @@ public class WorldUtil {
 					entity.level.getBlockState(blockPos2).getSlipperiness(entity.level, blockPos2, entity)
 			);
 		} else {
+			double blockX = entity.getX() + xDirection, blockZ = entity.getZ() + zDirection;
 			BlockPos blockPos = new BlockPos(
-					entity.getX() + xDirection,
-					entity.getBoundingBox().minY + baseLine - 0.3,
-					entity.getZ() + zDirection
+					blockX, entity.getBoundingBox().minY + baseLine - 0.3, blockZ
 			);
 			if (!entity.level.isLoaded(blockPos)) return null;
+			if (entity.level.getBlockState(blockPos).is(Blocks.AIR)) {
+				if (xDirection != 0) {
+					blockZ = blockZ + Math.signum((blockZ - Math.floor(blockZ)) - 0.5);
+				} else {
+					blockX = blockX + Math.signum((blockX - Math.floor(blockX)) - 0.5);
+				}
+				blockPos = new BlockPos(
+						blockX, entity.getBoundingBox().minY + baseLine - 0.3, blockZ
+				);
+			}
 			slipperiness = entity.level.getBlockState(blockPos).getSlipperiness(entity.level, blockPos, entity);
 		}
 		return slipperiness <= 0.9 ? new Vector3d(xDirection, 0, zDirection) : null;
