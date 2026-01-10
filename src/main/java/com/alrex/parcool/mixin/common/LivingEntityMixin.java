@@ -49,7 +49,8 @@ public abstract class LivingEntityMixin extends Entity {
 				return;
 			}
 			if (!parkourability.getActionInfo().can(ClimbPoles.class)
-					|| NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, parkourability.get(ClimbPoles.class))).isCanceled()
+					|| NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, parkourability.get(ClimbPoles.class)))
+					|| NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(player, parkourability.get(ClimbPoles.class)))
 			) {
 				return;
 			}

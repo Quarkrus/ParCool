@@ -22,29 +22,125 @@ public class ParCoolActionEvent extends Event {
         this.action = action;
     }
 
-    public static class TryToStartEvent extends ParCoolActionEvent implements ICancellableEvent {
+    @Deprecated
+    @Cancelable
+    public static class TryToStartEvent extends ParCoolActionEvent {
+
+        @Override
+        public boolean isCancelable() {
+            return true;
+        }
 
         public TryToStartEvent(Player player, Action action) {
             super(player, action);
         }
     }
 
-    public static class TryToContinueEvent extends ParCoolActionEvent implements ICancellableEvent {
+    @Deprecated
+    @Cancelable
+    public static class TryToContinueEvent extends ParCoolActionEvent {
+
+        @Override
+        public boolean isCancelable() {
+            return true;
+        }
 
         public TryToContinueEvent(Player player, Action action) {
             super(player, action);
         }
     }
 
+    @Deprecated
     public static class StartEvent extends ParCoolActionEvent {
         public StartEvent(Player player, Action action) {
             super(player, action);
         }
     }
 
+    @Deprecated
     public static class StopEvent extends ParCoolActionEvent {
         public StopEvent(Player player, Action action) {
             super(player, action);
         }
     }
+    // ======
+
+    public static class TryToStart extends ParCoolActionEvent {
+        @Override
+        public boolean isCancelable() {
+            return true;
+        }
+
+        public TryToStart(Player player, Action action) {
+            super(player, action);
+        }
+    }
+
+    @Cancelable
+    public static class TryToContinue extends ParCoolActionEvent {
+
+        @Override
+        public boolean isCancelable() {
+            return true;
+        }
+
+        public TryToContinue(Player player, Action action) {
+            super(player, action);
+        }
+    }
+
+    public static class Start extends ParCoolActionEvent {
+        private Start(Player player, Action action) {
+            super(player, action);
+        }
+
+        public static class Pre extends Start {
+            public Pre(Player player, Action action) {
+                super(player, action);
+            }
+        }
+
+        public static class Post extends Start {
+            public Post(Player player, Action action) {
+                super(player, action);
+            }
+        }
+    }
+
+    public static class Finish extends ParCoolActionEvent {
+        private Finish(Player player, Action action) {
+            super(player, action);
+        }
+
+        public static class Pre extends Finish {
+            public Pre(Player player, Action action) {
+                super(player, action);
+            }
+        }
+
+        public static class Post extends Finish {
+            public Post(Player player, Action action) {
+                super(player, action);
+            }
+        }
+    }
+
+    public static class Tick extends ParCoolActionEvent {
+        private Tick(Player player, Action action) {
+            super(player, action);
+        }
+
+        public static class Pre extends Tick {
+            public Pre(Player player, Action action) {
+                super(player, action);
+            }
+        }
+
+        public static class Post extends Tick {
+            public Post(Player player, Action action) {
+                super(player, action);
+            }
+        }
+    }
+
 }

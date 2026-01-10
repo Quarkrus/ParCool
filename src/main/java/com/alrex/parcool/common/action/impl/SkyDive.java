@@ -34,7 +34,14 @@ public class SkyDive extends Action {
 		Vec3 leftVec = forwardVec.yRot((float) Math.PI / 2).scale(clientPlayer.input.leftImpulse * 0.0);
 		forwardVec = forwardVec.scale(clientPlayer.input.forwardImpulse * 0.03);
 		clientPlayer.setDeltaMovement(clientPlayer.getDeltaMovement()
-				.multiply(1, 0.98, 1).add(
+				.multiply(
+						1,
+						parkourability.getLimitedValue(
+								ParCoolConfig.Client.Doubles.SkyDiveSpeedDecreaseRate,
+								ParCoolConfig.Server.Doubles.MinSkyDiveSpeedDecreaseRate
+						),
+						1
+				).add(
 						forwardVec.add(leftVec)
 				));
 	}
