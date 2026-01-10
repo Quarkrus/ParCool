@@ -10,6 +10,7 @@ import com.alrex.parcool.common.network.SyncStaminaMessage;
 import com.alrex.parcool.common.network.SyncStaminaToClientMessage;
 import com.alrex.parcool.config.ParCoolConfig;
 import net.minecraft.ChatFormatting;
+import com.alrex.parcool.utilities.BufferUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
@@ -35,35 +36,71 @@ public class ActionProcessor {
 	private final ByteBuffer bufferOfStarting = ByteBuffer.allocate(128);
 	private int staminaSyncCoolTimeTick = 0;
 
-	@OnlyIn(Dist.CLIENT)
-	@SubscribeEvent
-	public void onTickInClient(TickEvent.PlayerTickEvent event) {
-		if (event.phase == TickEvent.Phase.START) return;
-		if (event.side != LogicalSide.CLIENT) return;
-		AbstractClientPlayer player = (AbstractClientPlayer) event.player;
-		Animation animation = Animation.get(player);
-		if (animation == null) return;
-		Parkourability parkourability = Parkourability.get(player);
-		if (parkourability == null) return;
-		animation.tick(player, parkourability);
-	}
 
 	@SubscribeEvent
 	public void onTick(TickEvent.PlayerTickEvent event) {
-		Player player = event.player;
+		if (event.phase == TickEvent.Phase.START) return;
+
+		var player = event.player;
 		IStamina stamina = IStamina.get(player);
 		if (stamina == null) return;
-		if (event.phase == TickEvent.Phase.START) {
-			stamina.tick();
-			return;
-		}
 		Parkourability parkourability = Parkourability.get(player);
 		if (parkourability == null) return;
+
+		boolean inClient = event.side == LogicalSide.CLIENT;
+		boolean inServer = !inClient;
+
+		onTick$doPreprocess(event, stamina);
+		if (inClient) {
+			onTick$doPreprocessInClient(event, parkourability);
+		} else {
+			onTick$doPreprocessInServer(event);
+		}
+
 		List<Action> actions = parkourability.getList();
-		boolean needSync = event.side == LogicalSide.CLIENT && player.isLocalPlayer();
+		boolean needSync = player.isLocalPlayer();
 		SyncActionStateMessage.Encoder builder = SyncActionStateMessage.Encoder.reset();
 
-		if (needSync && player.tickCount > 100 && player.tickCount % 150 == 0 && parkourability.limitationIsNotSynced()) {
+		if (needSync) {
+			onTick$checkLimitationSynchronization(player, parkourability);
+		}
+
+		parkourability.getAdditionalProperties().onTick(player, parkourability);
+		for (Action action : actions) {
+			MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Tick.Pre(player, action));
+			processAction(player, parkourability, stamina, builder, inClient, action);
+			MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Tick.Post(player, action));
+		}
+		if (needSync) {
+			onTick$sendSynchronizationPacket(player, parkourability, stamina, builder);
+			if (stamina.isImposingExhaustionPenalty() && parkourability.getClientInfo().get(ParCoolConfig.Client.Booleans.EnableStaminaExhaustionPenalty)) {
+				player.setSprinting(false);
+			}
+		}
+
+		if (inServer) {
+			SyncStaminaToClientMessage.tick();
+		}
+	}
+
+	private void onTick$doPreprocess(TickEvent.PlayerTickEvent event, IStamina stamina) {
+		stamina.tick();
+	}
+
+	private void onTick$doPreprocessInServer(TickEvent.PlayerTickEvent event) {
+
+	}
+
+	// @OnlyIn(Dist.CLIENT)
+	private void onTick$doPreprocessInClient(TickEvent.PlayerTickEvent event, Parkourability parkourability) {
+		var player = (AbstractClientPlayer) event.player;
+		Animation animation = Animation.get(player);
+		if (animation == null) return;
+		animation.tick(player, parkourability);
+	}
+
+	private void onTick$checkLimitationSynchronization(Player player, Parkourability parkourability) {
+		if (player.isLocalPlayer() && player.tickCount > 127 && player.tickCount % 256 == 0 && parkourability.limitationIsNotSynced()) {
 			if (player instanceof LocalPlayer localPlayer) {
 				int trialCount = parkourability.getSynchronizeTrialCount();
 				if (trialCount < 5) {
@@ -79,113 +116,107 @@ public class ActionProcessor {
 				}
 			}
 		}
+	}
 
-		parkourability.getAdditionalProperties().onTick(player, parkourability);
-		for (Action action : actions) {
-			StaminaConsumeTiming timing = action.getStaminaConsumeTiming();
-			if (needSync) {
-				bufferOfPreState.clear();
-				action.saveSynchronizedState(bufferOfPreState);
-				bufferOfPreState.flip();
-			}
-			if (action.isDoing()) {
-				action.setDoingTick(action.getDoingTick() + 1);
-				action.setNotDoingTick(0);
-			} else {
-				action.setDoingTick(0);
-				action.setNotDoingTick(action.getNotDoingTick() + 1);
-			}
+	private void onTick$sendSynchronizationPacket(Player player, Parkourability parkourability, IStamina stamina, SyncActionStateMessage.Encoder builder) {
+		SyncActionStateMessage.sync(player, builder);
 
-			action.onTick(player, parkourability, stamina);
-			if (event.side == LogicalSide.CLIENT) {
-				action.onClientTick(player, parkourability, stamina);
-			} else {
-				action.onServerTick(player, parkourability, stamina);
-			}
-
-			if (player.isLocalPlayer()) {
-				if (action.isDoing()) {
-					boolean canContinue = parkourability.getActionInfo().can(action.getClass())
-							&& !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToContinueEvent(player, action))
-							&& action.canContinue(player, parkourability, stamina);
-					if (!canContinue) {
-						action.setDoing(false);
-						action.onStopInLocalClient(player);
-						action.onStop(player);
-                        MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.StopEvent(player, action));
-						builder.appendFinishMsg(parkourability, action);
-					}
-				} else {
-					bufferOfStarting.clear();
-                    boolean start = !player.isSpectator()
-                            && parkourability.getActionInfo().can(action.getClass())
-                            && !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, action))
-							&& action.canStart(player, parkourability, stamina, bufferOfStarting);
-					bufferOfStarting.flip();
-					if (start) {
-						action.setDoing(true);
-                        action.onStart(player, parkourability, bufferOfStarting);
-                        bufferOfStarting.rewind();
-						action.onStartInLocalClient(player, parkourability, stamina, bufferOfStarting);
-						bufferOfStarting.rewind();
-                        MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.StartEvent(player, action));
-						builder.appendStartData(parkourability, action, bufferOfStarting);
-						if (timing == StaminaConsumeTiming.OnStart)
-							stamina.consume(parkourability.getActionInfo().getStaminaConsumptionOf(action.getClass()));
-					}
-				}
-			}
-
-			if (action.isDoing()) {
-				action.onWorkingTick(player, parkourability, stamina);
-				if (event.side == LogicalSide.CLIENT) {
-					action.onWorkingTickInClient(player, parkourability, stamina);
-					if (player.isLocalPlayer()) {
-						action.onWorkingTickInLocalClient(player, parkourability, stamina);
-						if (timing == StaminaConsumeTiming.OnWorking)
-							stamina.consume(parkourability.getActionInfo().getStaminaConsumptionOf(action.getClass()));
-					}
-				} else {
-					action.onWorkingTickInServer(player, parkourability, stamina);
-				}
-			}
-
-			if (needSync) {
-				bufferOfPostState.clear();
-				action.saveSynchronizedState(bufferOfPostState);
-				bufferOfPostState.flip();
-
-				if (bufferOfPostState.limit() == bufferOfPreState.limit()) {
-					while (bufferOfPreState.hasRemaining()) {
-						if (bufferOfPostState.get() != bufferOfPreState.get()) {
-							bufferOfPostState.rewind();
-							builder.appendSyncData(parkourability, action, bufferOfPostState);
-							break;
-						}
-					}
-				} else {
-					bufferOfPostState.rewind();
-					builder.appendSyncData(parkourability, action, bufferOfPostState);
-				}
-			}
-		}
-		if (needSync) {
-			SyncActionStateMessage.sync(player, builder);
-
-			staminaSyncCoolTimeTick++;
-            if (!parkourability.limitationIsNotSynced() && (staminaSyncCoolTimeTick > 3 || stamina.wantToConsumeOnServer())) {
-				staminaSyncCoolTimeTick = 0;
-				SyncStaminaMessage.sync(player);
-			}
-			if (stamina.isImposingExhaustionPenalty() && parkourability.getClientInfo().get(ParCoolConfig.Client.Booleans.EnableStaminaExhaustionPenalty)) {
-				player.setSprinting(false);
-			}
-		}
-
-		if (event.side == LogicalSide.SERVER) {
-			SyncStaminaToClientMessage.tick();
+		staminaSyncCoolTimeTick++;
+		if (!parkourability.limitationIsNotSynced() && (staminaSyncCoolTimeTick > 3 || stamina.wantToConsumeOnServer())) {
+			staminaSyncCoolTimeTick = 0;
+			SyncStaminaMessage.sync(player);
 		}
 	}
+
+	private void processAction(Player player, Parkourability parkourability, IStamina stamina, SyncActionStateMessage.Encoder builder, boolean inClientSide, Action action) {
+		boolean needSync = player.isLocalPlayer();
+
+		if (needSync) {
+			saveSynchronizationState(action, bufferOfPreState);
+		}
+		action.tick();
+
+		action.onTick(player, parkourability, stamina);
+		if (inClientSide) {
+			action.onClientTick(player, parkourability, stamina);
+		} else {
+			action.onServerTick(player, parkourability, stamina);
+		}
+
+		if (needSync) {
+			checkAndChangeActionState(player, parkourability, stamina, action, builder);
+		}
+
+		if (action.isDoing()) {
+			action.onWorkingTick(player, parkourability, stamina);
+			if (inClientSide) {
+				action.onWorkingTickInClient(player, parkourability, stamina);
+				if (needSync) {
+					action.onWorkingTickInLocalClient(player, parkourability, stamina);
+					if (action.getStaminaConsumeTiming() == StaminaConsumeTiming.OnWorking) {
+						stamina.consume(parkourability.getActionInfo().getStaminaConsumptionOf(action.getClass()));
+					}
+				} else {
+					action.onWorkingTickInOtherClient(player, parkourability, stamina);
+				}
+			} else {
+				action.onWorkingTickInServer(player, parkourability, stamina);
+			}
+		}
+
+		if (needSync) {
+			saveSynchronizationState(action, bufferOfPostState);
+
+			if (!BufferUtil.haveSameContents(bufferOfPreState, bufferOfPostState)) {
+				bufferOfPostState.rewind();
+				builder.appendSyncData(parkourability, action, bufferOfPostState);
+				bufferOfPreState.clear();
+				bufferOfPostState.clear();
+			}
+		}
+	}
+
+	// @OnlyIn(Dist.CLIENT)
+	private void checkAndChangeActionState(Player player, Parkourability parkourability, IStamina stamina, Action action, SyncActionStateMessage.Encoder builder) {
+		if (action.isDoing()) {
+			boolean canContinue = parkourability.getActionInfo().can(action.getClass())
+					&& !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToContinueEvent(player, action))
+					&& !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToContinue(player, action))
+					&& action.canContinue(player, parkourability, stamina);
+			if (!canContinue) {
+				MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Pre(player, action));
+				action.finish(player);
+				MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.StopEvent(player, action));
+				MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Post(player, action));
+				builder.appendFinishMsg(parkourability, action);
+			}
+		} else {
+			bufferOfStarting.clear();
+			boolean start = !player.isSpectator()
+					&& parkourability.getActionInfo().can(action.getClass())
+					&& !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, action))
+					&& !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(player, action))
+					&& action.canStart(player, parkourability, stamina, bufferOfStarting);
+			bufferOfStarting.flip();
+			if (start) {
+				MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Pre(player, action));
+				action.start(player, parkourability, bufferOfStarting, stamina);
+				MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.StartEvent(player, action));
+				MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Post(player, action));
+				if (action.getStaminaConsumeTiming() == StaminaConsumeTiming.OnStart)
+					stamina.consume(parkourability.getActionInfo().getStaminaConsumptionOf(action.getClass()));
+				builder.appendStartData(parkourability, action, bufferOfStarting);
+			}
+		}
+	}
+
+	private void saveSynchronizationState(Action action, ByteBuffer buffer) {
+		buffer.clear();
+		action.saveSynchronizedState(buffer);
+		buffer.flip();
+	}
+
+	// ====
 
 	@OnlyIn(Dist.CLIENT)
 	@SubscribeEvent

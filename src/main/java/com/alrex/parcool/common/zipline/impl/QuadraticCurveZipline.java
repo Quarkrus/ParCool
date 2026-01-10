@@ -75,14 +75,7 @@ public class QuadraticCurveZipline extends Zipline {
         return xOffset * xOffset + zOffset * zOffset + yOffset * yOffset;
     }
 
-    @Override
-    public boolean isPossiblyHangable(Vec3 position) {
-        return new AABB(getStartPos().x(), getStartPos().y(), getStartPos().z(), getEndPos().x(), getEndPos().y(), getEndPos().z())
-                .inflate(1d)
-                .contains(position);
-    }
-
-    public double getAccurateDistance(Vec3 position) {
+    public double getAccurateDistance(Vector3d position) {
         /*
         // calculate by minimalize squared distance for t
 
