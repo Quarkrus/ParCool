@@ -378,6 +378,10 @@ public class ParCoolConfig {
 					ConfigGroup.Modifier, "Dodge speed modifier",
 					"dodge-speed_modifier", 1, Server.Doubles.MaxDodgeSpeedModifier.Min, Server.Doubles.MaxDodgeSpeedModifier.Max
 			),
+			SkyDiveSpeedDecreaseRate(
+					ConfigGroup.Modifier, "SkyDive speed decreasement rate",
+					"sky_dive-speed-decreasement", 0.98, Server.Doubles.MinSkyDiveSpeedDecreaseRate.Min, Server.Doubles.MinSkyDiveSpeedDecreaseRate.Max
+			),
 			LowestFallDistanceForBreakfall(
 					ConfigGroup.Control, "Lowest fall distance needed to trigger breakfall movements",
 					"lowest_fall_distance_for_breakfall", 2, 0, 10
@@ -738,6 +742,10 @@ public class ParCoolConfig {
 			MaxDodgeSpeedModifier(
 					ConfigGroup.Modifier, "Dodge speed modifier",
 					"max_dodge-speed_modifier", 1, 0.5, 3, AdvantageousDirection.Higher
+			),
+			MinSkyDiveSpeedDecreaseRate(
+					ConfigGroup.Modifier, "SkyDive speed decrease rate",
+					"min_sky-dive_speed_decrease", 0.98, 0.001, 1, AdvantageousDirection.Lower
 			);
 			public final ConfigGroup Group;
 			@Nullable

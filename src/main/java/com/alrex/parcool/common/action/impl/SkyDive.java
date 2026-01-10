@@ -5,6 +5,7 @@ import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.action.StaminaConsumeTiming;
 import com.alrex.parcool.common.capability.IStamina;
 import com.alrex.parcool.common.capability.Parkourability;
+import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.utilities.VectorUtil;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,7 +38,14 @@ public class SkyDive extends Action {
 		Vector3d leftVec = forwardVec.yRot((float) Math.PI / 2).scale(clientPlayer.input.leftImpulse * 0.0);
 		forwardVec = forwardVec.scale(clientPlayer.input.forwardImpulse * 0.03);
 		clientPlayer.setDeltaMovement(clientPlayer.getDeltaMovement()
-				.multiply(1, 0.98, 1).add(
+				.multiply(
+						1,
+						Math.max(
+								parkourability.getClientInfo().get(ParCoolConfig.Client.Doubles.SkyDiveSpeedDecreaseRate),
+								parkourability.getServerLimitation().get(ParCoolConfig.Server.Doubles.MinSkyDiveSpeedDecreaseRate)
+						),
+						1)
+				.add(
 						forwardVec.add(leftVec)
 				));
 	}
