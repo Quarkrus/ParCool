@@ -49,6 +49,7 @@ public abstract class LivingEntityMixin extends Entity {
 			}
 			if (!parkourability.getActionInfo().can(ClimbPoles.class)
 					|| MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, parkourability.get(ClimbPoles.class)))
+					|| MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(player, parkourability.get(ClimbPoles.class)))
 			) {
 				return;
             }
