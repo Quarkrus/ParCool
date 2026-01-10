@@ -77,7 +77,7 @@ public class ZiplineCommand {
         if (!((ZiplineHookTileEntity) entity).connectTo((ZiplineHookTileEntity) entity2, info)) {
             return 1;
         }
-        context.getSource().sendSuccess(Component.translatable("parcool.command.message.success.setZipline", hook1.toShortString(), hook2.toShortString()), true);
+        context.getSource().sendSuccess(() -> Component.translatable("parcool.command.message.success.setZipline", hook1.toShortString(), hook2.toShortString()), true);
         return 0;
     }
 }

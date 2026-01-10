@@ -471,7 +471,7 @@ public class WorldUtil {
                         Mth.floor(blockZ)
 				);
 			}
-			slipperiness = entity.level().getBlockState(blockPos).getFriction(entity.level, blockPos, entity);
+			slipperiness = entity.level().getBlockState(blockPos).getFriction(entity.level(), blockPos, entity);
 		}
 		return slipperiness <= 0.9 ? new Vec3(xDirection, 0, zDirection) : null;
 	}
