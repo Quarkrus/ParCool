@@ -8,6 +8,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
 
+import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 
 public abstract class Action {
@@ -15,28 +16,6 @@ public abstract class Action {
 	private int doingTick = 0;
 	private int notDoingTick = 0;
 	private int tickFromStarted = -1;
-
-	public void tick() {
-		if (doing) {
-			doingTick++;
-			notDoingTick = 0;
-		} else {
-			notDoingTick++;
-			doingTick = 0;
-		}
-		if (tickFromStarted >= 0) {
-			tickFromStarted++;
-		}
-	}
-
-	public void start() {
-		doing = true;
-		tickFromStarted = 0;
-	}
-
-	public void finish() {
-		doing = false;
-	}
 
 	public boolean isJustStarted() {
 		return isDoing() && getDoingTick() == 0;
@@ -58,24 +37,73 @@ public abstract class Action {
 		return doing;
 	}
 
+	public void tick() {
+		if (doing) {
+			doingTick++;
+			notDoingTick = 0;
+		} else {
+			notDoingTick++;
+			doingTick = 0;
+		}
+		if (tickFromStarted >= 0) {
+			tickFromStarted++;
+		}
+	}
+
+	public void start(Player player, Parkourability parkourability, ByteBuffer startInfo, @Nullable IStamina stamina) {
+		doing = true;
+		tickFromStarted = 0;
+		onStart(player, parkourability, startInfo);
+		startInfo.rewind();
+		if (player.isLocalPlayer()) {
+			if (stamina == null) {
+				stamina = IStamina.get(player);
+			}
+			if (stamina != null) {
+				onStartInLocalClient(player, parkourability, stamina, startInfo);
+			}
+		} else {
+			if (player.level().isClientSide()) {
+				onStartInOtherClient(player, parkourability, startInfo);
+			} else {
+				onStartInServer(player, parkourability, startInfo);
+			}
+		}
+		startInfo.rewind();
+	}
+
+	public void finish(Player player) {
+		doing = false;
+		if (player.isLocalPlayer()) {
+			onStopInLocalClient(player);
+		} else {
+			if (player.level().isClientSide()) {
+				onStopInOtherClient(player);
+			} else {
+				onStopInServer(player);
+			}
+		}
+		onStop(player);
+	}
+
 	@OnlyIn(Dist.CLIENT)
 	public abstract boolean canStart(Player player, Parkourability parkourability, IStamina stamina, ByteBuffer startInfo);
 
 	@OnlyIn(Dist.CLIENT)
 	public abstract boolean canContinue(Player player, Parkourability parkourability, IStamina stamina);
 
-	public void onStart(Player player, Parkourability parkourability, ByteBuffer startData) {
+	public void onStart(Player player, Parkourability parkourability, ByteBuffer startInfo) {
 	}
 
-	public void onStartInServer(Player player, Parkourability parkourability, ByteBuffer startData) {
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	public void onStartInOtherClient(Player player, Parkourability parkourability, ByteBuffer startData) {
+	public void onStartInServer(Player player, Parkourability parkourability, ByteBuffer startInfo) {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void onStartInLocalClient(Player player, Parkourability parkourability, IStamina stamina, ByteBuffer startData) {
+	public void onStartInOtherClient(Player player, Parkourability parkourability, ByteBuffer startInfo) {
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	public void onStartInLocalClient(Player player, Parkourability parkourability, IStamina stamina, ByteBuffer startInfo) {
 	}
 
 	public void onStop(Player player) {
@@ -98,6 +126,10 @@ public abstract class Action {
 
 	@OnlyIn(Dist.CLIENT)
 	public void onWorkingTickInClient(Player player, Parkourability parkourability, IStamina stamina) {
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	public void onWorkingTickInOtherClient(Player player, Parkourability parkourability, IStamina stamina) {
 	}
 
 	@OnlyIn(Dist.CLIENT)

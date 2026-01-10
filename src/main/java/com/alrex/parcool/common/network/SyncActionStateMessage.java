@@ -63,18 +63,17 @@ public class SyncActionStateMessage {
 				Action action = item.getAction();
 				switch (item.getType()) {
 					case Start:
-						action.start();
-                        ByteBuffer startData = item.getBuffer();
-                        action.onStart(player, parkourability, startData);
-                        startData.rewind();
-						action.onStartInServer(player, parkourability, item.getBuffer());
+						ByteBuffer startInfo = item.getBuffer();
+						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Pre(player, action));
+						action.start(player, parkourability, startInfo, null);
 						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.StartEvent(player, action));
+						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Post(player, action));
 						break;
 					case Finish:
-						action.finish();
-						action.onStopInServer(player);
-						action.onStop(player);
+						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Pre(player, action));
+						action.finish(player);
 						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.StopEvent(player, action));
+						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Post(player, action));
 						break;
 					case Normal:
 						action.restoreSynchronizedState(item.getBuffer());
@@ -113,26 +112,17 @@ public class SyncActionStateMessage {
 				Action action = item.getAction();
 				switch (item.getType()) {
 					case Start:
-						action.start();
-                        ByteBuffer startData = item.getBuffer();
-                        action.onStart(player, parkourability, startData);
-                        startData.rewind();
-						if (clientSide) {
-                            action.onStartInOtherClient(player, parkourability, startData);
-						} else {
-                            action.onStartInServer(player, parkourability, startData);
-						}
+						ByteBuffer startData = item.getBuffer();
+						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Pre(player, action));
+						action.start(player, parkourability, startData, null);
 						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.StartEvent(player, action));
+						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Post(player, action));
 						break;
 					case Finish:
-						action.finish();
-						if (clientSide) {
-							action.onStopInOtherClient(player);
-						} else {
-							action.onStopInServer(player);
-						}
-						action.onStop(player);
+						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Pre(player, action));
+						action.finish(player);
 						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.StopEvent(player, action));
+						MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Post(player, action));
 						break;
 					case Normal:
 						action.restoreSynchronizedState(item.getBuffer());

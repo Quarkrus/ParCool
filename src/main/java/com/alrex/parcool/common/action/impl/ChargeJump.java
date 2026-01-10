@@ -82,6 +82,7 @@ public class ChargeJump extends Action {
                     && !cp.input.left
                     && !parkourability.get(Crawl.class).isDoing()
                     && !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, this))
+                    && !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(player, this))
             ) {
                 if (cp.isShiftKeyDown() && KeyRecorder.keySneak.getPreviousTickNotKeyDown() > 5) {
                     chargeTick++;
