@@ -89,7 +89,7 @@ public class ActionProcessor {
 
 	}
 
-	// @OnlyIn(Dist.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	private void onTick$doPreprocessInClient(TickEvent.PlayerTickEvent event, Parkourability parkourability) {
 		var player = (AbstractClientPlayer) event.player;
 		Animation animation = Animation.get(player);
@@ -97,6 +97,7 @@ public class ActionProcessor {
 		animation.tick(player, parkourability);
 	}
 
+    @OnlyIn(Dist.CLIENT)
 	private void onTick$checkLimitationSynchronization(Player player, Parkourability parkourability) {
 		if (player.isLocalPlayer() && player.tickCount > 127 && player.tickCount % 256 == 0 && parkourability.limitationIsNotSynced()) {
 			if (player instanceof LocalPlayer localPlayer) {
@@ -116,6 +117,7 @@ public class ActionProcessor {
 		}
 	}
 
+    @OnlyIn(Dist.CLIENT)
 	private void onTick$sendSynchronizationPacket(Player player, Parkourability parkourability, IStamina stamina, SyncActionStateMessage.Encoder builder) {
 		SyncActionStateMessage.sync(player, builder);
 
@@ -174,7 +176,7 @@ public class ActionProcessor {
 		}
 	}
 
-	// @OnlyIn(Dist.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	private void checkAndChangeActionState(Player player, Parkourability parkourability, IStamina stamina, Action action, SyncActionStateMessage.Encoder builder) {
 		if (action.isDoing()) {
 			boolean canContinue = parkourability.getActionInfo().can(action.getClass())
