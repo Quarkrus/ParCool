@@ -77,8 +77,8 @@ public class PlayerDamageHandler {
 				HideInBlock hideInBlock = parkourability.get(HideInBlock.class);
 				if (hideInBlock.isStandbyInAir(parkourability)
 						&& parkourability.getActionInfo().can(HideInBlock.class)
-						&& !NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, hideInBlock))
-						&& !NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(player, hideInBlock))
+						&& !NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, hideInBlock)).isCanceled()
+						&& !NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(player, hideInBlock)).isCanceled()
 				) {
 					Tuple<BlockPos, BlockPos> area = WorldUtil.getHideAbleSpace(player, new BlockPos(player.blockPosition().below()));
 					if (area != null) {

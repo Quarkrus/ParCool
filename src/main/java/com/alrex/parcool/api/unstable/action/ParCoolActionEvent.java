@@ -23,28 +23,14 @@ public class ParCoolActionEvent extends Event {
     }
 
     @Deprecated
-    @Cancelable
-    public static class TryToStartEvent extends ParCoolActionEvent {
-
-        @Override
-        public boolean isCancelable() {
-            return true;
-        }
-
+    public static class TryToStartEvent extends ParCoolActionEvent implements ICancellableEvent {
         public TryToStartEvent(Player player, Action action) {
             super(player, action);
         }
     }
 
     @Deprecated
-    @Cancelable
-    public static class TryToContinueEvent extends ParCoolActionEvent {
-
-        @Override
-        public boolean isCancelable() {
-            return true;
-        }
-
+    public static class TryToContinueEvent extends ParCoolActionEvent implements ICancellableEvent {
         public TryToContinueEvent(Player player, Action action) {
             super(player, action);
         }
@@ -65,25 +51,13 @@ public class ParCoolActionEvent extends Event {
     }
     // ======
 
-    public static class TryToStart extends ParCoolActionEvent {
-        @Override
-        public boolean isCancelable() {
-            return true;
-        }
-
+    public static class TryToStart extends ParCoolActionEvent implements ICancellableEvent {
         public TryToStart(Player player, Action action) {
             super(player, action);
         }
     }
 
-    @Cancelable
-    public static class TryToContinue extends ParCoolActionEvent {
-
-        @Override
-        public boolean isCancelable() {
-            return true;
-        }
-
+    public static class TryToContinue extends ParCoolActionEvent implements ICancellableEvent {
         public TryToContinue(Player player, Action action) {
             super(player, action);
         }

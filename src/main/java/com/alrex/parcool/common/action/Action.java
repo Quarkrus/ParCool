@@ -7,7 +7,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
 
-import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 
 public abstract class Action {
@@ -49,18 +48,13 @@ public abstract class Action {
 		}
 	}
 
-	public void start(Player player, Parkourability parkourability, ByteBuffer startInfo, @Nullable IStamina stamina) {
+	public void start(Player player, Parkourability parkourability, ByteBuffer startInfo) {
 		doing = true;
 		tickFromStarted = 0;
 		onStart(player, parkourability, startInfo);
 		startInfo.rewind();
 		if (player.isLocalPlayer()) {
-			if (stamina == null) {
-				stamina = IStamina.get(player);
-			}
-			if (stamina != null) {
-				onStartInLocalClient(player, parkourability, stamina, startInfo);
-			}
+			onStartInLocalClient(player, parkourability, startInfo);
 		} else {
 			if (player.level().isClientSide()) {
 				onStartInOtherClient(player, parkourability, startInfo);
@@ -128,7 +122,7 @@ public abstract class Action {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void onWorkingTickInOtherClient(Player player, Parkourability parkourability, IStamina stamina) {
+	public void onWorkingTickInOtherClient(Player player, Parkourability parkourability) {
 	}
 
 	@OnlyIn(Dist.CLIENT)
