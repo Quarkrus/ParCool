@@ -124,6 +124,7 @@ public class ActionProcessor {
 		}
 	}
 
+    @OnlyIn(Dist.CLIENT)
 	private void onTick$checkLimitationSynchronization(Player player, Parkourability parkourability) {
 		if (player.isLocalPlayer() && player.tickCount > 127 && player.tickCount % 256 == 0 && parkourability.limitationIsNotSynced()) {
 			if (player instanceof LocalPlayer localPlayer) {
