@@ -203,7 +203,7 @@ public class ActionProcessor {
 		}
 	}
 
-	// @OnlyIn(Dist.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	private void checkAndChangeActionState(Player player, Parkourability parkourability, Action action, LinkedList<ActionStatePayload.Entry> syncStates) {
 		if (!(player instanceof LocalPlayer localPlayer)) return;
 		if (action.isDoing()) {
