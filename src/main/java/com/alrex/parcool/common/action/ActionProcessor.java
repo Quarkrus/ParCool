@@ -49,7 +49,6 @@ public class ActionProcessor {
 	private int staminaSyncCoolTimeTick = 0;
 
 
-	@SubscribeEvent
 	public void onTick(PlayerTickEvent.Post event) {
 		var player = event.getEntity();
 		Parkourability parkourability = Parkourability.get(player);
@@ -99,6 +98,7 @@ public class ActionProcessor {
 		animation.tick(clientPlayer, parkourability);
 	}
 
+    @OnlyIn(Dist.CLIENT)
 	private void onTick$doPostProcessInClient(PlayerTickEvent event, Parkourability parkourability) {
 		if (!(event.getEntity() instanceof LocalPlayer player)) return;
 		staminaSyncCoolTimeTick++;
@@ -251,6 +251,7 @@ public class ActionProcessor {
 		buffer.flip();
 	}
 
+    @OnlyIn(Dist.CLIENT)
 	private void consumeStamina(Player player, int value) {
 		if (player instanceof LocalPlayer localPlayer) {
 			LocalStamina.get(localPlayer).consume(localPlayer, value);
@@ -260,7 +261,6 @@ public class ActionProcessor {
 	// ====
 
 	@OnlyIn(Dist.CLIENT)
-	@SubscribeEvent
 	public void onRenderTick(RenderFrameEvent.Pre event) {
 		Player clientPlayer = Minecraft.getInstance().player;
 		if (clientPlayer == null) return;
@@ -278,7 +278,6 @@ public class ActionProcessor {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	@SubscribeEvent
 	public void onViewRender(ViewportEvent.ComputeCameraAngles event) {
         LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
