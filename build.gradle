@@ -94,6 +94,9 @@ dependencies {
 
     compileOnly "curse.maven:ShoulderSurfing-243190:6496668"
     compileOnly "curse.maven:BetterThirdPerson-435044:5833474"
+
+    compileOnly "curse.maven:EpicFight-405076:7489617"
+    runtimeOnly "curse.maven:EpicFight-405076:7489617"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

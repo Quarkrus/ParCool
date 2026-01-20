@@ -2,6 +2,7 @@ package com.alrex.parcool.extern;
 
 import com.alrex.parcool.common.attachment.client.LocalStamina;
 import com.alrex.parcool.extern.betterthirdperson.BetterThirdPersonManager;
+import com.alrex.parcool.extern.epicfight.EpicFightManager;
 import com.alrex.parcool.extern.paraglider.ParagliderManager;
 import com.alrex.parcool.extern.shouldersurfing.ShoulderSurfingManager;
 import net.minecraft.client.Minecraft;
@@ -15,7 +16,8 @@ import java.util.function.Supplier;
 public enum AdditionalMods {
     BETTER_THIRD_PERSON(BetterThirdPersonManager::new),
     SHOULDER_SURFING(ShoulderSurfingManager::new),
-    PARAGLIDER(ParagliderManager::new);
+    PARAGLIDER(ParagliderManager::new),
+    EPIC_FIGHT(EpicFightManager::new);
     private final ModManager manager;
 
     AdditionalMods(Supplier<ModManager> supplier) {
@@ -32,6 +34,10 @@ public enum AdditionalMods {
 
     public static ParagliderManager paraglider() {
         return (ParagliderManager) PARAGLIDER.manager;
+    }
+
+    public static EpicFightManager epicFight() {
+        return (EpicFightManager) EPIC_FIGHT.manager;
     }
 
     public ModManager get() {

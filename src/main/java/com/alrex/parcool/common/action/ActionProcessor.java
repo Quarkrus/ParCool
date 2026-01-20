@@ -2,11 +2,9 @@ package com.alrex.parcool.common.action;
 
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
-import com.alrex.parcool.common.attachment.Attachments;
 import com.alrex.parcool.common.attachment.client.Animation;
 import com.alrex.parcool.common.attachment.client.LocalStamina;
 import com.alrex.parcool.common.attachment.common.Parkourability;
-import com.alrex.parcool.common.attachment.common.ReadonlyStamina;
 import com.alrex.parcool.common.network.payload.ActionStatePayload;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.utilities.BufferUtil;
@@ -21,7 +19,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -108,12 +105,12 @@ public class ActionProcessor {
 			staminaSyncCoolTimeTick++;
 			if (staminaSyncCoolTimeTick > 5) {
 				stamina.sync(player);
+				staminaSyncCoolTimeTick = 0;
 			}
 		}
 		var attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
 		if (attr != null) {
-			ReadonlyStamina readonlyStamina = player.getData(Attachments.STAMINA);
-			if (readonlyStamina.isExhausted() && parkourability.getClientInfo().get(ParCoolConfig.Client.Booleans.EnableStaminaExhaustionPenalty)) {
+			if (LocalStamina.get(player).imposeExhaustionPenalty(player) && parkourability.getClientInfo().get(ParCoolConfig.Client.Booleans.EnableStaminaExhaustionPenalty)) {
 				player.setSprinting(false);
 				if (!attr.hasModifier(STAMINA_DEPLETED_SLOWNESS_MODIFIER_ID)) {
 					attr.addTransientModifier(STAMINA_DEPLETED_SLOWNESS_MODIFIER);

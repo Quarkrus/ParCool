@@ -16,7 +16,8 @@ public enum StaminaType {
     NONE(InfiniteStaminaHandler::new),
     PARCOOL(ParCoolStaminaHandler::new),
     HUNGER(HungerStaminaHandler::new),
-    PARAGLIDER(AdditionalMods.paraglider()::newParagliderStaminaHandlerFor);
+    PARAGLIDER(AdditionalMods.paraglider()::newParagliderStaminaHandlerFor),
+    EPIC_FIGHT(AdditionalMods.epicFight()::newStaminaHandlerFor);
 
     private final Function<Player, IParCoolStaminaHandler> constructor;
 
