@@ -2,6 +2,7 @@ package com.alrex.parcool.mixin.common;
 
 import com.alrex.parcool.common.action.impl.HideInBlock;
 import com.alrex.parcool.common.capability.Parkourability;
+import com.alrex.parcool.config.ParCoolConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
@@ -51,6 +52,22 @@ public abstract class EntityMixin extends CapabilityProvider<Entity> {
         HideInBlock hideInBlock = parkourability.get(HideInBlock.class);
         if (hideInBlock.isDoing() || hideInBlock.getNotDoingTick() < 2) {
             cir.setReturnValue(false);
+        }
+    }
+
+    @Inject(method = "onGround", at = @At("HEAD"), cancellable = true)
+    public void onOnGround(CallbackInfoReturnable<Boolean> cir) {
+        if (!(((Object) this) instanceof Player player)) {
+            return;
+        }
+        Parkourability parkourability = Parkourability.get(player);
+        if (parkourability == null) return;
+        if (parkourability.getAdditionalProperties().isInAirByJumping()) return;
+        if (parkourability.getAdditionalProperties().getActualNotLandingTick() < parkourability.getLimitedValue(
+                ParCoolConfig.Client.Integers.CoyoteTime,
+                ParCoolConfig.Server.Integers.MaxCoyoteTime
+        )) {
+            cir.setReturnValue(true);
         }
     }
 }
