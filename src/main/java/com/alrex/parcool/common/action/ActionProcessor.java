@@ -2,6 +2,7 @@ package com.alrex.parcool.common.action;
 
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
+import com.alrex.parcool.common.attachment.Attachments;
 import com.alrex.parcool.common.attachment.client.Animation;
 import com.alrex.parcool.common.attachment.client.LocalStamina;
 import com.alrex.parcool.common.attachment.common.Parkourability;
