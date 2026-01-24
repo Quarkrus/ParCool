@@ -82,4 +82,20 @@ public abstract class EntityMixin extends AttachmentHolder {
             setPos(player.getX() + dMove.x, player.getY() + dMove.y, player.getZ() + dMove.z);
         }
     }
+
+    @Inject(method = "onGround", at = @At("HEAD"), cancellable = true)
+    public void onOnGround(CallbackInfoReturnable<Boolean> cir) {
+        if (!(((Object) this) instanceof Player player)) {
+            return;
+        }
+        Parkourability parkourability = Parkourability.get(player);
+        if (parkourability == null) return;
+        if (parkourability.getAdditionalProperties().isInAirByJumping()) return;
+        if (parkourability.getAdditionalProperties().getActualNotLandingTick() < parkourability.getLimitedValue(
+                ParCoolConfig.Client.Integers.CoyoteTime,
+                ParCoolConfig.Server.Integers.MaxCoyoteTime
+        )) {
+            cir.setReturnValue(true);
+        }
+    }
 }
