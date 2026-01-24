@@ -205,6 +205,7 @@ public class ActionProcessor {
 		if (!(player instanceof LocalPlayer localPlayer)) return;
 		if (action.isDoing()) {
 			boolean canContinue = parkourability.getActionInfo().can(action.getClass())
+					&& !player.getData(Attachments.STAMINA).isExhausted()
 					&& !NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToContinueEvent(player, action)).isCanceled()
 					&& !NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToContinue(player, action)).isCanceled()
 					&& action.canContinue(player, parkourability);
@@ -218,6 +219,7 @@ public class ActionProcessor {
 		} else {
 			bufferOfStarting.clear();
 			boolean start = !player.isSpectator()
+					&& !player.getData(Attachments.STAMINA).isExhausted()
 					&& parkourability.getActionInfo().can(action.getClass())
 					&& !NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, action)).isCanceled()
 					&& !NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(player, action)).isCanceled()
