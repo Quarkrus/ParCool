@@ -59,5 +59,10 @@ public class NetworkRegistries {
                         StaminaProcessOnServerPayload::handleServer
                 )
         );
+        r.playToClient(
+                StaminaBroadcastPayload.TYPE,
+                StaminaBroadcastPayload.CODEC,
+                StaminaBroadcastPayload::handleClient
+        );
     }
 }

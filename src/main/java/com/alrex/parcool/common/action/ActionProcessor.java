@@ -46,7 +46,7 @@ public class ActionProcessor {
 	private final ByteBuffer bufferOfPostState = ByteBuffer.allocate(128);
 	private final ByteBuffer bufferOfPreState = ByteBuffer.allocate(128);
 	private final ByteBuffer bufferOfStarting = ByteBuffer.allocate(128);
-	private int staminaSyncCoolTimeTick = 0;
+	private int staminaSyncCoolTimeTick = 5;
 
 
 	@SubscribeEvent
@@ -101,13 +101,12 @@ public class ActionProcessor {
 
 	private void onTick$doPostProcessInClient(PlayerTickEvent event, Parkourability parkourability) {
 		if (!(event.getEntity() instanceof LocalPlayer player)) return;
-		staminaSyncCoolTimeTick++;
 		if (!parkourability.limitationIsNotSynced()) {
 			var stamina = LocalStamina.get(player);
 			stamina.onTick(player);
-			staminaSyncCoolTimeTick++;
-			if (staminaSyncCoolTimeTick > 5) {
+			if (--staminaSyncCoolTimeTick <= 0) {
 				stamina.sync(player);
+				staminaSyncCoolTimeTick = 5;
 			}
 		}
 		var attr = player.getAttribute(Attributes.MOVEMENT_SPEED);

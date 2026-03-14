@@ -4,6 +4,7 @@ import com.alrex.parcool.client.hud.HUDManager;
 import com.alrex.parcool.client.input.KeyRecorder;
 import com.alrex.parcool.common.action.ActionProcessor;
 import com.alrex.parcool.common.handlers.*;
+import com.alrex.parcool.common.network.StaminaSynchronization;
 import com.alrex.parcool.common.potion.ParCoolBrewingRecipe;
 import net.neoforged.bus.api.IEventBus;
 
@@ -15,6 +16,7 @@ public class EventBusForgeRegistry {
         bus.register(PlayerVisibilityHandler.class);
         bus.register(PlayerDamageHandler.class);
         bus.register(PlayerCloneHandler.class);
+        bus.register(StaminaSynchronization.class);
 		bus.register(new ActionProcessor());
 	}
 
