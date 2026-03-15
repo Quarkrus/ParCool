@@ -15,12 +15,14 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class ZiplineRopeEntity extends Entity {
     private static final DataParameter<BlockPos> DATA_START_POS;
@@ -50,12 +52,15 @@ public class ZiplineRopeEntity extends Entity {
         setPos((end.getX() + start.getX()) / 2.0 + 0.5, Math.min(end.getY(), start.getY()), (end.getZ() + start.getZ()) / 2.0 + 0.5);
         noPhysics = true;
         forcedLoading = true;
+        cullingBB = new AxisAlignedBB(start.getX(), start.getY(), start.getZ(), end.getX(), end.getY(), end.getZ()).inflate(1);
     }
 
     private BlockPos zipline_start;
     private BlockPos zipline_end;
     private ZiplineType zip_type;
     private Zipline zipline;
+    @Nullable
+    private AxisAlignedBB cullingBB;
     public Zipline getZipline() {
         BlockPos start = getStartPos();
         BlockPos end = getEndPos();
@@ -68,6 +73,7 @@ public class ZiplineRopeEntity extends Entity {
             zipline_start = start;
             zipline_end = end;
             zip_type = type;
+            cullingBB = new AxisAlignedBB(start.getX(), start.getY(), start.getZ(), end.getX(), end.getY(), end.getZ()).inflate(1);
             Vector3d startPos;
             Vector3d endPos;
             TileEntity startEntity = level.getBlockEntity(start);
@@ -113,6 +119,13 @@ public class ZiplineRopeEntity extends Entity {
         Vector3d mostNearPoint = new Vector3d(xOffset * t + start.getX(), yOffset * t + start.getY(), zOffset * t + start.getZ());
         distanceSqr = mostNearPoint.distanceToSqr(x, y, z);
         return distanceSqr < Zipline.MAXIMUM_HORIZONTAL_DISTANCE * Zipline.MAXIMUM_HORIZONTAL_DISTANCE;
+    }
+
+    @Nonnull
+    @Override
+    public AxisAlignedBB getBoundingBoxForCulling() {
+        if (cullingBB == null) return super.getBoundingBoxForCulling();
+        return cullingBB;
     }
 
     @Nonnull
