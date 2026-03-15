@@ -119,10 +119,12 @@ public class ActionProcessor {
 
 	@OnlyIn(Dist.CLIENT)
 	private void onTick$sendSynchronizationPacket(PlayerEntity player, Parkourability parkourability, IStamina stamina, SyncActionStateMessage.Encoder builder) {
-		SyncActionStateMessage.sync(player, builder);
+		if (!builder.isEmpty()) {
+			SyncActionStateMessage.sync(player, builder);
+		}
 
 		staminaSyncCoolTimeTick++;
-		if (!parkourability.limitationIsNotSynced() && (staminaSyncCoolTimeTick > 3 || stamina.wantToConsumeOnServer())) {
+		if (!parkourability.limitationIsNotSynced() && (staminaSyncCoolTimeTick > 5 || stamina.wantToConsumeOnServer())) {
 			staminaSyncCoolTimeTick = 0;
 			SyncStaminaMessage.sync(player);
 		}

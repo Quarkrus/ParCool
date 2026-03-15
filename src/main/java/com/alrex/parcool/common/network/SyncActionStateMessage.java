@@ -151,21 +151,30 @@ public class SyncActionStateMessage {
 		}
 
 		private final ByteBuffer buffer = ByteBuffer.allocate(1024);
+		private boolean empty = true;
+
+		public boolean isEmpty() {
+			return empty;
+		}
 
 		public static Encoder reset() {
+			instance.empty = true;
 			instance.buffer.clear();
 			return instance;
 		}
 
 		public Encoder appendSyncData(Parkourability parkourability, Action action, ByteBuffer actionBuffer) {
+			empty = false;
 			return append(DataType.Normal, parkourability, action, actionBuffer);
 		}
 
 		public Encoder appendStartData(Parkourability parkourability, Action action, ByteBuffer actionBuffer) {
+			empty = false;
 			return append(DataType.Start, parkourability, action, actionBuffer);
 		}
 
 		public Encoder appendFinishMsg(Parkourability parkourability, Action action) {
+			empty = false;
 			short id = parkourability.getActionID(action);
 			if (id < 0) return this;
 			buffer.putShort(id)
@@ -175,6 +184,7 @@ public class SyncActionStateMessage {
 		}
 
 		private Encoder append(DataType type, Parkourability parkourability, Action action, ByteBuffer actionBuffer) {
+			empty = false;
 			short id = parkourability.getActionID(action);
 			if (id < 0) return this;
 			buffer.putShort(id)
