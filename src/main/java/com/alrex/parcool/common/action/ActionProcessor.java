@@ -9,8 +9,8 @@ import com.alrex.parcool.common.network.SyncActionStateMessage;
 import com.alrex.parcool.common.network.SyncStaminaMessage;
 import com.alrex.parcool.common.network.SyncStaminaToClientMessage;
 import com.alrex.parcool.config.ParCoolConfig;
-import net.minecraft.ChatFormatting;
 import com.alrex.parcool.utilities.BufferUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
@@ -122,7 +122,7 @@ public class ActionProcessor {
     @OnlyIn(Dist.CLIENT)
 	private void onTick$sendSynchronizationPacket(Player player, Parkourability parkourability, IStamina stamina, SyncActionStateMessage.Encoder builder) {
         if (!builder.isEmpty()) {
-		    SyncActionStateMessage.sync(player, builder);
+			SyncActionStateMessage.sync(player, builder);
         }
 
 		staminaSyncCoolTimeTick++;
