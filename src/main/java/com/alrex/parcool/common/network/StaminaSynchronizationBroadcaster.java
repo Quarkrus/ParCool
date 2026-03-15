@@ -11,10 +11,10 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
-public class StaminaSynchronization {
+public class StaminaSynchronizationBroadcaster {
     private static Map<UUID, ReadonlyStamina> staminaMap = new TreeMap<>();
 
-    /// This have to be called from same thread as game ticking
+    /// This have to be called from same thread as game ticking in logical server
     public static void add(UUID playerID, ReadonlyStamina stamina) {
         staminaMap.put(playerID, stamina);
     }

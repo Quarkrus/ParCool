@@ -78,7 +78,7 @@ public class ActionProcessor {
 			processAction(player, parkourability, syncStates, inClient, action);
 			NeoForge.EVENT_BUS.post(new ParCoolActionEvent.Tick.Post(player, action));
 		}
-		if (needSync) {
+		if (needSync && !syncStates.isEmpty()) {
 			onTick$sendSynchronizationPacket(player, syncStates);
 		}
 

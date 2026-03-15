@@ -3,7 +3,7 @@ package com.alrex.parcool.common.network.payload;
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.attachment.Attachments;
 import com.alrex.parcool.common.attachment.common.ReadonlyStamina;
-import com.alrex.parcool.common.network.StaminaSynchronization;
+import com.alrex.parcool.common.network.StaminaSynchronizationBroadcaster;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.StreamCodec;
@@ -45,7 +45,7 @@ public record StaminaPayload(UUID playerID, ReadonlyStamina stamina) implements 
     public static void handleServer(StaminaPayload payload, IPayloadContext context) {
         context.enqueueWork(() -> {
             payload.processPlayer(context);
-            StaminaSynchronization.add(payload.playerID, payload.stamina);
+            StaminaSynchronizationBroadcaster.add(payload.playerID, payload.stamina);
         });
     }
 }
