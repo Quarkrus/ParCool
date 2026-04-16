@@ -152,7 +152,7 @@ publishMods {
         style {
             look = 'MODERN'
             link = 'BUTTON'
-            thumbnailUrl = 'https://imgur.com/pibqOcC'
+            thumbnailUrl = 'https://i.imgur.com/pibqOcC.png'
         }
     }
 }
