@@ -1,15 +1,15 @@
-modLoader = "javafml" #mandatory
-loaderVersion = "[43,)"
-license = "GNU LESSER GENERAL PUBLIC LICENSE Version 3"
-issueTrackerURL = "https://github.com/alRex-U/ParCool/issues" #optional
-[[mods]] #mandatory
+modLoader = "javafml"
+loaderVersion = "${loader_version_range}"
+license = "${mod_license}"
+issueTrackerURL = "https://github.com/alRex-U/ParCool/issues"
+[[mods]]
 modId = "parcool" #mandatory
-version = "${file.jarVersion}" #mandatory
+version = "${mod_version}" #mandatory
 displayName = "ParCool!" #mandatory
 displayURL = "https://www.curseforge.com/minecraft/mc-mods/parcool" #optional
 logoFile = "parcool_logo.png" #optional
 # credits = "" #optional
-authors = 'alRex_U'
+authors = "${mod_authors}"
 description = '''
     This enable us act like parkour players.
     Enjoy Minecraft with cool actions!
@@ -30,30 +30,34 @@ versionRange = "[1.19.2,1.20)"
 ordering = "NONE"
 side = "BOTH"
 
+# Feathers
 [[dependencies.parcool]]
-modId = "feathers"
+modId = "${extern_feathers.mod_id}"
 mandatory = false
-versionRange = "[0.1,)"
+versionRange = "${extern_feathers.version_range}"
 ordering = "BEFORE"
 side = "BOTH"
 
+# Better Third Person
 [[dependencies.parcool]]
-modId = "betterthirdperson"
+modId = "${extern_betterthirdperson.mod_id}"
 mandatory = false
-versionRange = "[1.9.0,)"
+versionRange = "${extern_betterthirdperson.version_range}"
 ordering = "NONE"
 side = "BOTH"
 
+# Shoulder Surfing
 [[dependencies.parcool]]
-modId = "shouldersurfing"
+modId = "${extern_shouldersurfing.mod_id}"
 mandatory = false
-versionRange = "[1.19.2-4.11.0,)"
+versionRange = "${extern_shouldersurfing.version_range}"
 ordering = "NONE"
 side = "BOTH"
 
+# EpicFight
 [[dependencies.parcool]]
-modId = "epicfight"
+modId = "${extern_epicfight.mod_id}"
 mandatory = false
-versionRange = "[19.5.22,)"
+versionRange = "${extern_epicfight.version_range}"
 ordering = "NONE"
 side = "BOTH"
