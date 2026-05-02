@@ -183,24 +183,6 @@ publishMods {
         announcementTitle = 'Download from Modrinth'
     }
     discord {
-        discord {
-            username.set("Update Notification")
-            avatarUrl.set("https://i.imgur.com/FrxDviN.png")
-            content = """\
-            # ParCool: ${minecraft_version}-${mod_version} is released!
-            
-""".stripIndent() + changelogText
-            webhookUrl = providers.environmentVariable('API_TOKEN_PARCOOL_DISCORD_WEBHOOK_PCL')
-            dryRunWebhookUrl = providers.environmentVariable('API_TOKEN_PARCOOL_DISCORD_WEBHOOK_DRY_RUN_PCL')
-            setPlatforms(publishMods.platforms.curseforge, publishMods.platforms.modrinth)
-            style {
-                look = 'MODERN'
-                link = 'BUTTON'
-                thumbnailUrl = 'https://i.imgur.com/pibqOcC.png'
-            }
-        }
-    }
-    discord {
         username.set("Update Notification")
         avatarUrl.set("https://i.imgur.com/FrxDviN.png")
         content = """\
@@ -208,8 +190,8 @@ publishMods {
             # ParCool: ${minecraft_version}-${mod_version} is released!
             
 """.stripIndent() + changelogText
-        webhookUrl = providers.environmentVariable('API_TOKEN_PARCOOL_DISCORD_WEBHOOK_ATK')
-        dryRunWebhookUrl = providers.environmentVariable('API_TOKEN_PARCOOL_DISCORD_WEBHOOK_DRY_RUN_ATK')
+        webhookUrl = providers.environmentVariable('API_TOKEN_PARCOOL_DISCORD_WEBHOOK')
+        dryRunWebhookUrl = providers.environmentVariable('API_TOKEN_PARCOOL_DISCORD_WEBHOOK_DRY_RUN')
         setPlatforms(publishMods.platforms.curseforge, publishMods.platforms.modrinth)
         style {
             look = 'MODERN'
