@@ -5,10 +5,12 @@ buildscript {
         maven { url = 'https://repo.spongepowered.org/maven' }
     }
     dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.+', changing: true
         classpath 'org.spongepowered:mixingradle:0.7.+'
     }
 }
 plugins {
+    id 'java'
     id 'net.minecraftforge.gradle' version '7.+'
     id 'org.spongepowered.mixin' version '0.7.+'
     id 'me.modmuss50.mod-publish-plugin' version '1.+'
@@ -100,9 +102,9 @@ jar {
         attributes([
                 "Specification-Title"     : "ParCool!",
                 "Specification-Vendor"    : "alRex",
-                "Specification-Version" : "${mod_version_code}",
+                "Specification-Version" : "${mod_version}",
                 "Implementation-Title"    : project.name,
-                "Implementation-Version": "${mod_version_code}",
+                "Implementation-Version": "${mod_version}",
                 "Implementation-Vendor"   : "alRex",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                 "TweakClass"              : "org.spongepowered.asm.launch.MixinTweaker",
