@@ -1,3 +1,5 @@
+import me.modmuss50.mpp.ReleaseType
+
 buildscript {
     repositories {
         maven { url = 'https://repo.spongepowered.org/maven' }
@@ -7,12 +9,10 @@ buildscript {
     }
 }
 plugins {
-    id 'eclipse'
-    id 'idea'
-    id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'net.minecraftforge.gradle' version '7.+'
+    id 'org.spongepowered.mixin' version '0.7.+'
+    id 'me.modmuss50.mod-publish-plugin' version '1.+'
 }
-apply plugin: 'org.spongepowered.mixin'
 
 compileJava.options.encoding("UTF-8")
 compileTestJava.options.encoding("UTF-8")
@@ -22,9 +22,7 @@ mixin {
     config 'parcool.mixins.json'
 }
 
-//Version Format (MajorMOD.MajorAPI.Minor.Patch)
-var mod_version_code = "${major_mod}.${major_api}.${minor}.${patch}"
-version = "${mc_version}-${mod_version_code}"
+version = "${mc_version}-${mod_version}"
 group = 'com.alrex'
 base {
     archivesBaseName = 'ParCool'
@@ -113,16 +111,50 @@ jar {
     }
     finalizedBy('reobfJar')
 }
+publishMods {
+    type = ReleaseType.of(release_type)
+    file = jar.archiveFile
+    var changelogText = project.layout.projectDirectory.file("changelog/v_${mod_version}.md").asFile.getText()
+    changelog = changelogText
+    modLoaders.add('forge')
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-        }
+    displayName = "${mc_version}-${mod_version}"
+    version = "${mc_version}-${mod_version}"
+
+    curseforge {
+        projectId = '482378'
+        accessToken = providers.environmentVariable('API_TOKEN_PARCOOL_CURSEFORGE')
+        minecraftVersions.add(mc_version)
+
+        clientRequired = true
+        serverRequired = true
+
+        optional('parcool-compatibility-addon')
+
+        announcementTitle = 'Download from CurseForge'
     }
-    repositories {
-        maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
+    modrinth {
+        projectId = 'Fsvx2bdR'
+        accessToken = providers.environmentVariable('API_TOKEN_PARCOOL_MODRINTH')
+        minecraftVersions.add(mc_version)
+
+        announcementTitle = 'Download from Modrinth'
+    }
+    discord {
+        username.set("Update Notification")
+        avatarUrl.set("https://i.imgur.com/FrxDviN.png")
+        content = """\
+            <@&1074034800849059930>
+            # ParCool: ${mc_version}-${mod_version} is released!
+            
+""".stripIndent() + changelogText
+        webhookUrl = providers.environmentVariable('API_TOKEN_PARCOOL_DISCORD_WEBHOOK')
+        dryRunWebhookUrl = providers.environmentVariable('API_TOKEN_PARCOOL_DISCORD_WEBHOOK_DRY_RUN')
+        setPlatforms(publishMods.platforms.curseforge, publishMods.platforms.modrinth)
+        style {
+            look = 'MODERN'
+            link = 'BUTTON'
+            thumbnailUrl = 'https://i.imgur.com/pibqOcC.png'
         }
     }
 }
