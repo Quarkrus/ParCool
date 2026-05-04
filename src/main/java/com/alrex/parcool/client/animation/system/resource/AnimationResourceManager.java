@@ -1,0 +1,223 @@
+package com.alrex.parcool.client.animation.system.resource;
+
+import com.alrex.parcool.client.animation.system.*;
+import com.alrex.parcool.client.animation.system.registration.BlendingFactors;
+import com.alrex.parcool.client.animation.system.resource.json.*;
+import com.alrex.parcool.client.animation.system.util.IResult;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.mojang.logging.LogUtils;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.util.*;
+
+public class AnimationResourceManager extends SimplePreparableReloadListener<AnimationResource> {
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private static final TypeToken<List<JsonAnimationSet>> ANIMATION_SETS_TYPE = new TypeToken<>() {
+    };
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(ResourceLocation.class, new ResourceLocationAdapter())
+            .registerTypeAdapter(TimedValue.class, new TimedValueAdapter())
+            .create();
+
+    private AnimationResource resource = AnimationResource.empty();
+
+    public AnimationResource getResource() {
+        return resource;
+    }
+
+    @Override
+    protected AnimationResource prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+        var animationSetRegistrationMap = new TreeMap<ResourceLocation, JsonAnimationSet>();
+        var requestedComponentGroups = new TreeSet<ResourceLocation>();
+        for (var namespace : resourceManager.getNamespaces()) {
+            for (var setResource : resourceManager.getResourceStack(new ResourceLocation(namespace, "mma/animations.json"))) {
+                try (var reader = setResource.openAsReader()) {
+                    var jsonResult = GSON.<List<JsonAnimationSet>>fromJson(reader, ANIMATION_SETS_TYPE.getType());
+                    for (var registration : jsonResult) {
+                        animationSetRegistrationMap.put(registration.getName(), registration);
+                        if (registration.getIntro() != null) requestedComponentGroups.add(registration.getIntro());
+                        if (registration.getOutro() != null) requestedComponentGroups.add(registration.getOutro());
+                        requestedComponentGroups.add(registration.getMain());
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        var animationComponentGroupMap = new TreeMap<ResourceLocation, JsonAnimationComponentGroup>();
+        var requestedComponents = new TreeSet<ResourceLocation>();
+        for (var groupLocation : requestedComponentGroups) {
+            var groupResource = resourceManager.getResource(new ResourceLocation(groupLocation.getNamespace(), "mma/components/" + groupLocation.getPath()));
+            if (groupResource.isPresent()) {
+                try (var reader = groupResource.get().openAsReader()) {
+                    var jsonResult = GSON.fromJson(reader, JsonAnimationComponentGroup.class);
+                    animationComponentGroupMap.put(groupLocation, jsonResult);
+                    jsonResult.getComponents()
+                            .stream()
+                            .map(JsonAnimationComponentGroup.AnimationComponent::getName)
+                            .forEach(requestedComponents::add);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                LOGGER.warn("Requested component group [{}] does not exist in resources", groupLocation);
+            }
+        }
+        for (var compGroup : requestedComponentGroups) {
+            if (!animationComponentGroupMap.containsKey(compGroup)) {
+                LOGGER.warn("Requested component group [{}] is not found in loaded resources", compGroup);
+            }
+        }
+        var animationComponentMap = new TreeMap<ResourceLocation, JsonAnimationComponent>();
+        for (var compLocation : requestedComponents) {
+            var compResource = resourceManager.getResource(new ResourceLocation(compLocation.getNamespace(), "mma/groups/" + compLocation.getPath()));
+            if (compResource.isPresent()) {
+                try (var reader = compResource.get().openAsReader()) {
+                    var jsonResult = GSON.fromJson(reader, JsonAnimationComponent.class);
+                    animationComponentMap.put(compLocation, jsonResult);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                LOGGER.warn("Requested component [{}] does not exist in resources", compLocation);
+            }
+        }
+        for (var comp : requestedComponents) {
+            if (!animationComponentMap.containsKey(comp)) {
+                LOGGER.warn("Requested animation component [{}] is not found in loaded resources", comp);
+            }
+        }
+        return constructResource(animationSetRegistrationMap, animationComponentGroupMap, animationComponentMap);
+    }
+
+    private AnimationResource constructResource(
+            TreeMap<ResourceLocation, JsonAnimationSet> animationSets,
+            TreeMap<ResourceLocation, JsonAnimationComponentGroup> componentGroups,
+            TreeMap<ResourceLocation, JsonAnimationComponent> components
+    ) {
+        var componentInstances = constructComponents(components);
+        var componentGroupInstances = constructComponentGroups(componentGroups, componentInstances);
+        var animationSetInstances = constructAnimationSets(animationSets, componentGroupInstances);
+        return new AnimationResource(componentInstances, componentGroupInstances, animationSetInstances);
+    }
+
+    private TreeMap<ResourceLocation, AnimationComponent> constructComponents(
+            TreeMap<ResourceLocation, JsonAnimationComponent> jsonComponents
+    ) {
+        var componentInstances = new TreeMap<ResourceLocation, AnimationComponent>();
+        for (var componentJson : jsonComponents.entrySet()) {
+            var map = new EnumMap<AnimatableModelPart, EnumMap<AnimatableProperty, Timeline>>(AnimatableModelPart.class);
+            for (var part : AnimatableModelPart.values()) {
+                var partTimelines = componentJson.getValue().get(part);
+                if (partTimelines == null) continue;
+                var timelineMap = new EnumMap<AnimatableProperty, Timeline>(AnimatableProperty.class);
+                propertyLoop:
+                for (var property : AnimatableProperty.values()) {
+                    var timeline = partTimelines.get(property);
+                    if (timeline == null) continue;
+                    var list = new ArrayList<Transition>();
+                    for (int i = 0; i < timeline.size(); i++) {
+                        var result = timeline.get(i).parse();
+                        if (result instanceof IResult.Error<Transition, String> error) {
+                            LOGGER.warn("Failed to parse [{}:{}:{}:{}] : {}", componentJson.getKey(), part, property, i, error.error());
+                            continue propertyLoop;
+                        }
+                        if (result instanceof IResult.Success<Transition, String> success) {
+                            list.add(success.result());
+                        }
+                    }
+                    list.sort((t1, t2) -> Float.compare(t1.getStart().value(), t2.getStart().value()));
+                    timelineMap.put(property, new Timeline(list));
+                }
+                map.put(part, timelineMap);
+            }
+            componentInstances.put(componentJson.getKey(), new AnimationComponent(map));
+        }
+        return componentInstances;
+    }
+
+    private TreeMap<ResourceLocation, AnimationComponentGroup> constructComponentGroups(
+            TreeMap<ResourceLocation, JsonAnimationComponentGroup> jsonComponentGroups,
+            TreeMap<ResourceLocation, AnimationComponent> components
+    ) {
+        var instances = new TreeMap<ResourceLocation, AnimationComponentGroup>();
+        for (var compGroupEntry : jsonComponentGroups.entrySet()) {
+            var componentList = new ArrayList<AnimationComponentGroup.ComponentEntry>(compGroupEntry.getValue().getComponents().size());
+            for (var compEntry : compGroupEntry.getValue().getComponents()) {
+                var comp = components.get(compEntry.getName());
+                if (comp == null) {
+                    LOGGER.warn("Component[{}] requested by Group[{}], is not loaded", compEntry.getName(), compGroupEntry.getKey());
+                    continue;
+                }
+                var blend = compEntry.getBlend();
+                componentList.add(new AnimationComponentGroup.ComponentEntry(
+                        comp,
+                        blend == null ? null : BlendingFactors.get(
+                                blend.getName(),
+                                blend.getsArgs() != null ? blend.getsArgs() : Collections.EMPTY_MAP,
+                                blend.getfArgs() != null ? blend.getfArgs() : Collections.EMPTY_MAP
+                        )
+                ));
+            }
+            instances.put(compGroupEntry.getKey(), new AnimationComponentGroup(
+                    componentList, compGroupEntry.getValue().getDuration(), compGroupEntry.getValue().isLoop()
+            ));
+        }
+        return instances;
+    }
+
+    private TreeMap<ResourceLocation, AnimationSet> constructAnimationSets(
+            TreeMap<ResourceLocation, JsonAnimationSet> jsonAnimationSets,
+            TreeMap<ResourceLocation, AnimationComponentGroup> componentGroups
+    ) {
+        var instances = new TreeMap<ResourceLocation, AnimationSet>();
+        for (var animSetEntry : jsonAnimationSets.entrySet()) {
+            if (animSetEntry.getValue().getMain() == null) {
+                LOGGER.warn("Animation Set [{}] has no main animation", animSetEntry.getKey());
+                continue;
+            }
+            var main = componentGroups.get(animSetEntry.getValue().getMain());
+            if (main == null) {
+                LOGGER.warn("Main animation {} of Animation Set [{}] is not found", animSetEntry.getValue().getMain(), animSetEntry.getKey());
+                continue;
+            }
+            AnimationComponentGroup intro = null;
+            if (animSetEntry.getValue().getIntro() != null) {
+                intro = componentGroups.get(animSetEntry.getValue().getIntro());
+                if (intro == null) {
+                    LOGGER.warn("Animation Set [{}] has intro animation, but it's not found", animSetEntry.getKey());
+                    continue;
+                }
+            }
+            AnimationComponentGroup outro = null;
+            if (animSetEntry.getValue().getOutro() != null) {
+                outro = componentGroups.get(animSetEntry.getValue().getOutro());
+                if (outro == null) {
+                    LOGGER.warn("Animation Set [{}] has outro animation, but it's not found", animSetEntry.getKey());
+                    continue;
+                }
+            }
+            instances.put(
+                    animSetEntry.getKey(),
+                    new AnimationSet(
+                            animSetEntry.getKey(),
+                            animSetEntry.getValue().getFadeInDuration(),
+                            intro, main, outro
+                    )
+            );
+        }
+        return instances;
+    }
+
+    @Override
+    protected void apply(AnimationResource animationResource, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+        this.resource = animationResource;
+    }
+}
