@@ -1,0 +1,100 @@
+import com.google.gson.JsonParser
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.code.gson:gson:+'
+    }
+}
+
+abstract class ParCoolLimitationGenerationTask extends DefaultTask {
+    @InputFile
+    abstract RegularFileProperty getInputFile()
+
+    @OutputFile
+    abstract RegularFileProperty getOutputFile()
+
+    @TaskAction
+    void action() {
+        def jsonObj = inputFile.asFile.get().withReader { JsonParser.parseReader(it) }
+        def stringBuilder = new StringBuilder()
+        def preText = """
+package com.alrex.parcool.server.limitation;
+import com.alrex.parcool.server.limitation.ILimitationEntry;
+import com.alrex.parcool.server.limitation.PriorityOrder;
+import java.util.Collections;
+import java.util.List;
+class LimitationEntries{
+public static class Bool{
+"""
+        stringBuilder.append(preText)
+        def index = 0
+        jsonObj.asJsonObject.get("bool").asJsonObject.entrySet().each {
+            def entryName = it.key
+            def defaultValue = it.getValue().asJsonObject.get("default").asJsonPrimitive.asBoolean
+            def priority = it.getValue().asJsonObject.get("priority").asJsonPrimitive.asString
+            def description = it.getValue().asJsonObject.get("description").asJsonPrimitive.asString
+            stringBuilder
+                    .append("public static final ILimitationEntry.Bool ").append(entryName.toUpperCase()).append(' = new ILimitationEntry.Bool(').append(index++).append(',"')
+                    .append(it.key).append('",').append(defaultValue).append(",PriorityOrder.").append(priority.toUpperCase()).append(',"').append(description).append('");\n')
+        }
+        stringBuilder.append("public static final List<ILimitationEntry.Bool> ENTRIES= Collections.unmodifiableList(List.of(")
+        jsonObj.asJsonObject.get("bool").asJsonObject.entrySet().each {
+            stringBuilder.append(it.key.toUpperCase()).append(",")
+        }
+        stringBuilder.deleteCharAt(stringBuilder.size() - 1)
+
+        stringBuilder.append("));\n}\npublic static class Int{\n")
+        index = 0
+        jsonObj.asJsonObject.get("int").asJsonObject.entrySet().each {
+            def entryName = it.key
+            def defaultValue = it.getValue().asJsonObject.get("default").asJsonPrimitive.asNumber.shortValue()
+            def min = it.getValue().asJsonObject.get("min")
+            def max = it.getValue().asJsonObject.get("max")
+            def minValue = min == null ? (short) 0 : min.asJsonPrimitive.asNumber.shortValue()
+            def maxValue = max == null ? "Short.MAX_VALUE" : min.asJsonPrimitive.asNumber.shortValue().toString()
+            def priority = it.getValue().asJsonObject.get("priority").asJsonPrimitive.asString
+            def description = it.getValue().asJsonObject.get("description").asJsonPrimitive.asString
+            stringBuilder
+                    .append("public static final ILimitationEntry.Int ").append(entryName.toUpperCase()).append(' = new ILimitationEntry.Int(').append(index++).append(',"')
+                    .append(it.key).append('",(short)').append(defaultValue).append(",(short)").append(minValue).append(",(short)").append(maxValue).append(",PriorityOrder.").append(priority.toUpperCase()).append(',"').append(description).append('");\n')
+        }
+        stringBuilder.append("public static final List<ILimitationEntry.Int> ENTRIES= Collections.unmodifiableList(List.of(")
+        jsonObj.asJsonObject.get("int").asJsonObject.entrySet().each {
+            stringBuilder.append(it.key.toUpperCase()).append(",")
+        }
+        stringBuilder.deleteCharAt(stringBuilder.size() - 1)
+
+        stringBuilder.append("));\n}\npublic static class Real{\n")
+        index = 0
+        jsonObj.asJsonObject.get("real").asJsonObject.entrySet().each {
+            def entryName = it.key
+            def defaultValue = it.getValue().asJsonObject.get("default").asJsonPrimitive.asNumber.floatValue()
+            def min = it.getValue().asJsonObject.get("min")
+            def max = it.getValue().asJsonObject.get("max")
+            def minValue = min == null ? (short) 0 : min.asJsonPrimitive.asNumber.floatValue()
+            def maxValue = max == null ? "Float.POSITIVE_INFINITY" : min.asJsonPrimitive.asNumber.floatValue().toString()
+            def priority = it.getValue().asJsonObject.get("priority").asJsonPrimitive.asString
+            def description = it.getValue().asJsonObject.get("description").asJsonPrimitive.asString
+            stringBuilder
+                    .append("public static final ILimitationEntry.Real ").append(entryName.toUpperCase()).append(' = new ILimitationEntry.Real(').append(index++).append(',"')
+                    .append(it.key).append('",').append(defaultValue).append("f,").append(minValue).append("f,(float)").append(maxValue).append(",PriorityOrder.").append(priority.toUpperCase()).append(',"').append(description).append('");\n')
+        }
+        stringBuilder.append("public static final List<ILimitationEntry.Real> ENTRIES= Collections.unmodifiableList(List.of(")
+        jsonObj.asJsonObject.get("real").asJsonObject.entrySet().each {
+            stringBuilder.append(it.key.toUpperCase()).append(",")
+        }
+        stringBuilder.deleteCharAt(stringBuilder.size() - 1)
+        def postText = "));\n}}"
+        stringBuilder.append(postText)
+
+        outputFile.get().asFile.text = stringBuilder.toString();
+    }
+}
+
+tasks.register("generateLimitationEntry", ParCoolLimitationGenerationTask) {
+    inputFile = project.file("src/template/data/limitation_entries.json")
+    outputFile = project.file("src/generated/java/com/alrex/parcool/server/limitation/LimitationEntries.java")
+}
