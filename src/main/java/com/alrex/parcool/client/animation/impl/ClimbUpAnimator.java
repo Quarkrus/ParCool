@@ -4,8 +4,8 @@ import com.alrex.parcool.client.animation.Animator;
 import com.alrex.parcool.client.animation.PlayerModelRotator;
 import com.alrex.parcool.client.animation.PlayerModelTransformer;
 import com.alrex.parcool.common.capability.Parkourability;
-import com.alrex.parcool.utilities.EasingFunctions;
-import com.alrex.parcool.utilities.MathUtil;
+import com.alrex.parcool.util.EasingFunctions;
+import com.alrex.parcool.util.MathUtil;
 import net.minecraft.world.entity.player.Player;
 
 public class ClimbUpAnimator extends Animator {

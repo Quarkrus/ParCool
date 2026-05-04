@@ -9,7 +9,7 @@ import com.alrex.parcool.common.capability.Animation;
 import com.alrex.parcool.common.capability.IStamina;
 import com.alrex.parcool.common.capability.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
-import com.alrex.parcool.utilities.EntityUtil;
+import com.alrex.parcool.util.EntityUtil;
 import net.minecraft.world.entity.player.Player;
 
 import java.nio.ByteBuffer;

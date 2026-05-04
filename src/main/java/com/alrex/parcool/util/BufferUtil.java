@@ -1,4 +1,4 @@
-package com.alrex.parcool.utilities;
+package com.alrex.parcool.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;

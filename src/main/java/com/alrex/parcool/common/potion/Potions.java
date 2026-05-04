@@ -1,7 +1,6 @@
 package com.alrex.parcool.common.potion;
 
 import com.alrex.parcool.ParCool;
-import com.alrex.parcool.api.Effects;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.alchemy.Potion;
@@ -29,7 +28,7 @@ public class Potions {
 					)
 			);
 
-	public static void registerAll(IEventBus modBus) {
+	public static void register(IEventBus modBus) {
 		POTIONS.register(modBus);
 	}
 }

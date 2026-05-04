@@ -1,4 +1,4 @@
-package com.alrex.parcool.utilities;
+package com.alrex.parcool.util;
 
 public class ColorUtil {
 	public static int getColorCodeFromARGB(int a, int r, int g, int b) {

@@ -1,6 +1,6 @@
 package com.alrex.parcool.client.input;
 
-import com.alrex.parcool.utilities.VectorUtil;
+import com.alrex.parcool.util.VectorUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;

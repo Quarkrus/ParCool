@@ -1,4 +1,4 @@
-package com.alrex.parcool.utilities;
+package com.alrex.parcool.util;
 
 import com.alrex.parcool.common.action.impl.HangDown;
 import com.alrex.parcool.common.tags.BlockTags;

@@ -1,5 +1,10 @@
 package com.alrex.parcool.proxy;
 
+import com.alrex.parcool.common.action.ActionProcessor;
+import com.alrex.parcool.common.handlers.*;
+import com.alrex.parcool.server.command.CommandRegistry;
+import com.alrex.parcool.server.limitation.Limitations;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public abstract class CommonProxy {
@@ -9,5 +14,15 @@ public abstract class CommonProxy {
 	public abstract void registerMessages(SimpleChannel instance);
 
 	public void init() {
+        MinecraftForge.EVENT_BUS.register(AttachCapabilityHandler.class);
+        MinecraftForge.EVENT_BUS.register(LoginLogoutHandler.class);
+        MinecraftForge.EVENT_BUS.register(PlayerJumpHandler.class);
+        MinecraftForge.EVENT_BUS.register(PlayerVisibilityHandler.class);
+        MinecraftForge.EVENT_BUS.register(PlayerDamageHandler.class);
+        MinecraftForge.EVENT_BUS.register(PlayerCloneHandler.class);
+        MinecraftForge.EVENT_BUS.register(CommandRegistry.class);
+        MinecraftForge.EVENT_BUS.register(new ActionProcessor());
+        MinecraftForge.EVENT_BUS.addListener(Limitations::init);
+        MinecraftForge.EVENT_BUS.addListener(Limitations::save);
 	}
 }

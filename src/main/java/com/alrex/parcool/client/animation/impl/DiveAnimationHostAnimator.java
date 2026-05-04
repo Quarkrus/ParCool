@@ -7,9 +7,9 @@ import com.alrex.parcool.client.input.KeyBindings;
 import com.alrex.parcool.common.action.impl.Dive;
 import com.alrex.parcool.common.action.impl.SkyDive;
 import com.alrex.parcool.common.capability.Parkourability;
-import com.alrex.parcool.utilities.Easing;
-import com.alrex.parcool.utilities.EasingFunctions;
-import com.alrex.parcool.utilities.MathUtil;
+import com.alrex.parcool.util.Easing;
+import com.alrex.parcool.util.EasingFunctions;
+import com.alrex.parcool.util.MathUtil;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;

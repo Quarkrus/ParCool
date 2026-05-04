@@ -9,7 +9,7 @@ import com.alrex.parcool.common.network.SyncActionStateMessage;
 import com.alrex.parcool.common.network.SyncStaminaMessage;
 import com.alrex.parcool.common.network.SyncStaminaToClientMessage;
 import com.alrex.parcool.config.ParCoolConfig;
-import com.alrex.parcool.utilities.BufferUtil;
+import com.alrex.parcool.util.BufferUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;

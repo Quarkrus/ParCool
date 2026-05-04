@@ -13,7 +13,7 @@ public class Attributes {
     public static final RegistryObject<Attribute> MAX_STAMINA = ATTRIBUTES.register("max_stamina", () -> new RangedAttribute("parcool.max_stamina", 2000, 10, 10000).setSyncable(true));
     public static final RegistryObject<Attribute> STAMINA_RECOVERY = ATTRIBUTES.register("stamina_recovery", () -> new RangedAttribute("parcool.stamina_recovery", 20, 0, 10000).setSyncable(true));
 
-    public static void registerAll(IEventBus bus) {
+    public static void register(IEventBus bus) {
         ATTRIBUTES.register(bus);
     }
 }

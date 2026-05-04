@@ -1,4 +1,4 @@
-package com.alrex.parcool.utilities;
+package com.alrex.parcool.util;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;

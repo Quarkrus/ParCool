@@ -5,7 +5,7 @@ import com.alrex.parcool.client.animation.PlayerModelRotator;
 import com.alrex.parcool.client.animation.PlayerModelTransformer;
 import com.alrex.parcool.common.action.impl.RideZipline;
 import com.alrex.parcool.common.capability.Parkourability;
-import com.alrex.parcool.utilities.VectorUtil;
+import com.alrex.parcool.util.VectorUtil;
 import com.mojang.math.Vector3f;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;

@@ -5,8 +5,8 @@ import com.alrex.parcool.client.animation.PlayerModelRotator;
 import com.alrex.parcool.client.animation.PlayerModelTransformer;
 import com.alrex.parcool.common.action.impl.Slide;
 import com.alrex.parcool.common.capability.Parkourability;
-import com.alrex.parcool.utilities.Easing;
-import com.alrex.parcool.utilities.VectorUtil;
+import com.alrex.parcool.util.Easing;
+import com.alrex.parcool.util.VectorUtil;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 

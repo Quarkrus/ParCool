@@ -5,7 +5,7 @@ import com.alrex.parcool.common.action.impl.*;
 import com.alrex.parcool.common.capability.Parkourability;
 import com.alrex.parcool.common.network.StartBreakfallMessage;
 import com.alrex.parcool.config.ParCoolConfig;
-import com.alrex.parcool.utilities.WorldUtil;
+import com.alrex.parcool.util.WorldUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;

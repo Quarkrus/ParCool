@@ -4,11 +4,11 @@ import com.alrex.parcool.client.animation.Animator;
 import com.alrex.parcool.client.animation.PlayerModelTransformer;
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.capability.Parkourability;
-import com.alrex.parcool.utilities.Easing;
-import com.alrex.parcool.utilities.EasingFunctions;
+import com.alrex.parcool.util.Easing;
+import com.alrex.parcool.util.EasingFunctions;
 import net.minecraft.world.entity.player.Player;
 
-import static com.alrex.parcool.utilities.MathUtil.lerp;
+import static com.alrex.parcool.util.MathUtil.lerp;
 
 ;
 

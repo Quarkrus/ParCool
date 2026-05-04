@@ -2,7 +2,7 @@ package com.alrex.parcool.client.animation;
 
 import com.alrex.parcool.api.unstable.animation.AnimationOption;
 import com.alrex.parcool.api.unstable.animation.AnimationPart;
-import com.alrex.parcool.utilities.MathUtil;
+import com.alrex.parcool.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.client.model.PlayerModel;

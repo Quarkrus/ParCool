@@ -1,4 +1,4 @@
-package com.alrex.parcool.utilities;
+package com.alrex.parcool.util;
 
 public class MathUtil {
 	public static float squaring(float value) {

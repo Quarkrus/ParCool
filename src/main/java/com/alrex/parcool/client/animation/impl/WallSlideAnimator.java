@@ -4,7 +4,7 @@ import com.alrex.parcool.client.animation.Animator;
 import com.alrex.parcool.client.animation.PlayerModelTransformer;
 import com.alrex.parcool.common.action.impl.WallSlide;
 import com.alrex.parcool.common.capability.Parkourability;
-import com.alrex.parcool.utilities.VectorUtil;
+import com.alrex.parcool.util.VectorUtil;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 

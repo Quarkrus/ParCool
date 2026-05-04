@@ -15,7 +15,7 @@ public class Effects {
 			"inexhaustible", InexhaustibleEffect::new
 	);
 
-	public static void registerAll(IEventBus modBus) {
+	public static void register(IEventBus modBus) {
 		EFFECTS.register(modBus);
 	}
 }

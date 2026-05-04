@@ -1,4 +1,4 @@
-package com.alrex.parcool.utilities;
+package com.alrex.parcool.util;
 
 /**
  * All Functions take arg1 as phase(0~1) and return value will also be in 0~1

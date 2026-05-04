@@ -50,7 +50,7 @@ public class SoundEvents {
     public static final RegistryObject<SoundEvent> ZIPLINE_SET = SOUNDS.register("zipline.set", () -> ZIPLINE_SET_SOUND);
     public static final RegistryObject<SoundEvent> ZIPLINE_REMOVE = SOUNDS.register("zipline.remove", () -> ZIPLINE_REMOVE_SOUND);
 
-    public static void registerAll(IEventBus modBus) {
+    public static void register(IEventBus modBus) {
         SOUNDS.register(modBus);
     }
 }

@@ -2,8 +2,12 @@ package com.alrex.parcool.proxy;
 
 import com.alrex.parcool.client.hud.HUDRegistry;
 import com.alrex.parcool.client.input.KeyBindings;
+import com.alrex.parcool.client.input.KeyRecorder;
+import com.alrex.parcool.common.handlers.EnableOrDisableParCoolHandler;
+import com.alrex.parcool.common.handlers.InputHandler;
+import com.alrex.parcool.common.handlers.OpenSettingsParCoolHandler;
+import com.alrex.parcool.common.handlers.PlayerJoinHandler;
 import com.alrex.parcool.common.network.*;
-import com.alrex.parcool.common.registries.EventBusForgeRegistry;
 import com.alrex.parcool.config.ParCoolConfig;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -21,10 +25,16 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void init() {
-		EventBusForgeRegistry.registerClient(MinecraftForge.EVENT_BUS);
+		super.init();
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		bus.addListener(KeyBindings::register);
 		bus.addListener(HUDRegistry.getInstance()::onSetup);
+		MinecraftForge.EVENT_BUS.register(HUDRegistry.getInstance());
+		MinecraftForge.EVENT_BUS.register(KeyRecorder.class);
+		MinecraftForge.EVENT_BUS.register(OpenSettingsParCoolHandler.class);
+		MinecraftForge.EVENT_BUS.register(EnableOrDisableParCoolHandler.class);
+		MinecraftForge.EVENT_BUS.register(PlayerJoinHandler.class);
+		MinecraftForge.EVENT_BUS.register(InputHandler.class);
 	}
 
 	@Override
