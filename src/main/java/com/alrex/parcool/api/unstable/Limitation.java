@@ -3,7 +3,7 @@ package com.alrex.parcool.api.unstable;
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.config.ParCoolConfig;
-import com.alrex.parcool.server.limitation.Limitations;
+import com.alrex.parcool.server.limitation.LimitationRegistry;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,11 +19,11 @@ import java.nio.file.StandardOpenOption;
 
 public abstract class Limitation {
     public static Limitation get(ServerPlayer player, ID limitationID) {
-        return new NormalLimitation(player, Limitations.createLimitationOf(player.getUUID(), limitationID.convert()));
+        return new NormalLimitation(player, LimitationRegistry.createLimitationOf(player.getUUID(), limitationID.convert()));
     }
 
     public static Limitation getIndividual(ServerPlayer player) {
-        return new NormalLimitation(player, Limitations.createLimitationOf(player.getUUID(), Limitations.INDIVIDUAL_ID));
+        return new NormalLimitation(player, LimitationRegistry.createLimitationOf(player.getUUID(), LimitationRegistry.INDIVIDUAL_ID));
     }
 
     public static Limitation getGlobal(MinecraftServer server) {
@@ -126,7 +126,7 @@ public abstract class Limitation {
     public abstract void save();
 
     public static boolean delete(ID limitationID) {
-        return Limitations.delete(limitationID.convert());
+        return LimitationRegistry.delete(limitationID.convert());
     }
 
     private static class NormalLimitation extends Limitation {
@@ -140,20 +140,20 @@ public abstract class Limitation {
 
         @Override
         public void apply() {
-            Limitations.updateOnlyLimitation(player);
+            LimitationRegistry.updateOnlyLimitation(player);
         }
 
         @Override
         public void save() {
-            Path filepath = Limitations.getActualFilePath(player.getUUID(), instance.getID());
+            Path filepath = LimitationRegistry.getActualFilePath(player.getUUID(), instance.getID());
             if (filepath == null) {
                 ParCool.LOGGER.error(
                         "On Saving Limitation : Could not resolve file("
                                 + player.getUUID()
                                 + ","
-                                + instance.getID().getGroup()
+                                + instance.getID().group()
                                 + ":"
-                                + instance.getID().getName()
+                                + instance.getID().name()
                                 + ")"
                 );
                 return;
@@ -186,14 +186,14 @@ public abstract class Limitation {
         private final MinecraftServer server;
 
         private GlobalLimitation(MinecraftServer server) {
-            super(Limitations.getGlobalLimitation());
+            super(LimitationRegistry.getGlobalLimitation());
             this.server = server;
         }
 
         @Override
         public void apply() {
             for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-                Limitations.updateOnlyLimitation(player);
+                LimitationRegistry.updateOnlyLimitation(player);
             }
         }
 

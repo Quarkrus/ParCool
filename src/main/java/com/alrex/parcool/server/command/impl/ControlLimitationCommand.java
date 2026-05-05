@@ -7,7 +7,7 @@ import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.server.command.args.ActionArgumentType;
 import com.alrex.parcool.server.command.args.LimitationIDArgumentType;
 import com.alrex.parcool.server.command.args.LimitationItemArgumentType;
-import com.alrex.parcool.server.limitation.Limitations;
+import com.alrex.parcool.server.limitation.LimitationRegistry;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -524,7 +524,7 @@ public class ControlLimitationCommand {
         Limitation.ID limitation = LimitationIDArgumentType.getLimitationID(context, ARGS_NAME_LIMITATION_ID);
         if (Limitation.delete(limitation)) {
             for (ServerPlayer player : context.getSource().getServer().getPlayerList().getPlayers()) {
-                Limitations.updateOnlyLimitation(player);
+                LimitationRegistry.updateOnlyLimitation(player);
             }
             context.getSource().sendSuccess(Component.translatable("parcool.command.message.success.deleteLimitation", limitation.toString()), true);
         } else {

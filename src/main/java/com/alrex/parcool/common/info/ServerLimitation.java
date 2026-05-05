@@ -4,7 +4,7 @@ import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.action.ActionList;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.server.limitation.Limitation;
-import com.alrex.parcool.server.limitation.Limitations;
+import com.alrex.parcool.server.limitation.LimitationRegistry;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.nio.ByteBuffer;
@@ -145,11 +145,11 @@ public abstract class ServerLimitation {
     public abstract boolean isSynced();
 
     public static ServerLimitation get(ServerPlayer player) {
-        Collection<Limitation> limitations = Limitations.getLimitationsOf(player.getUUID());
+        Collection<Limitation> limitations = LimitationRegistry.getLimitationsOf(player.getUUID());
 
         Remote instance = new Remote();
-        if (Limitations.getGlobalLimitation().isEnabled()) {
-            instance.apply(Limitations.getGlobalLimitation());
+        if (LimitationRegistry.getGlobalLimitation().isEnabled()) {
+            instance.apply(LimitationRegistry.getGlobalLimitation());
         }
         for (Limitation limitation : limitations) {
             if (limitation.isEnabled()) {

@@ -2,7 +2,7 @@ package com.alrex.parcool.server.command.args;
 
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.api.unstable.Limitation;
-import com.alrex.parcool.server.limitation.Limitations;
+import com.alrex.parcool.server.limitation.LimitationRegistry;
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -44,9 +44,9 @@ public class LimitationIDArgumentType implements ArgumentType<Limitation.ID> {
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         String remain = builder.getRemaining();
-        for (com.alrex.parcool.server.limitation.Limitation.ID id : Limitations.getRegisteredIDs()) {
-            if (id.getGroup().equals(ParCool.MOD_ID)) continue;
-            String suggestion = id.getGroup() + ":" + id.getName();
+        for (com.alrex.parcool.server.limitation.Limitation.ID id : LimitationRegistry.getRegisteredIDs()) {
+            if (id.group().equals(ParCool.MOD_ID)) continue;
+            String suggestion = id.group() + ":" + id.name();
             if (suggestion.startsWith(remain))
                 builder.suggest(suggestion);
         }

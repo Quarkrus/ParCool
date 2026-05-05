@@ -3,7 +3,7 @@ package com.alrex.parcool.common.network;
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.capability.Parkourability;
 import com.alrex.parcool.common.info.ClientSetting;
-import com.alrex.parcool.server.limitation.Limitations;
+import com.alrex.parcool.server.limitation.LimitationRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
@@ -59,7 +59,7 @@ public class SyncClientInformationMessage {
 				if (player == null) return;
 				ParCool.CHANNEL_INSTANCE.send(PacketDistributor.ALL.noArg(), this);
 				if (requestLimitations) {
-					Limitations.update(serverPlayer);
+                    LimitationRegistry.update(serverPlayer);
 				}
 			}
 			Parkourability parkourability = Parkourability.get(player);
@@ -82,7 +82,7 @@ public class SyncClientInformationMessage {
 			Parkourability parkourability = Parkourability.get(player);
 			if (parkourability == null) return;
 			if (requestLimitations) {
-				Limitations.update(player);
+                LimitationRegistry.update(player);
 			}
             logReceived(player);
             parkourability.getActionInfo().setClientSetting(ClientSetting.readFrom(data));

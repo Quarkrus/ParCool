@@ -21,8 +21,6 @@ public interface ILimitationEntry<T extends Comparable<T>> {
         return value;
     }
 
-    ;
-
     record Bool(
             int index,
             String name,
