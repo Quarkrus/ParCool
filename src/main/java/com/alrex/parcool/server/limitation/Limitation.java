@@ -6,7 +6,7 @@ import com.google.gson.JsonPrimitive;
 
 import java.util.TreeMap;
 
-public abstract class Limitation {
+public abstract class Limitation implements ILimitationProvider {
 
     //Whether this limitation is applied
     private boolean enabled = false;
@@ -27,12 +27,6 @@ public abstract class Limitation {
     public ID getID() {
         return id;
     }
-
-    public abstract boolean get(ILimitationEntry.Bool entry);
-
-    public abstract short get(ILimitationEntry.Int entry);
-
-    public abstract double get(ILimitationEntry.Real entry);
 
     public abstract void set(ILimitationEntry.Bool entry, boolean value);
 
@@ -160,25 +154,13 @@ public abstract class Limitation {
 
         public void reset() {
             for (var entry : LimitationEntries.Bool.ENTRIES) {
-                booleans[entry.index()] = switch (entry.priority()) {
-                    case LOWER -> true;
-                    case HIGHER -> false;
-                    case NONE -> entry.defaultValue();
-                };
+                booleans[entry.index()] = entry.getLowestPriorityValue();
             }
             for (var entry : LimitationEntries.Int.ENTRIES) {
-                integers[entry.index()] = switch (entry.priority()) {
-                    case LOWER -> entry.max();
-                    case HIGHER -> entry.min();
-                    case NONE -> entry.defaultValue();
-                };
+                integers[entry.index()] = entry.getLowestPriorityValue();
             }
             for (var entry : LimitationEntries.Real.ENTRIES) {
-                reals[entry.index()] = switch (entry.priority()) {
-                    case LOWER -> entry.max();
-                    case HIGHER -> entry.min();
-                    case NONE -> entry.defaultValue();
-                };
+                reals[entry.index()] = entry.getLowestPriorityValue();
             }
         }
 

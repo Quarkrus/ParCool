@@ -222,40 +222,21 @@ public class ParCoolConfig {
 			builder.push("bool");
 			{
 				booleans = LimitationEntries.Bool.ENTRIES.stream().map(e -> builder.comment(e.description()).define(
-						e.name(),
-						(boolean) switch (e.priority()) {
-							case NONE -> e.defaultValue();
-							case HIGHER -> false;
-							case LOWER -> true;
-						}
+						e.name(), (boolean) e.getLowestPriorityValue()
 				)).toList();
 			}
 			builder.pop();
 			builder.push("int");
 			{
 				integers = LimitationEntries.Int.ENTRIES.stream().map(e -> builder.comment(e.description()).defineInRange(
-						e.name(),
-						switch (e.priority()) {
-							case NONE -> e.defaultValue();
-							case HIGHER -> e.min();
-							case LOWER -> e.max();
-						},
-						e.min(),
-						e.max()
+						e.name(), e.getLowestPriorityValue(), e.min(), e.max()
 				)).toList();
 			}
 			builder.pop();
 			builder.push("real");
 			{
 				reals = LimitationEntries.Real.ENTRIES.stream().map(e -> builder.comment(e.description()).defineInRange(
-						e.name(),
-						switch (e.priority()) {
-							case NONE -> e.defaultValue();
-							case HIGHER -> e.min();
-							case LOWER -> e.max();
-						},
-						e.min(),
-						e.max()
+						e.name(), e.getLowestPriorityValue(), e.min(), e.max()
 				)).toList();
 			}
 			builder.pop();

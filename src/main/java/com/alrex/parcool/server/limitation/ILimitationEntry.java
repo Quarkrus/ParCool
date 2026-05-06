@@ -17,9 +17,13 @@ public interface ILimitationEntry<T extends Comparable<T>> {
 
     int index();
 
+    @Nonnull
     default T clampInValidRange(T value) {
         return value;
     }
+
+    @Nonnull
+    T getLowestPriorityValue();
 
     record Bool(
             int index,
@@ -28,6 +32,15 @@ public interface ILimitationEntry<T extends Comparable<T>> {
             PriorityOrder priority,
             String description
     ) implements ILimitationEntry<Boolean> {
+        @Nonnull
+        @Override
+        public Boolean getLowestPriorityValue() {
+            return switch (priority) {
+                case HIGHER -> false;
+                case LOWER -> true;
+                default -> defaultValue();
+            };
+        }
     }
 
     record Int(
@@ -38,9 +51,20 @@ public interface ILimitationEntry<T extends Comparable<T>> {
             PriorityOrder priority,
             String description
     ) implements ILimitationEntry<Short> {
+        @Nonnull
         @Override
         public Short clampInValidRange(Short value) {
             return (short) Mth.clamp(value, min, max);
+        }
+
+        @Nonnull
+        @Override
+        public Short getLowestPriorityValue() {
+            return switch (priority) {
+                case HIGHER -> min;
+                case LOWER -> max;
+                default -> defaultValue();
+            };
         }
     }
 
@@ -52,9 +76,20 @@ public interface ILimitationEntry<T extends Comparable<T>> {
             PriorityOrder priority,
             String description
     ) implements ILimitationEntry<Float> {
+        @Nonnull
         @Override
         public Float clampInValidRange(Float value) {
             return Mth.clamp(value, max, max);
+        }
+
+        @Nonnull
+        @Override
+        public Float getLowestPriorityValue() {
+            return switch (priority) {
+                case HIGHER -> min;
+                case LOWER -> max;
+                default -> defaultValue();
+            };
         }
     }
 }
