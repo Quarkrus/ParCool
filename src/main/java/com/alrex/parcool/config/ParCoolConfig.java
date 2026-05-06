@@ -13,6 +13,7 @@ import com.alrex.parcool.server.limitation.ILimitationEntry;
 import com.alrex.parcool.server.limitation.LimitationEntries;
 import net.minecraftforge.common.ForgeConfigSpec;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ParCoolConfig {
@@ -176,8 +177,8 @@ public class ParCoolConfig {
 		}
 	}
 
-	public static final ConfigLimitation CLIENT_CONFIG_LIMITATION = new ConfigLimitation(new ForgeConfigSpec.Builder());
-	public static final ConfigLimitation SERVER_CONFIG_LIMITATION = new ConfigLimitation(new ForgeConfigSpec.Builder());
+	public static final ConfigLimitation CLIENT_CONFIG_LIMITATION = new ConfigLimitation(true, new ForgeConfigSpec.Builder());
+	public static final ConfigLimitation SERVER_CONFIG_LIMITATION = new ConfigLimitation(false, new ForgeConfigSpec.Builder());
 
 	public static class ConfigLimitation {
 		public ForgeConfigSpec getBuiltConfig() {
@@ -188,6 +189,7 @@ public class ParCoolConfig {
 		private final List<ForgeConfigSpec.BooleanValue> booleans;
 		private final List<ForgeConfigSpec.IntValue> integers;
 		private final List<ForgeConfigSpec.DoubleValue> reals;
+		@Nullable
 		private final ForgeConfigSpec.BooleanValue enabled;
 
 		public ForgeConfigSpec.BooleanValue get(ILimitationEntry.Bool entry) {
@@ -202,12 +204,21 @@ public class ParCoolConfig {
 			return reals.get(entry.index());
 		}
 
-		public ForgeConfigSpec.BooleanValue getEnabled() {
-			return enabled;
+		public void setEnabled(boolean enabled) {
+			if (this.enabled != null) this.enabled.set(enabled);
 		}
 
-		private ConfigLimitation(ForgeConfigSpec.Builder builder) {
-			enabled = builder.define("enabled", true);
+		public boolean isEnabled() {
+			if (enabled != null) return enabled.get();
+			else return true;
+		}
+
+		private ConfigLimitation(boolean alwaysEnabled, ForgeConfigSpec.Builder builder) {
+			if (!alwaysEnabled) {
+				enabled = builder.define("enabled", true);
+			} else {
+				enabled = null;
+			}
 			builder.push("bool");
 			{
 				booleans = LimitationEntries.Bool.ENTRIES.stream().map(e -> builder.comment(e.description()).define(

@@ -211,7 +211,7 @@ public abstract class Limitation {
 
     public static Limitation readFromServerConfig(ParCoolConfig.ConfigLimitation configLimitation) {
         var limitation = new FullLimitation(LimitationRegistry.GLOBAL_ID);
-        limitation.setEnabled(configLimitation.getEnabled().get());
+        limitation.setEnabled(configLimitation.isEnabled());
         for (var entry : LimitationEntries.Bool.ENTRIES) {
             limitation.set(entry, configLimitation.get(entry).get());
         }
