@@ -1,7 +1,7 @@
 package com.alrex.parcool.common.info;
 
 import com.alrex.parcool.common.action.Action;
-import com.alrex.parcool.common.action.ActionList;
+import com.alrex.parcool.common.action.ActionGroup;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.server.limitation.Limitation;
 import com.alrex.parcool.server.limitation.LimitationRegistry;
@@ -46,8 +46,8 @@ public abstract class ServerLimitation {
     }
 
     private static class Remote extends ServerLimitation {
-        private final boolean[] actionPossibilities = new boolean[ActionList.ACTIONS.size()];
-        private final int[] leastStaminaConsumptions = new int[ActionList.ACTIONS.size()];
+        private final boolean[] actionPossibilities = new boolean[ActionGroup.ACTIONS.size()];
+        private final int[] leastStaminaConsumptions = new int[ActionGroup.ACTIONS.size()];
         private final EnumMap<ParCoolConfig.Server.Booleans, Boolean> booleans = new EnumMap<>(ParCoolConfig.Server.Booleans.class);
         private final EnumMap<ParCoolConfig.Server.Integers, Integer> integers = new EnumMap<>(ParCoolConfig.Server.Integers.class);
         private final EnumMap<ParCoolConfig.Server.Doubles, Double> doubles = new EnumMap<>(ParCoolConfig.Server.Doubles.class);
@@ -68,12 +68,12 @@ public abstract class ServerLimitation {
 
         @Override
         public boolean isPermitted(Class<? extends Action> action) {
-            return actionPossibilities[ActionList.getIndexOf(action)];
+            return actionPossibilities[ActionGroup.getIndexOf(action)];
         }
 
         @Override
         public int getStaminaConsumptionOf(Class<? extends Action> action) {
-            return leastStaminaConsumptions[ActionList.getIndexOf(action)];
+            return leastStaminaConsumptions[ActionGroup.getIndexOf(action)];
         }
 
         @Override
@@ -97,13 +97,13 @@ public abstract class ServerLimitation {
         }
 
         void apply(Limitation limitation) {
-            for (int i = 0; i < ActionList.ACTIONS.size(); i++) {
+            for (int i = 0; i < ActionGroup.ACTIONS.size(); i++) {
                 if (this.actionPossibilities[i]) {
-                    this.actionPossibilities[i] = limitation.isPermitted(ActionList.ACTIONS.get(i));
+                    this.actionPossibilities[i] = limitation.isPermitted(ActionGroup.ACTIONS.get(i));
                 }
                 this.leastStaminaConsumptions[i] = Math.max(
                         this.leastStaminaConsumptions[i],
-                        limitation.getLeastStaminaConsumption(ActionList.ACTIONS.get(i))
+                        limitation.getLeastStaminaConsumption(ActionGroup.ACTIONS.get(i))
                 );
             }
             for (ParCoolConfig.Server.Booleans item : ParCoolConfig.Server.Booleans.values()) {
@@ -160,7 +160,7 @@ public abstract class ServerLimitation {
     }
 
     public void writeTo(ByteBuffer buffer) {
-        for (Class<? extends Action> action : ActionList.ACTIONS) {
+        for (Class<? extends Action> action : ActionGroup.ACTIONS) {
             buffer.put((byte) (isPermitted(action) ? 1 : 0));
             buffer.putInt(getStaminaConsumptionOf(action));
         }

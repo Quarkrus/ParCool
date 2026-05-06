@@ -1,7 +1,7 @@
 package com.alrex.parcool.common.info;
 
 import com.alrex.parcool.common.action.Action;
-import com.alrex.parcool.common.action.ActionList;
+import com.alrex.parcool.common.action.ActionGroup;
 import com.alrex.parcool.config.ParCoolConfig;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -40,8 +40,8 @@ public abstract class ClientSetting {
     }
 
     private static class Remote extends ClientSetting {
-        private final boolean[] actionPossibilities = new boolean[ActionList.ACTIONS.size()];
-        private final int[] staminaConsumptions = new int[ActionList.ACTIONS.size()];
+        private final boolean[] actionPossibilities = new boolean[ActionGroup.ACTIONS.size()];
+        private final int[] staminaConsumptions = new int[ActionGroup.ACTIONS.size()];
         private final EnumMap<ParCoolConfig.Client.Booleans, Boolean> booleans = new EnumMap<>(ParCoolConfig.Client.Booleans.class);
         private final EnumMap<ParCoolConfig.Client.Integers, Integer> integers = new EnumMap<>(ParCoolConfig.Client.Integers.class);
         private final EnumMap<ParCoolConfig.Client.Doubles, Double> doubles = new EnumMap<>(ParCoolConfig.Client.Doubles.class);
@@ -62,12 +62,12 @@ public abstract class ClientSetting {
 
         @Override
         public boolean getPossibilityOf(Class<? extends Action> action) {
-            return actionPossibilities[ActionList.getIndexOf(action)];
+            return actionPossibilities[ActionGroup.getIndexOf(action)];
         }
 
         @Override
         public int getStaminaConsumptionOf(Class<? extends Action> action) {
-            return staminaConsumptions[ActionList.getIndexOf(action)];
+            return staminaConsumptions[ActionGroup.getIndexOf(action)];
         }
 
         @Override
@@ -102,8 +102,8 @@ public abstract class ClientSetting {
     public static ClientSetting readFromLocalConfig() {
         Remote instance = new Remote();
         for (int i = 0; i < instance.actionPossibilities.length; i++) {
-            instance.actionPossibilities[i] = ParCoolConfig.Client.getPossibilityOf(ActionList.ACTIONS.get(i)).get();
-            instance.staminaConsumptions[i] = ParCoolConfig.Client.getStaminaConsumptionOf(ActionList.ACTIONS.get(i)).get();
+            instance.actionPossibilities[i] = ParCoolConfig.Client.getPossibilityOf(ActionGroup.ACTIONS.get(i)).get();
+            instance.staminaConsumptions[i] = ParCoolConfig.Client.getStaminaConsumptionOf(ActionGroup.ACTIONS.get(i)).get();
         }
         for (ParCoolConfig.Client.Booleans item : ParCoolConfig.Client.Booleans.values()) {
             instance.booleans.put(item, item.get());
@@ -118,7 +118,7 @@ public abstract class ClientSetting {
     }
 
     public void writeTo(ByteBuffer buffer) {
-        for (Class<? extends Action> action : ActionList.ACTIONS) {
+        for (Class<? extends Action> action : ActionGroup.ACTIONS) {
             buffer.put((byte) (getPossibilityOf(action) ? 1 : 0));
             buffer.putInt(getStaminaConsumptionOf(action));
         }

@@ -49,7 +49,6 @@ public class ParCool {
 			() -> ClientProxy::new,
 			() -> ServerProxy::new
 	);
-
 	public static final Logger LOGGER = LogManager.getLogger();
 
 	public static boolean isActive() {

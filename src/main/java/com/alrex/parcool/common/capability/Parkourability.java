@@ -1,10 +1,7 @@
 package com.alrex.parcool.common.capability;
 
-import com.alrex.parcool.common.action.Action;
-import com.alrex.parcool.common.action.ActionList;
-import com.alrex.parcool.common.action.AdditionalProperties;
-import com.alrex.parcool.common.action.BehaviorEnforcer;
-import com.alrex.parcool.common.capability.capabilities.Capabilities;
+import com.alrex.parcool.common.IParkourabilityHolder;
+import com.alrex.parcool.common.action.*;
 import com.alrex.parcool.common.info.ActionInfo;
 import com.alrex.parcool.common.info.ClientSetting;
 import com.alrex.parcool.common.info.ServerLimitation;
@@ -14,7 +11,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -23,18 +19,21 @@ import java.util.List;
 public class Parkourability {
 	@Nullable
 	public static Parkourability get(Player player) {
-		LazyOptional<Parkourability> optional = player.getCapability(Capabilities.PARKOURABILITY_CAPABILITY);
-		return optional.orElse(null);
+		if (player instanceof IParkourabilityHolder holder) {
+			return holder.getParkourability();
+		}
+		return null;
 	}
 
 	private final ActionInfo info;
 	private final AdditionalProperties properties = new AdditionalProperties();
 	private final BehaviorEnforcer enforcer = new BehaviorEnforcer();
-	private final List<Action> actions = ActionList.constructActionsList();
+	private final ActionSet actions;
 	private final HashMap<Class<? extends Action>, Action> actionsMap;
 	private int synchronizeTrialCount = 0;
 
-	public Parkourability() {
+	public Parkourability(ActionRegistry registry) {
+		actions = new ActionSet(registry);
 		actionsMap = new HashMap<>((int) (actions.size() * 1.5));
 		for (Action action : actions) {
 			actionsMap.put(action.getClass(), action);
@@ -51,7 +50,7 @@ public class Parkourability {
 	}
 
 	public short getActionID(Action instance) {
-		return ActionList.getIndexOf(instance.getClass());
+		return ActionGroup.getIndexOf(instance.getClass());
 	}
 
 	@Nullable

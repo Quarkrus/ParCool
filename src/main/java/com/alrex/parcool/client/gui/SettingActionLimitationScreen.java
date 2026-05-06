@@ -1,7 +1,7 @@
 package com.alrex.parcool.client.gui;
 
 import com.alrex.parcool.common.action.Action;
-import com.alrex.parcool.common.action.ActionList;
+import com.alrex.parcool.common.action.ActionGroup;
 import com.alrex.parcool.common.capability.Parkourability;
 import com.alrex.parcool.common.info.ActionInfo;
 import com.alrex.parcool.common.info.ClientSetting;
@@ -19,14 +19,14 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 public class SettingActionLimitationScreen extends ParCoolSettingScreen {
-    private final ActionConfigSet[] actionList = new ActionConfigSet[ActionList.ACTIONS.size()];
+    private final ActionConfigSet[] actionList = new ActionConfigSet[ActionGroup.ACTIONS.size()];
     private final Checkbox[] actionButtons = new Checkbox[actionList.length];
 
     public SettingActionLimitationScreen(Component titleIn, ActionInfo info, ColorTheme theme) {
         super(titleIn, info, theme);
         currentScreen = 0;
         for (int i = 0; i < actionList.length; i++) {
-            actionList[i] = new ActionConfigSet(ActionList.getByIndex(i), info);
+            actionList[i] = new ActionConfigSet(ActionGroup.getByIndex(i), info);
             actionButtons[i] = new Checkbox(0, 0, 0, Checkbox_Item_Height, Component.literal(actionList[i].name), actionList[i].getter.getAsBoolean());
         }
     }

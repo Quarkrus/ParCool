@@ -6,7 +6,7 @@ import com.alrex.parcool.client.gui.ColorTheme;
 import com.alrex.parcool.client.hud.Position;
 import com.alrex.parcool.client.hud.impl.HUDType;
 import com.alrex.parcool.common.action.Action;
-import com.alrex.parcool.common.action.ActionList;
+import com.alrex.parcool.common.action.ActionGroup;
 import com.alrex.parcool.common.action.impl.*;
 import com.alrex.parcool.common.capability.IStamina;
 import com.alrex.parcool.server.limitation.ILimitationEntry;
@@ -26,7 +26,7 @@ public class ParCoolConfig {
 		public static final ForgeConfigSpec BUILT_CONFIG;
 
 		public static ForgeConfigSpec.BooleanValue getPossibilityOf(Class<? extends Action> action) {
-			return actionPossibilities[ActionList.getIndexOf(action)];
+			return actionPossibilities[ActionGroup.getIndexOf(action)];
 		}
 
 		public static ForgeConfigSpec.BooleanValue canAnimate(Class<? extends Animator> animator) {
@@ -34,12 +34,12 @@ public class ParCoolConfig {
 		}
 
 		public static ForgeConfigSpec.IntValue getStaminaConsumptionOf(Class<? extends Action> action) {
-			return staminaConsumptions[ActionList.getIndexOf(action)];
+			return staminaConsumptions[ActionGroup.getIndexOf(action)];
 		}
 
-		private static final ForgeConfigSpec.BooleanValue[] actionPossibilities = new ForgeConfigSpec.BooleanValue[ActionList.ACTIONS.size()];
+		private static final ForgeConfigSpec.BooleanValue[] actionPossibilities = new ForgeConfigSpec.BooleanValue[ActionGroup.ACTIONS.size()];
 		private static final ForgeConfigSpec.BooleanValue[] animatorPossibilities = new ForgeConfigSpec.BooleanValue[AnimatorList.ANIMATORS.size()];
-		private static final ForgeConfigSpec.IntValue[] staminaConsumptions = new ForgeConfigSpec.IntValue[ActionList.ACTIONS.size()];
+		private static final ForgeConfigSpec.IntValue[] staminaConsumptions = new ForgeConfigSpec.IntValue[ActionGroup.ACTIONS.size()];
 		public static final ForgeConfigSpec.EnumValue<HUDType> STAMINA_HUD_TYPE;
 		public static final ForgeConfigSpec.EnumValue<Vault.TypeSelectionMode> VAULT_ANIMATION_MODE;
 		public static final ForgeConfigSpec.EnumValue<Position.Horizontal> STAMINA_HUD_ALIGN_HORIZONTAL;
@@ -87,8 +87,8 @@ public class ParCoolConfig {
 			ForgeConfigSpec.Builder builder = BUILDER;
             builder.push("Possibility_of_Actions(Some_do_not_have_to_work)");
 			{
-				for (int i = 0; i < ActionList.ACTIONS.size(); i++) {
-					actionPossibilities[i] = builder.define("can_" + ActionList.ACTIONS.get(i).getSimpleName(), true);
+				for (int i = 0; i < ActionGroup.ACTIONS.size(); i++) {
+					actionPossibilities[i] = builder.define("can_" + ActionGroup.ACTIONS.get(i).getSimpleName(), true);
 				}
 			}
 			builder.pop();
@@ -151,11 +151,11 @@ public class ParCoolConfig {
 				builder.comment("Caution : Max stamina and stamina recovery config is removed because they became attributes.");
 				builder.push("Consumption");
 				{
-					for (int i = 0; i < ActionList.ACTIONS.size(); i++) {
+					for (int i = 0; i < ActionGroup.ACTIONS.size(); i++) {
 						staminaConsumptions[i]
 								= builder.defineInRange(
-								"stamina_consumption_of_" + ActionList.ACTIONS.get(i).getSimpleName(),
-								ActionList.ACTION_REGISTRIES.get(i).getDefaultStaminaConsumption(),
+								"stamina_consumption_of_" + ActionGroup.ACTIONS.get(i).getSimpleName(),
+								ActionGroup.ACTION_REGISTRIES.get(i).getDefaultStaminaConsumption(),
 								0, 10000
 						);
 					}

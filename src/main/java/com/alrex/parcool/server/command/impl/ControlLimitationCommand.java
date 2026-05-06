@@ -2,7 +2,7 @@ package com.alrex.parcool.server.command.impl;
 
 import com.alrex.parcool.api.unstable.Limitation;
 import com.alrex.parcool.common.action.Action;
-import com.alrex.parcool.common.action.ActionList;
+import com.alrex.parcool.common.action.ActionGroup;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.server.command.args.ActionArgumentType;
 import com.alrex.parcool.server.command.args.LimitationIDArgumentType;
@@ -366,7 +366,7 @@ public class ControlLimitationCommand {
         StringBuilder builder = new StringBuilder();
         builder.append("- Limitation Info -\n");
         builder.append("Enabled : ").append(limitation.isEnabled()).append('\n');
-        for (Class<? extends Action> action : ActionList.ACTIONS) {
+        for (Class<? extends Action> action : ActionGroup.ACTIONS) {
             builder.append("  ").append(action.getSimpleName()).append(" : ").append('\n')
                     .append("    ").append("permitted : ").append(limitation.isPermitted(action)).append('\n')
                     .append("    ").append("stamina consumption : ").append(limitation.getLeastStaminaConsumption(action)).append('\n');

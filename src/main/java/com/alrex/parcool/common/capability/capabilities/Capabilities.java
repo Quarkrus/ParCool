@@ -19,14 +19,12 @@ public class Capabilities {
 	public static final ResourceLocation STAMINA_LOCATION = new ResourceLocation(ParCool.MOD_ID, "capability.stamina");
     public static final Capability<Parkourability> PARKOURABILITY_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
     });
-	public static final ResourceLocation PARKOURABILITY_LOCATION = new ResourceLocation(ParCool.MOD_ID, "capability.parkourability");
     public static final Capability<Animation> ANIMATION_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
     });
 	public static final ResourceLocation ANIMATION_LOCATION = new ResourceLocation(ParCool.MOD_ID, "capability.animation");
 
 	@SubscribeEvent
 	public static void register(RegisterCapabilitiesEvent event) {
-		event.register(Parkourability.class);
 		event.register(IStamina.class);
 	}
 
