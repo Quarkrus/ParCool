@@ -19,7 +19,7 @@ public class StaminaProvider implements ICapabilitySerializable<CompoundTag> {
     public StaminaProvider(Player player) {
         IStamina instance;
         if (player.isLocalPlayer()) {
-            instance = ParCoolConfig.Client.StaminaType.get().newInstance(player);
+            instance = ParCoolConfig.Client.STAMINA_TYPE.get().newInstance(player);
         } else {
             instance = new OtherStamina(player);
         }

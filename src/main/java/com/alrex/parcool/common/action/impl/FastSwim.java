@@ -45,16 +45,16 @@ public class FastSwim extends Action {
                 && player.isSprinting()
                 && player.isSwimming()
                 && !parkourability.get(FastRun.class).isDoing()
-                && ((ParCoolConfig.Client.FastRunControl.get() == FastRun.ControlType.PressKey && KeyBindings.getKeyFastRunning().isDown())
-                || (ParCoolConfig.Client.FastRunControl.get() == FastRun.ControlType.Toggle && toggleStatus)
-                || ParCoolConfig.Client.FastRunControl.get() == FastRun.ControlType.Auto)
+                && ((ParCoolConfig.Client.FAST_RUN_CONTROL.get() == FastRun.ControlType.PressKey && KeyBindings.getKeyFastRunning().isDown())
+                || (ParCoolConfig.Client.FAST_RUN_CONTROL.get() == FastRun.ControlType.Toggle && toggleStatus)
+                || ParCoolConfig.Client.FAST_RUN_CONTROL.get() == FastRun.ControlType.Auto)
         );
     }
 
     @Override
     public void onClientTick(Player player, Parkourability parkourability, IStamina stamina) {
         if (player.isLocalPlayer()) {
-            if (ParCoolConfig.Client.FastRunControl.get() == FastRun.ControlType.Toggle
+            if (ParCoolConfig.Client.FAST_RUN_CONTROL.get() == FastRun.ControlType.Toggle
                     && parkourability.getAdditionalProperties().getSprintingTick() > 3
                     && player.isInWaterOrBubble()
                     && player.isSwimming()

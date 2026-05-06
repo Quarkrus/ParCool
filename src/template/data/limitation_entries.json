@@ -5,6 +5,11 @@
       "priority": "higher",
       "description": "Infinite stamina"
     },
+    "enable_stamina_exhaustion_penalty": {
+      "default": true,
+      "priority": "higher",
+      "description": ""
+    },
     "enable_walljump_cooldown": {
       "default": true,
       "priority": "higher",
@@ -68,6 +73,13 @@
   },
   "real": {
     "fastrun_speed_modifier": {
+      "default": 2.0,
+      "min": 0.001,
+      "max": 10.0,
+      "priority": "lower",
+      "description": ""
+    },
+    "fastswim_speed_modifier": {
       "default": 2.0,
       "min": 0.001,
       "max": 10.0,

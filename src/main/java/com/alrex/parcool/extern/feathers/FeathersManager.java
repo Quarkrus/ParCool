@@ -20,6 +20,6 @@ public class FeathersManager extends ModManager {
 
 	@OnlyIn(Dist.CLIENT)
     public boolean isUsingFeathers() {
-        return isInstalled() && ParCoolConfig.Client.StaminaType.get() == IStamina.Type.Feathers;
+        return isInstalled() && ParCoolConfig.Client.STAMINA_TYPE.get() == IStamina.Type.Feathers;
 	}
 }

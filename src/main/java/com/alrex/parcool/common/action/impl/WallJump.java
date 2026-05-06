@@ -102,7 +102,7 @@ public class WallJump extends Action {
 
 	@OnlyIn(Dist.CLIENT)
 	public boolean isInputDone() {
-		ControlType control = ParCoolConfig.Client.WallJumpControl.get();
+		ControlType control = ParCoolConfig.Client.WALL_JUMP_CONTROL.get();
 		return (control == ControlType.PressKey && KeyRecorder.keyWallJump.isPressed()) || (control == ControlType.ReleaseKey && KeyRecorder.keyWallJump.isReleased());
 	}
 

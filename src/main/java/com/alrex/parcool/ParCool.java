@@ -76,8 +76,9 @@ public class ParCool {
 		EntityTypes.register(eventBus);
 		TileEntities.register(eventBus);
 
-		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ParCoolConfig.Server.BUILT_CONFIG);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParCoolConfig.Client.BUILT_CONFIG);
+		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParCoolConfig.CLIENT_CONFIG_LIMITATION.getBuiltConfig(), "parcool-client-limitation.toml");
+		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ParCoolConfig.SERVER_CONFIG_LIMITATION.getBuiltConfig(), "parcool-server-limitation.toml");
 	}
 
 	private void loaded(FMLLoadCompleteEvent event) {

@@ -1,5 +1,6 @@
 package com.alrex.parcool.server.limitation;
 
+import com.alrex.parcool.config.ParCoolConfig;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -208,8 +209,19 @@ public abstract class Limitation {
         return new PartialLimitation(id);
     }
 
-    public static Limitation readFromServerConfig() {
-        //TODO
+    public static Limitation readFromServerConfig(ParCoolConfig.ConfigLimitation configLimitation) {
+        var limitation = new FullLimitation(LimitationRegistry.GLOBAL_ID);
+        limitation.setEnabled(configLimitation.getEnabled().get());
+        for (var entry : LimitationEntries.Bool.ENTRIES) {
+            limitation.set(entry, configLimitation.get(entry).get());
+        }
+        for (var entry : LimitationEntries.Int.ENTRIES) {
+            limitation.set(entry, configLimitation.get(entry).get().shortValue());
+        }
+        for (var entry : LimitationEntries.Real.ENTRIES) {
+            limitation.set(entry, configLimitation.get(entry).get().floatValue());
+        }
+        return limitation;
     }
 
     public static Limitation readFrom(ID id, JsonObject object) {

@@ -60,7 +60,7 @@ public class StaminaHUDController implements IGuiOverlay {
 		if (MinecraftForge.EVENT_BUS.post(new ParCoolHUDEvent.RenderEvent(gui, poseStack, partialTick, width, height)))
 			return;
 
-		switch (ParCoolConfig.Client.StaminaHUDType.get()) {
+        switch (ParCoolConfig.Client.STAMINA_HUD_TYPE.get()) {
 			case Light:
 				lightStaminaHUD.render(gui, poseStack, parkourability, stamina, partialTick, width, height);
 				break;

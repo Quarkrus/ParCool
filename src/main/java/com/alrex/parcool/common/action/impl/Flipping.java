@@ -56,7 +56,7 @@ public class Flipping extends Action {
 		} else {
 			fDirection = Direction.Front;
 		}
-		ControlType control = ParCoolConfig.Client.FlipControl.get();
+		ControlType control = ParCoolConfig.Client.FLIP_CONTROL.get();
 		startInfo
 				.putInt(control.ordinal())
 				.putInt(fDirection.ordinal());

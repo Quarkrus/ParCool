@@ -9,35 +9,13 @@ import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.action.ActionList;
 import com.alrex.parcool.common.action.impl.*;
 import com.alrex.parcool.common.capability.IStamina;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import com.alrex.parcool.server.limitation.ILimitationEntry;
+import com.alrex.parcool.server.limitation.LimitationEntries;
 import net.minecraftforge.common.ForgeConfigSpec;
 
-import javax.annotation.Nullable;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
+import java.util.List;
 
 public class ParCoolConfig {
-	public enum AdvantageousDirection {
-		Lower, Higher
-	}
-	public interface Item<T> {
-		T get();
-
-		void set(T value);
-
-		String getPath();
-
-		@Nullable
-		ForgeConfigSpec.ConfigValue<T> getInternalInstance();
-
-		void register(ForgeConfigSpec.Builder builder);
-
-		void writeToBuffer(ByteBuffer buffer);
-
-		T readFromBuffer(ByteBuffer buffer);
-	}
-
 	public enum ConfigGroup {
 		Animation, CameraAnimation, HUD, Modifier, Control, Stamina, Other
 	}
@@ -58,471 +36,51 @@ public class ParCoolConfig {
 			return staminaConsumptions[ActionList.getIndexOf(action)];
 		}
 
-		public enum Booleans implements Item<Boolean> {
-			InfiniteStamina(
-					ConfigGroup.Stamina,
-					"Infinite Stamina (this needs a permission from server, even if it is on single player's game. normally permitted)\nPlease check 'parcool-server.toml' in 'serverconfig' directory",
-					"infinite_stamina", false
-			),
-			InfiniteStaminaWhenCreative(
-					ConfigGroup.Stamina, "Infinite Stamina while player is creative mode",
-					"infinite_stamina_if_creative_mode", true
-			),
-			EnableAnimation(
-					ConfigGroup.Animation, "Enable custom animations",
-					"enable_animation", true
-			),
-			EnableFallingAnimation(
-					ConfigGroup.Animation, "Enable custom animation of falling",
-					"enable_falling_animation", true
-			),
-			EnableLeanAnimationOfFastRun(
-					ConfigGroup.Animation, "Enable lean animation while FastRun",
-					"enable_lean_animation_fast_run", true
-			),
-			EnableFPVAnimation(
-					ConfigGroup.CameraAnimation, "Enable first-person-view animations",
-					"enable_fpv_animation", false
-			),
-			EnableCameraAnimationOfDodge(
-					ConfigGroup.CameraAnimation, "Enable rotation of camera by Dodge",
-					"enable_camera_rotation_dodge", false
-			),
-			EnableCameraAnimationOfBackWallJump(
-					ConfigGroup.CameraAnimation, "Enable rotation of camera by Backward Wall-Jump",
-					"enable_camera_rotation_back_wall_jump", true
-			),
-			EnableCameraAnimationOfRolling(
-					ConfigGroup.CameraAnimation, "Enable rotation of camera by Roll",
-					"enable_camera_rotation_roll", true
-			),
-			EnableCameraAnimationOfFlipping(
-					ConfigGroup.CameraAnimation, "Enable rotation of camera by Flipping",
-					"enable_camera_rotation_flipping", false
-			),
-			EnableCameraAnimationOfVault(
-					ConfigGroup.CameraAnimation, "Enable animation of camera by Vault",
-					"enable_camera_animation_vault", false
-			),
-			EnableCameraAnimationOfHWallRun(
-					ConfigGroup.CameraAnimation, "Enable animation of camera by Horizontal-WallRun",
-					"enable_camera_animation_h-wall-run", true
-			),
-			EnableCameraAnimationOfHangDown(
-					ConfigGroup.CameraAnimation, "Enable animation of camera by Hang-Down",
-					"enable_camera_animation_hang-down", true
-			),
-			HideStaminaHUDWhenStaminaIsInfinite(
-					ConfigGroup.HUD, null,
-					"hide_hud_if_stamina_infinite", true
-			),
-			ShowActionStatusBar(
-					ConfigGroup.HUD, "Stamina HUD shows action charge rate, cool time or etc",
-					"show_action_status_bar", true
-			),
-			ShowLightStaminaHUDAlways(
-					ConfigGroup.HUD, "Light stamina HUD shows always",
-					"show_light_hud_always", false
-			),
-			EnableStaminaExhaustionPenalty(
-					ConfigGroup.Stamina, "Enable slowing down of stamina exhaustion",
-					"enable_stamina_exhaustion_penalty", true
-			),
-			EnableDoubleTappingForDodge(
-					ConfigGroup.Control, "Enable double-tapping ctrl for Dodge",
-					"enable_double_tapping_for_dodge", false
-			),
-			EnableWallJumpCooldown(
-					ConfigGroup.Control, "Enable cooldown of wall jump",
-					"enable_wall_jump_cooldown", true
-			),
-			EnableCrawlInAir(
-					ConfigGroup.Control, "Enable Crawl in air",
-					"enable_crawl_in_air", true
-			),
-			EnableVaultInAir(
-					ConfigGroup.Control, "Enable Vault in air",
-					"enable_vault_in_air", true
-			),
-			CanGetOffStepsWhileDodge(
-					ConfigGroup.Control, "Enable getting off steps while doing dodge",
-					"can_get_off_steps_while_dodge", false
-			),
-			EnableRollWhenCreative(
-					ConfigGroup.Control, "Enable Roll when creative mode (experimental)",
-					"enable_roll_creative", false
-			),
-			EnableJustTimeEffectOfBreakfall(
-					ConfigGroup.Other, "Enable just timing effect of Breakfall",
-					"enable_just_time_effect_breakfall", true
-			),
-			EnableActionSounds(
-					ConfigGroup.Other, "Enable sounds triggered by Action",
-					"enable_sounds", true
-			),
-			EnableActionParticles(
-					ConfigGroup.Other, "Enable particles triggered by Action",
-					"enable_particles", true
-			),
-			EnableActionParticlesOfJustTimeBreakfall(
-					ConfigGroup.Other, "Enable particles triggered by just-time breakfall",
-					"enable_particles_jt_breakfall", true
-			),
-			Enable3DRenderingForZipline(
-					ConfigGroup.Other, "Enable block like rendering of zipline",
-					"enable_3d_render_zipline", true
-			),
-			VaultKeyPressedNeeded(
-					ConfigGroup.Control, "Make Vault need Vault Key Pressed",
-					"vault_needs_key_pressed", false
-			),
-			HideInBlockSneakNeeded(
-					ConfigGroup.Control, "Make HideInBlock need player sneaking",
-					"hideinblock_needs_sneaking", true
-			),
-			SubstituteSprintForFastRun(
-					ConfigGroup.Control, "enable players to do actions needing Fast-Running by sprint",
-					"substitute_sprint", false
-			),
-			ShowAutoResynchronizationNotification(
-					ConfigGroup.Other, "Notify if auto resynchronization of Limitation is executed",
-					"notify_limitation_auto_resync", false
-			),
-			ParCoolIsActive(
-					ConfigGroup.Other, "Whether ParCool is active",
-					"parcool_activation", true
-			);
-			public final ConfigGroup Group;
-			@Nullable
-			public final String Comment;
-			public final String Path;
-			public final String Translation;
-			public final boolean DefaultValue;
-			@Nullable
-			private ForgeConfigSpec.BooleanValue configInstance = null;
-
-			Booleans(
-					ConfigGroup group,
-					@Nullable String comment,
-					String path,
-					boolean defaultValue
-			) {
-				Group = group;
-				Comment = comment;
-				Path = path;
-				DefaultValue = defaultValue;
-				Translation = "parcool.config.c." + path;
-			}
-
-			@Override
-			public String getPath() {
-				return Path;
-			}
-
-			@Override
-			public void register(ForgeConfigSpec.Builder builder) {
-				if (Comment != null) {
-					builder.comment(Comment);
-				}
-				builder.translation(Translation);
-				configInstance = builder.define(Path, DefaultValue);
-			}
-
-			public Boolean get() {
-				if (configInstance == null) return DefaultValue;
-				return configInstance.get();
-			}
-
-			@Override
-			public void set(Boolean value) {
-				if (configInstance != null) {
-					configInstance.set(value);
-				}
-			}
-
-			public ForgeConfigSpec.BooleanValue getInternalInstance() {
-				return configInstance;
-			}
-
-			@Override
-			public void writeToBuffer(ByteBuffer buffer) {
-				buffer.put((byte) (get() ? 1 : 0));
-			}
-
-			@Override
-			public Boolean readFromBuffer(ByteBuffer buffer) {
-				return buffer.get() != 0;
-			}
-		}
-
-		public enum Integers implements Item<Integer> {
-			AcceptableAngleOfWallJump(
-					ConfigGroup.Control, "acceptable walll angle of wall jump : `0` means you exactly opposite to wall, `180` allow you to wall jump for all angle",
-					"acceptable_angle_wall_jump", 110, 0, 180
-			),
-            HorizontalOffsetOfStaminaHUD(
-                    ConfigGroup.HUD, "horizontal offset of normal HUD",
-                    "offset_h_stamina_hud", 3, 0, 100
-            ),
-            VerticalOffsetOfStaminaHUD(
-                    ConfigGroup.HUD, "vertical offset of normal HUD",
-                    "offset_v_stamina_hud", 3, 0, 100
-			),
-            HorizontalOffsetOfLightStaminaHUD(
-                    ConfigGroup.HUD, "horizontal offset of light HUD",
-                    "offset_h_light_hud", 0, -100, 100
-            ),
-            VerticalOffsetOfLightStaminaHUD(
-                    ConfigGroup.HUD, "vertical offset of light HUD",
-                    "offset_v_light_hud", 0, -100, 100
-			),
-			WallRunContinuableTick(
-					ConfigGroup.Modifier, "How long you can do Horizontal Wall Run",
-					"wall-run_continuable_tick", 25, Server.Integers.MaxWallRunContinuableTick.Min, Server.Integers.MaxWallRunContinuableTick.Max
-			),
-			SlidingContinuableTick(
-					ConfigGroup.Modifier, "How long you can do Slide",
-					"sliding_continuable_tick", 15, Server.Integers.MaxSlidingContinuableTick.Min, Server.Integers.MaxSlidingContinuableTick.Max
-			),
-			SuccessiveDodgeCoolTime(
-					ConfigGroup.Control, "How long duration of dodge is deal as successive dodge",
-					"successive_dodge_cool_time", 30, 0, Integer.MAX_VALUE
-			),
-			DodgeCoolTime(
-					ConfigGroup.Control, "Cool time of Dodge action",
-					"dodge_cool_time", Dodge.MAX_TICK, Dodge.MAX_TICK, Integer.MAX_VALUE
-			),
-			MaxSuccessiveDodgeCount(
-					ConfigGroup.Control, "Max number of times of successive Dodge action",
-					"successive_dodge_count", 3, 1, Integer.MAX_VALUE
-			),
-			JustTimeBreakfallTick(
-					ConfigGroup.Control, "Window time of just time breakfall",
-					"justtime_breakfall_tick",
-					Server.Integers.MaxJustTimeBreakfallTick.DefaultValue,
-					Server.Integers.MaxJustTimeBreakfallTick.Min,
-					Server.Integers.MaxJustTimeBreakfallTick.Max
-			);
-			public final ConfigGroup Group;
-			@Nullable
-			public final String Comment;
-			public final String Path;
-			public final int DefaultValue;
-			public final String Translation;
-			public final int Min;
-			public final int Max;
-			@Nullable
-			private ForgeConfigSpec.IntValue configInstance = null;
-
-			Integers(
-					ConfigGroup group,
-					@Nullable String comment,
-					String path,
-					int defaultValue,
-					int min,
-					int max
-			) {
-				Group = group;
-				Comment = comment;
-				Path = path;
-				DefaultValue = defaultValue;
-				Min = min;
-				Max = max;
-				Translation = "parcool.config.c." + path;
-			}
-
-			Integers(
-					ConfigGroup group,
-					@Nullable String comment,
-					String path,
-					Server.Integers defaultValues
-			) {
-				Group = group;
-				Comment = comment;
-				Path = path;
-				DefaultValue = defaultValues.DefaultValue;
-				Min = defaultValues.Min;
-				Max = defaultValues.Max;
-				Translation = "parcool.config.c." + path;
-			}
-
-			@Override
-			public String getPath() {
-				return Path;
-			}
-
-			public void register(ForgeConfigSpec.Builder builder) {
-				if (Comment != null) {
-					builder.comment(Comment);
-				}
-				builder.translation(Translation);
-				configInstance = builder.defineInRange(Path, DefaultValue, Min, Max);
-			}
-
-			@Override
-			public Integer get() {
-				if (configInstance == null) return DefaultValue;
-				return configInstance.get();
-			}
-
-			@Override
-			public void set(Integer value) {
-				if (configInstance != null) {
-					configInstance.set(value);
-				}
-			}
-
-			public ForgeConfigSpec.IntValue getInternalInstance() {
-				return configInstance;
-			}
-
-			@Override
-			public void writeToBuffer(ByteBuffer buffer) {
-				buffer.putInt(get());
-			}
-
-			@Override
-			public Integer readFromBuffer(ByteBuffer buffer) {
-				return buffer.getInt();
-			}
-		}
-
-		public enum Doubles implements Item<Double> {
-			FastRunSpeedModifier(
-					ConfigGroup.Modifier, "FastRun speed modifier",
-					"fast-run_modifier", 2, Server.Doubles.MaxFastRunSpeedModifier.Min, Server.Doubles.MaxFastRunSpeedModifier.Max
-			),
-			FastSwimSpeedModifier(
-					ConfigGroup.Modifier, "FastSwim speed modifier",
-					"fast-swim_modifier", 2, Server.Doubles.MaxFastSwimSpeedModifier.Min, Server.Doubles.MaxFastSwimSpeedModifier.Max
-			),
-			DodgeSpeedModifier(
-					ConfigGroup.Modifier, "Dodge speed modifier",
-					"dodge-speed_modifier", 1, Server.Doubles.MaxDodgeSpeedModifier.Min, Server.Doubles.MaxDodgeSpeedModifier.Max
-			),
-			SkyDiveSpeedDecreaseRate(
-					ConfigGroup.Modifier, "SkyDive speed decreasement rate",
-					"sky_dive-speed-decreasement", 0.98, Server.Doubles.MinSkyDiveSpeedDecreaseRate.Min, Server.Doubles.MinSkyDiveSpeedDecreaseRate.Max
-			),
-			LowestFallDistanceForBreakfall(
-					ConfigGroup.Control, "Lowest fall distance needed to trigger breakfall movements",
-					"lowest_fall_distance_for_breakfall", Server.Doubles.MinLowestFallDistanceForBreakfall
-			),
-			DamageCompleteRemovableHeightBreakfall(
-					ConfigGroup.Control, "How long distance breakfall can remove damage",
-					"max_breakfall_damage_remove_height", Server.Doubles.MaxDamageCompleteRemovableHeightBreakfall
-			),
-			DamageReductionRateBreakfall(
-					ConfigGroup.Control, "Damage reduction rate of Breakfall",
-					"max_breakfall_damage_reduction_rate", Server.Doubles.MaxDamageReductionRateBreakfall
-			);
-			public final ConfigGroup Group;
-			@Nullable
-			public final String Comment;
-			public final String Path;
-			public final double DefaultValue;
-			public final String Translation;
-			public final double Min;
-			public final double Max;
-			@Nullable
-			private ForgeConfigSpec.DoubleValue configInstance = null;
-
-			Doubles(
-					ConfigGroup group,
-					@Nullable String comment,
-					String path,
-					double defaultValue,
-					double min,
-					double max
-			) {
-				Group = group;
-				Comment = comment;
-				Path = path;
-				DefaultValue = defaultValue;
-				Min = min;
-				Max = max;
-				Translation = "parcool.config.c." + path;
-			}
-
-			Doubles(
-					ConfigGroup group,
-					@Nullable String comment,
-					String path,
-					ParCoolConfig.Server.Doubles defaultValues
-			) {
-				Group = group;
-				Comment = comment;
-				Path = path;
-				DefaultValue = defaultValues.DefaultValue;
-				Min = defaultValues.Min;
-				Max = defaultValues.Max;
-				Translation = "parcool.config.c." + path;
-			}
-
-			@Override
-			public String getPath() {
-				return Path;
-			}
-
-			public void register(ForgeConfigSpec.Builder builder) {
-				if (Comment != null) {
-					builder.comment(Comment);
-				}
-				builder.translation(Translation);
-				configInstance = builder.defineInRange(Path, DefaultValue, Min, Max);
-			}
-
-			@Override
-			public void writeToBuffer(ByteBuffer buffer) {
-				buffer.putDouble(get());
-			}
-
-			@Override
-			public Double readFromBuffer(ByteBuffer buffer) {
-				return buffer.getDouble();
-			}
-
-			@Override
-			public Double get() {
-				if (configInstance == null) return DefaultValue;
-				return configInstance.get();
-			}
-
-			@Override
-			public void set(Double value) {
-				if (configInstance != null) {
-					configInstance.set(value);
-				}
-			}
-
-			@OnlyIn(Dist.CLIENT)
-			@Nullable
-			public ForgeConfigSpec.DoubleValue getInternalInstance() {
-				return configInstance;
-			}
-		}
-
 		private static final ForgeConfigSpec.BooleanValue[] actionPossibilities = new ForgeConfigSpec.BooleanValue[ActionList.ACTIONS.size()];
 		private static final ForgeConfigSpec.BooleanValue[] animatorPossibilities = new ForgeConfigSpec.BooleanValue[AnimatorList.ANIMATORS.size()];
 		private static final ForgeConfigSpec.IntValue[] staminaConsumptions = new ForgeConfigSpec.IntValue[ActionList.ACTIONS.size()];
-		public static final ForgeConfigSpec.EnumValue<HUDType> StaminaHUDType;
-		public static final ForgeConfigSpec.EnumValue<Vault.TypeSelectionMode> VaultAnimationMode;
-		public static final ForgeConfigSpec.EnumValue<Position.Horizontal> AlignHorizontalStaminaHUD;
-		public static final ForgeConfigSpec.EnumValue<Position.Vertical> AlignVerticalStaminaHUD;
-		public static final ForgeConfigSpec.EnumValue<ColorTheme> GUIColorTheme;
-		public static final ForgeConfigSpec.EnumValue<FastRun.ControlType> FastRunControl;
-		public static final ForgeConfigSpec.EnumValue<Crawl.ControlType> CrawlControl;
-		public static final ForgeConfigSpec.EnumValue<Flipping.ControlType> FlipControl;
-		public static final ForgeConfigSpec.EnumValue<HorizontalWallRun.ControlType> HWallRunControl;
-		public static final ForgeConfigSpec.EnumValue<WallJump.ControlType> WallJumpControl;
-		public static final ForgeConfigSpec.EnumValue<ClingToCliff.ControlType> ClingToCliffControl;
-		public static final ForgeConfigSpec.EnumValue<IStamina.Type> StaminaType;
+		public static final ForgeConfigSpec.EnumValue<HUDType> STAMINA_HUD_TYPE;
+		public static final ForgeConfigSpec.EnumValue<Vault.TypeSelectionMode> VAULT_ANIMATION_MODE;
+		public static final ForgeConfigSpec.EnumValue<Position.Horizontal> STAMINA_HUD_ALIGN_HORIZONTAL;
+		public static final ForgeConfigSpec.EnumValue<Position.Vertical> STAMINA_HUD_ALIGN_VERTICAL;
+		public static final ForgeConfigSpec.EnumValue<ColorTheme> GUI_COLOR_THEME;
+		public static final ForgeConfigSpec.EnumValue<FastRun.ControlType> FAST_RUN_CONTROL;
+		public static final ForgeConfigSpec.EnumValue<Crawl.ControlType> CRAWL_CONTROL;
+		public static final ForgeConfigSpec.EnumValue<Flipping.ControlType> FLIP_CONTROL;
+		public static final ForgeConfigSpec.EnumValue<HorizontalWallRun.ControlType> H_WALL_RUN_CONTROL;
+		public static final ForgeConfigSpec.EnumValue<WallJump.ControlType> WALL_JUMP_CONTROL;
+		public static final ForgeConfigSpec.EnumValue<ClingToCliff.ControlType> CLING_TO_CLIFF_CONTROL;
+		public static final ForgeConfigSpec.EnumValue<IStamina.Type> STAMINA_TYPE;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_ANIMATION;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_FALLING_ANIMATION;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_LEAN_ANIMATION_OF_FAST_RUN;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_FPV_ANIMATION;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_CAMERA_ANIMATION_OF_DODGE;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_CAMERA_ANIMATION_OF_BACK_WALL_JUMP;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_CAMERA_ANIMATION_OF_ROLLING;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_CAMERA_ANIMATION_OF_FLIPPING;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_CAMERA_ANIMATION_OF_VAULT;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_CAMERA_ANIMATION_OF_H_WALL_RUN;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_CAMERA_ANIMATION_OF_HANG_DOWN;
+		public static final ForgeConfigSpec.BooleanValue STAMINA_HUD_HIDE_WHEN_STAMINA_IS_INFINITE;
+		public static final ForgeConfigSpec.BooleanValue SHOW_ACTION_STATUS_BAR;
+		public static final ForgeConfigSpec.BooleanValue STAMINA_HUD_SHOW_ALWAYS;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_DOUBLE_TAPPING_FOR_DODGE;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_CRAWL_IN_AIR;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_VAULT_IN_AIR;
+		public static final ForgeConfigSpec.BooleanValue CAN_GET_OFF_STEPS_WHILE_DODGE;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_ACTION_SOUNDS;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_ACTION_PARTICLES;
+		public static final ForgeConfigSpec.BooleanValue ENABLE_3D_RENDERING_FOR_ZIPLINE;
+		public static final ForgeConfigSpec.BooleanValue VAULT_NEED_KEY_PRESSED;
+		public static final ForgeConfigSpec.BooleanValue HIDE_IN_BLOCK_NEED_SNEAK;
+		public static final ForgeConfigSpec.BooleanValue SUBSTITUTE_SPRINT_FOR_FAST_RUN;
+		public static final ForgeConfigSpec.BooleanValue SHOW_AUTO_RESYNCHRONIZATION_NOTIFICATION;
+		public static final ForgeConfigSpec.BooleanValue PARCOOL_IS_ACTIVE;
 
-		private static void register(ForgeConfigSpec.Builder builder, ConfigGroup group) {
-			Arrays.stream(Booleans.values()).filter(x -> x.Group == group).forEach(x -> x.register(builder));
-			Arrays.stream(Integers.values()).filter(x -> x.Group == group).forEach(x -> x.register(builder));
-			Arrays.stream(Doubles.values()).filter(x -> x.Group == group).forEach(x -> x.register(builder));
-		}
+		public static final ForgeConfigSpec.IntValue ACCEPTABLE_ANGLE_OF_WALL_JUMP;
+		public static final ForgeConfigSpec.IntValue STAMINA_HUD_HORIZONTAL_OFFSET;
+		public static final ForgeConfigSpec.IntValue STAMINA_HUD_VERTICAL_OFFSET;
 
 		static {
 			ForgeConfigSpec.Builder builder = BUILDER;
@@ -533,12 +91,16 @@ public class ParCoolConfig {
 				}
 			}
 			builder.pop();
-            builder.push("Stamina_HUD_Configuration");
+			builder.push("HUD");
 			{
-				StaminaHUDType = builder.defineEnum("stamina_hud_type", HUDType.Light);
-				AlignHorizontalStaminaHUD = builder.comment("horizontal alignment").defineEnum("align_h_s_hud", Position.Horizontal.Right);
-				AlignVerticalStaminaHUD = builder.comment("vertical alignment").defineEnum("align_v_s_hud", Position.Vertical.Bottom);
-				register(builder, ConfigGroup.HUD);
+				STAMINA_HUD_TYPE = builder.defineEnum("stamina_hud_type", HUDType.Light);
+				STAMINA_HUD_ALIGN_HORIZONTAL = builder.comment("horizontal alignment").defineEnum("hud_align_h_s", Position.Horizontal.Right);
+				STAMINA_HUD_ALIGN_VERTICAL = builder.comment("vertical alignment").defineEnum("hud_align_v_s", Position.Vertical.Bottom);
+				STAMINA_HUD_HORIZONTAL_OFFSET = builder.defineInRange("hud_offset_h", 0, -100, 100);
+				STAMINA_HUD_VERTICAL_OFFSET = builder.defineInRange("hud_offset_v", 0, -100, 100);
+				STAMINA_HUD_SHOW_ALWAYS = builder.define("show_stamina_hud_always", true);
+				STAMINA_HUD_HIDE_WHEN_STAMINA_IS_INFINITE = builder.define("hide_stamina_hud_infinite_stamina", true);
+				SHOW_ACTION_STATUS_BAR = builder.comment("HUD shows cooldown time, etc").define("show_action_status", true);
 			}
 			builder.pop();
 			builder.push("Animations");
@@ -550,38 +112,42 @@ public class ParCoolConfig {
 					}
 				}
 				builder.pop();
-				register(builder, ConfigGroup.Animation);
-				register(builder, ConfigGroup.CameraAnimation);
+				ENABLE_ANIMATION = builder.define("enable_animation", true);
+				ENABLE_FALLING_ANIMATION = builder.define("enable_falling_animation", true);
+				ENABLE_FPV_ANIMATION = builder.define("enable_fpv_animation", true);
+				ENABLE_LEAN_ANIMATION_OF_FAST_RUN = builder.define("enable_lean_animation_fast_run", true);
+				ENABLE_ACTION_PARTICLES = builder.define("enable_particles", true);
+				ENABLE_CAMERA_ANIMATION_OF_BACK_WALL_JUMP = builder.define("enable_camera_animation_backward_wall_jump", false);
+				ENABLE_CAMERA_ANIMATION_OF_DODGE = builder.define("enable_camera_animation_dodge", false);
+				ENABLE_CAMERA_ANIMATION_OF_FLIPPING = builder.define("enable_camera_animation_flipping", false);
+				ENABLE_CAMERA_ANIMATION_OF_ROLLING = builder.define("enable_camera_animation_roll", true);
+				ENABLE_CAMERA_ANIMATION_OF_HANG_DOWN = builder.define("enable_camera_animation_hang_down", true);
+				ENABLE_CAMERA_ANIMATION_OF_VAULT = builder.define("enable_camera_animation_vault", true);
+				ENABLE_CAMERA_ANIMATION_OF_H_WALL_RUN = builder.define("enable_camera_animation_h_wallrun", false);
 			}
 			builder.pop();
 			builder.push("Control");
 			{
-				FastRunControl = builder.comment("Control of Fast Run").defineEnum("fast-run_control", FastRun.ControlType.PressKey);
-				CrawlControl = builder.comment("Control of Crawl").defineEnum("crawl_control", Crawl.ControlType.PressKey);
-				FlipControl = builder.comment("Control of Flipping").defineEnum("flip_control", Flipping.ControlType.TapMovementAndJump);
-				HWallRunControl = builder.comment("Control of Horizontal Wall Run").defineEnum("h-wall-run_control", HorizontalWallRun.ControlType.PressKey);
-				WallJumpControl = builder.comment("Control of Wall Jump").defineEnum("wall-jump_control", WallJump.ControlType.PressKey);
-				ClingToCliffControl = builder.comment("Control of Cling To Cliff").defineEnum("cling-to-cliff_control", ClingToCliff.ControlType.PressKey);
-				register(builder, ConfigGroup.Control);
-			}
-			builder.pop();
-			builder.push("Modifier");
-			{
-				register(builder, ConfigGroup.Modifier);
-			}
-			builder.pop();
-            builder.push("Other_Configuration");
-			{
-				VaultAnimationMode = builder.comment("Vault Animation(Dynamic is to select animation dynamically)").defineEnum("vault_animation_mode", Vault.TypeSelectionMode.Dynamic);
-				GUIColorTheme = builder.comment("Color theme of Setting GUI").defineEnum("gui_color_theme", ColorTheme.Blue);
-				register(builder, ConfigGroup.Other);
+				FAST_RUN_CONTROL = builder.defineEnum("fast-run_control", FastRun.ControlType.PressKey);
+				CRAWL_CONTROL = builder.defineEnum("crawl_control", Crawl.ControlType.PressKey);
+				FLIP_CONTROL = builder.defineEnum("flip_control", Flipping.ControlType.TapMovementAndJump);
+				H_WALL_RUN_CONTROL = builder.defineEnum("h-wall-run_control", HorizontalWallRun.ControlType.PressKey);
+				WALL_JUMP_CONTROL = builder.defineEnum("wall-jump_control", WallJump.ControlType.PressKey);
+				CLING_TO_CLIFF_CONTROL = builder.defineEnum("cling-to-cliff_control", ClingToCliff.ControlType.PressKey);
+				ENABLE_DOUBLE_TAPPING_FOR_DODGE = builder.define("enable_double_tap_dodge", false);
+				ENABLE_CRAWL_IN_AIR = builder.define("enable_crawl_in_air", true);
+				ENABLE_VAULT_IN_AIR = builder.define("enable_vault_in_air", true);
+				CAN_GET_OFF_STEPS_WHILE_DODGE = builder.define("enable_getting_off_steps_while_dodge", false);
+				VAULT_NEED_KEY_PRESSED = builder.define("vault_needs_key_pressed", false);
+				HIDE_IN_BLOCK_NEED_SNEAK = builder.define("hide_in_block_needs_sneak", false);
+				SUBSTITUTE_SPRINT_FOR_FAST_RUN = builder.comment("players can do actions needing FastRun with normal sprint").define("substitute_sprint", false);
+				ACCEPTABLE_ANGLE_OF_WALL_JUMP = builder.comment("How much angle to wall is acceptable for triggering wall jump").defineInRange("wall_jump_acceptable_angle", 110, 0, 180);
 			}
 			builder.pop();
 			builder.push("Stamina");
 			{
-				StaminaType = builder.defineEnum("used_stamina", IStamina.Type.Default);
+				STAMINA_TYPE = builder.defineEnum("used_stamina", IStamina.Type.Default);
 				builder.comment("Caution : Max stamina and stamina recovery config is removed because they became attributes.");
-				register(builder, ConfigGroup.Stamina);
 				builder.push("Consumption");
 				{
 					for (int i = 0; i < ActionList.ACTIONS.size(); i++) {
@@ -596,353 +162,93 @@ public class ParCoolConfig {
 				builder.pop();
 			}
 			builder.pop();
+			builder.push("Other");
+			{
+				VAULT_ANIMATION_MODE = builder.comment("Vault Animation(Dynamic is to select animation dynamically)").defineEnum("vault_animation_mode", Vault.TypeSelectionMode.Dynamic);
+				GUI_COLOR_THEME = builder.comment("Color theme of Setting GUI").defineEnum("gui_color_theme", ColorTheme.Blue);
+				ENABLE_ACTION_SOUNDS = builder.define("enable_sounds", true);
+				ENABLE_3D_RENDERING_FOR_ZIPLINE = builder.define("enable_zipline_3d_rendering", true);
+				SHOW_AUTO_RESYNCHRONIZATION_NOTIFICATION = builder.define("show_auto_resync_notification", false);
+				PARCOOL_IS_ACTIVE = builder.define("parcool_is_active", true);
+			}
+			builder.pop();
 			BUILT_CONFIG = builder.build();
 		}
 	}
 
-	public static class Server {
-		public enum Booleans implements Item<Boolean> {
-			AllowInfiniteStamina(
-					ConfigGroup.Stamina, "Permission of infinite stamina",
-					"allow_infinite_stamina", true, true
-			),
-			AllowDisableWallJumpCooldown(
-					ConfigGroup.Control, "Allow disabling cooldown of wall jump",
-					"allow_disabling_wall_jump_cooldown", true, true
-			),
-			DodgeProvideInvulnerableFrame(
-					ConfigGroup.Other, "Enable invulnerable time by Dodge",
-					"enable_dodge_invulnerable_time", true, true
-			);
-			public final ConfigGroup Group;
-			@Nullable
-			public final String Comment;
-			public final String Path;
-			public final boolean DefaultValue;
-			public final boolean AdvantageousValue;
-			@Nullable
-			private ForgeConfigSpec.BooleanValue configInstance = null;
+	public static final ConfigLimitation CLIENT_CONFIG_LIMITATION = new ConfigLimitation(new ForgeConfigSpec.Builder());
+	public static final ConfigLimitation SERVER_CONFIG_LIMITATION = new ConfigLimitation(new ForgeConfigSpec.Builder());
 
-			Booleans(
-					ConfigGroup group,
-					@Nullable String comment,
-					String path,
-					boolean defaultValue,
-					boolean advantageous
-			) {
-				Group = group;
-				Comment = comment;
-				Path = path;
-				DefaultValue = defaultValue;
-				AdvantageousValue = advantageous;
-			}
-
-			@Override
-			public String getPath() {
-				return Path;
-			}
-
-			@Override
-			public void register(ForgeConfigSpec.Builder builder) {
-				if (Comment != null) {
-					builder.comment(Comment);
-				}
-				configInstance = builder.define(Path, DefaultValue);
-			}
-
-			public Boolean get() {
-				if (configInstance == null) return DefaultValue;
-				return configInstance.get();
-			}
-
-			@Override
-			public void set(Boolean value) {
-				if (configInstance != null) {
-					configInstance.set(value);
-				}
-			}
-
-			public ForgeConfigSpec.BooleanValue getInternalInstance() {
-				return configInstance;
-			}
-
-			@Override
-			public void writeToBuffer(ByteBuffer buffer) {
-				buffer.put((byte) (get() ? 1 : 0));
-			}
-
-			@Override
-			public Boolean readFromBuffer(ByteBuffer buffer) {
-				return buffer.get() != 0;
-			}
+	public static class ConfigLimitation {
+		public ForgeConfigSpec getBuiltConfig() {
+			return builtConfig;
 		}
 
-		public enum Integers implements Item<Integer> {
-			MaxStaminaLimit(
-					ConfigGroup.Stamina, "Limitation of max stamina value",
-					"max_stamina_limit", Integer.MAX_VALUE, 300, Integer.MAX_VALUE, AdvantageousDirection.Higher
-			),
-			MaxStaminaRecovery(
-					ConfigGroup.Stamina, "Limitation of max stamina recovery",
-					"max_stamina_recovery_limit", Integer.MAX_VALUE, 1, Integer.MAX_VALUE, AdvantageousDirection.Higher
-			),
-			SuccessiveDodgeCoolTime(
-					ConfigGroup.Control, "How long duration of dodge is deal as successive dodge",
-					"least_successive_dodge_cool_time", 0, 0, Integer.MAX_VALUE, AdvantageousDirection.Lower
-			),
-			DodgeCoolTime(
-					ConfigGroup.Control, "Cool time of Dodge action",
-					"least_dodge_cool_time", Dodge.MAX_TICK, Dodge.MAX_TICK, Integer.MAX_VALUE, AdvantageousDirection.Lower
-			),
-			MaxSuccessiveDodgeCount(
-					ConfigGroup.Control, "Max number of times of successive Dodge action",
-					"max_successive_dodge_count", Integer.MAX_VALUE, 1, Integer.MAX_VALUE, AdvantageousDirection.Higher
-			),
-			MaxWallRunContinuableTick(
-					ConfigGroup.Modifier, "How long you can do Horizontal Wall Run",
-					"wall-run_continuable_tick", 40, 15, 100, AdvantageousDirection.Higher
-			),
-			MaxSlidingContinuableTick(
-					ConfigGroup.Modifier, "How long you can do Slide",
-					"sliding_continuable_tick", 30, 10, 60, AdvantageousDirection.Higher
-			),
-			MaxJustTimeBreakfallTick(
-					ConfigGroup.Control, "Window time of just time breakfall",
-					"justtime_breakfall_tick", 5, 0, Integer.MAX_VALUE, AdvantageousDirection.Higher
-			);
-			public final ConfigGroup Group;
-			@Nullable
-			public final String Comment;
-			public final String Path;
-			public final int DefaultValue;
-			public final int Min;
-			public final int Max;
-			public final AdvantageousDirection Advantageous;
-			@Nullable
-			private ForgeConfigSpec.IntValue configInstance = null;
+		private final ForgeConfigSpec builtConfig;
+		private final List<ForgeConfigSpec.BooleanValue> booleans;
+		private final List<ForgeConfigSpec.IntValue> integers;
+		private final List<ForgeConfigSpec.DoubleValue> reals;
+		private final ForgeConfigSpec.BooleanValue enabled;
 
-			Integers(
-					ConfigGroup group,
-					@Nullable String comment,
-					String path,
-					int defaultValue,
-					int min,
-					int max,
-					AdvantageousDirection advantageous
-			) {
-				Group = group;
-				Comment = comment;
-				Path = path;
-				DefaultValue = defaultValue;
-				Min = min;
-				Max = max;
-				Advantageous = advantageous;
-			}
-
-			@Override
-			public String getPath() {
-				return Path;
-			}
-
-			public void register(ForgeConfigSpec.Builder builder) {
-				if (Comment != null) {
-					builder.comment(Comment);
-				}
-				configInstance = builder.defineInRange(Path, DefaultValue, Min, Max);
-			}
-
-			@Override
-			public Integer get() {
-				if (configInstance == null) return DefaultValue;
-				return configInstance.get();
-			}
-
-			@Override
-			public void set(Integer value) {
-				if (configInstance != null) {
-					configInstance.set(value);
-				}
-			}
-
-			public ForgeConfigSpec.IntValue getInternalInstance() {
-				return configInstance;
-			}
-
-			@Override
-			public void writeToBuffer(ByteBuffer buffer) {
-				buffer.putInt(get());
-			}
-
-			@Override
-			public Integer readFromBuffer(ByteBuffer buffer) {
-				return buffer.getInt();
-			}
+		public ForgeConfigSpec.BooleanValue get(ILimitationEntry.Bool entry) {
+			return booleans.get(entry.index());
 		}
 
-		public enum Doubles implements Item<Double> {
-			MaxFastRunSpeedModifier(
-					ConfigGroup.Modifier, "FastRun speed modifier",
-					"max_fast-run_modifier", 2, 0.001, 10, AdvantageousDirection.Higher
-			),
-			MaxFastSwimSpeedModifier(
-					ConfigGroup.Modifier, "FastSwim speed modifier",
-					"max_fast-swim_modifier", 2, 0.001, 10, AdvantageousDirection.Higher
-			),
-			MaxDodgeSpeedModifier(
-					ConfigGroup.Modifier, "Dodge speed modifier",
-					"max_dodge-speed_modifier", 1, 0.5, 3, AdvantageousDirection.Higher
-			),
-			MinSkyDiveSpeedDecreaseRate(
-					ConfigGroup.Modifier, "SkyDive speed decrease rate",
-					"min_sky-dive_speed_decrease", 0.98, 0.001, 1, AdvantageousDirection.Lower
-			),
-			MinLowestFallDistanceForBreakfall(
-					ConfigGroup.Control, "Lowest fall distance needed to trigger breakfall movements",
-					"lowest_fall_distance_for_breakfall", 2, 0, 10, AdvantageousDirection.Lower
-			),
-			MaxDamageCompleteRemovableHeightBreakfall(
-					ConfigGroup.Control, "How long breakfall can remove damage",
-					"max_breakfall_damage_remove_height", 6, 0, Double.MAX_VALUE, AdvantageousDirection.Higher
-			),
-			MaxDamageReductionRateBreakfall(
-					ConfigGroup.Control, "Damage reduction rate of Breakfall",
-					"max_breakfall_damage_reduction_rate", 0.6, 0, 1, AdvantageousDirection.Higher
-			);
-			public final ConfigGroup Group;
-			@Nullable
-			public final String Comment;
-			public final String Path;
-			public final double DefaultValue;
-			public final double Min;
-			public final double Max;
-			public final AdvantageousDirection Advantageous;
-			@Nullable
-			private ForgeConfigSpec.DoubleValue configInstance = null;
-
-			Doubles(
-					ConfigGroup group,
-					@Nullable String comment,
-					String path,
-					double defaultValue,
-					double min,
-					double max,
-					AdvantageousDirection advantageous
-			) {
-				Group = group;
-				Comment = comment;
-				Path = path;
-				DefaultValue = defaultValue;
-				Min = min;
-				Max = max;
-				Advantageous = advantageous;
-			}
-
-			@Override
-			public String getPath() {
-				return Path;
-			}
-
-			public void register(ForgeConfigSpec.Builder builder) {
-				if (Comment != null) {
-					builder.comment(Comment);
-				}
-				configInstance = builder.defineInRange(Path, DefaultValue, Min, Max);
-			}
-
-			@Override
-			public void writeToBuffer(ByteBuffer buffer) {
-				buffer.putDouble(get());
-			}
-
-			@Override
-			public Double readFromBuffer(ByteBuffer buffer) {
-				return buffer.getDouble();
-			}
-
-			@Override
-			public Double get() {
-				if (configInstance == null) return DefaultValue;
-				return configInstance.get();
-			}
-
-			@Override
-			public void set(Double value) {
-				if (configInstance != null) {
-					configInstance.set(value);
-				}
-			}
-
-			@OnlyIn(Dist.CLIENT)
-			@Nullable
-			public ForgeConfigSpec.DoubleValue getInternalInstance() {
-				return configInstance;
-			}
+		public ForgeConfigSpec.IntValue get(ILimitationEntry.Int entry) {
+			return integers.get(entry.index());
 		}
 
-		public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-		public static final ForgeConfigSpec BUILT_CONFIG;
-		private static final ForgeConfigSpec.BooleanValue[] actionPermissions = new ForgeConfigSpec.BooleanValue[ActionList.ACTIONS.size()];
-
-		public static boolean getPermissionOf(Class<? extends Action> action) {
-			return actionPermissions[ActionList.getIndexOf(action)].get();
+		public ForgeConfigSpec.DoubleValue get(ILimitationEntry.Real entry) {
+			return reals.get(entry.index());
 		}
 
-		private static final ForgeConfigSpec.IntValue[] leastStaminaConsumptions = new ForgeConfigSpec.IntValue[ActionList.ACTIONS.size()];
-		public static final ForgeConfigSpec.BooleanValue LimitationEnabled;
-
-		private static void register(ForgeConfigSpec.Builder builder, ConfigGroup group) {
-			Arrays.stream(Server.Booleans.values()).filter(x -> x.Group == group).forEach(x -> x.register(builder));
-			Arrays.stream(Server.Integers.values()).filter(x -> x.Group == group).forEach(x -> x.register(builder));
-			Arrays.stream(Server.Doubles.values()).filter(x -> x.Group == group).forEach(x -> x.register(builder));
+		public ForgeConfigSpec.BooleanValue getEnabled() {
+			return enabled;
 		}
 
-		public static int getLeastStaminaConsumptionOf(Class<? extends Action> action) {
-			return leastStaminaConsumptions[ActionList.getIndexOf(action)].get();
-		}
-
-		static {
-			ForgeConfigSpec.Builder builder = BUILDER;
-			builder.push("Limitations");
+		private ConfigLimitation(ForgeConfigSpec.Builder builder) {
+			enabled = builder.define("enabled", true);
+			builder.push("bool");
 			{
-				LimitationEnabled = builder.comment("Whether these limitations will be imposed to players").define("limitation_imposed", false);
-				builder.push("Action_Permissions");
-				{
-					for (int i = 0; i < ActionList.ACTIONS.size(); i++) {
-						actionPermissions[i]
-								= builder.define("permit_" + ActionList.ACTIONS.get(i).getSimpleName(), true);
-					}
-				}
-				builder.pop();
-
-				builder.push("Stamina");
-				{
-					builder.push("Least_Consumption");
-					{
-						for (int i = 0; i < ActionList.ACTIONS.size(); i++) {
-							leastStaminaConsumptions[i] = builder.defineInRange(
-									"stamina_consumption_of_" + ActionList.ACTIONS.get(i).getSimpleName(),
-									ActionList.ACTION_REGISTRIES.get(i).getDefaultStaminaConsumption(),
-									0, 10000
-							);
+				booleans = LimitationEntries.Bool.ENTRIES.stream().map(e -> builder.comment(e.description()).define(
+						e.name(),
+						(boolean) switch (e.priority()) {
+							case NONE -> e.defaultValue();
+							case HIGHER -> false;
+							case LOWER -> true;
 						}
-					}
-					builder.pop();
-					register(builder, ConfigGroup.Stamina);
-				}
-				builder.pop();
-				builder.push("Control");
-				{
-					register(builder, ConfigGroup.Control);
-				}
-				builder.pop();
-				builder.push("Modifier");
-				{
-					register(builder, ConfigGroup.Modifier);
-				}
-				builder.pop();
+				)).toList();
 			}
 			builder.pop();
-			BUILT_CONFIG = builder.build();
+			builder.push("int");
+			{
+				integers = LimitationEntries.Int.ENTRIES.stream().map(e -> builder.comment(e.description()).defineInRange(
+						e.name(),
+						switch (e.priority()) {
+							case NONE -> e.defaultValue();
+							case HIGHER -> e.min();
+							case LOWER -> e.max();
+						},
+						e.min(),
+						e.max()
+				)).toList();
+			}
+			builder.pop();
+			builder.push("real");
+			{
+				reals = LimitationEntries.Real.ENTRIES.stream().map(e -> builder.comment(e.description()).defineInRange(
+						e.name(),
+						switch (e.priority()) {
+							case NONE -> e.defaultValue();
+							case HIGHER -> e.min();
+							case LOWER -> e.max();
+						},
+						e.min(),
+						e.max()
+				)).toList();
+			}
+			builder.pop();
+			builtConfig = builder.build();
 		}
 	}
 }

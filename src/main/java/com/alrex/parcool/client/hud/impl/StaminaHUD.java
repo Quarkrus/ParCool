@@ -64,8 +64,8 @@ public class StaminaHUD extends GuiComponent {
 
 	public void render(ForgeGui gui, PoseStack stack, Parkourability parkourability, IStamina stamina, float partialTick, int width, int height) {
 		Position position = new Position(
-				ParCoolConfig.Client.AlignHorizontalStaminaHUD.get(),
-				ParCoolConfig.Client.AlignVerticalStaminaHUD.get(),
+				ParCoolConfig.Client.STAMINA_HUD_ALIGN_HORIZONTAL.get(),
+				ParCoolConfig.Client.STAMINA_HUD_ALIGN_VERTICAL.get(),
 				ParCoolConfig.Client.Integers.HorizontalOffsetOfStaminaHUD.get(),
 				ParCoolConfig.Client.Integers.VerticalOffsetOfStaminaHUD.get()
 		);

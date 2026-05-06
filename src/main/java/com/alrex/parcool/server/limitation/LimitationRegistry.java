@@ -5,6 +5,7 @@ import com.alrex.parcool.common.capability.IStamina;
 import com.alrex.parcool.common.capability.Parkourability;
 import com.alrex.parcool.common.info.ServerLimitation;
 import com.alrex.parcool.common.network.SyncServerInfoMessage;
+import com.alrex.parcool.config.ParCoolConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -28,7 +29,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 public class LimitationRegistry {
-    private static final Limitation.ID GLOBAL_ID = new Limitation.ID(ParCool.MOD_ID, "global");
+    public static final Limitation.ID GLOBAL_ID = new Limitation.ID(ParCool.MOD_ID, "global");
     public static final Limitation.ID INDIVIDUAL_ID = new Limitation.ID(ParCool.MOD_ID, "individual");
     private static final LevelResource SERVER_CONFIG = new LevelResource("serverconfig");
     private static final Gson GSON = new Gson();
@@ -48,7 +49,7 @@ public class LimitationRegistry {
     private final Path limitationFolderRootPath;
     private final SortedMap<UUID, SortedMap<Limitation.ID, Limitation>> loaded = new TreeMap<>();
     private final SortedSet<Limitation.ID> registeredID = new TreeSet<>();
-    private final Limitation globalLimitation = Limitation.readFromServerConfig();
+    private final Limitation globalLimitation = Limitation.readFromServerConfig(ParCoolConfig.SERVER_CONFIG_LIMITATION);
 
     private SortedMap<Limitation.ID, Limitation> getLimitationMapOf(UUID playerID) {
         SortedMap<Limitation.ID, Limitation> map = loaded.get(playerID);

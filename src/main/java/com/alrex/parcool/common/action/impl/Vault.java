@@ -59,7 +59,7 @@ public class Vault extends Action {
 			return false;
 		}
 		AnimationType animationType;
-		switch (ParCoolConfig.Client.VaultAnimationMode.get()) {
+		switch (ParCoolConfig.Client.VAULT_ANIMATION_MODE.get()) {
 			case KongVault:
 				animationType = AnimationType.KONG_VAULT;
 				break;
