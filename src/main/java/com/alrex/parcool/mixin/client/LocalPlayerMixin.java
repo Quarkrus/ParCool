@@ -1,6 +1,6 @@
 package com.alrex.parcool.mixin.client;
 
-import com.alrex.parcool.common.capability.Parkourability;
+import com.alrex.parcool.common.Parkourability;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;

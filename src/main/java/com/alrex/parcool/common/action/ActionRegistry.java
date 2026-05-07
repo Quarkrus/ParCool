@@ -1,17 +1,8 @@
 package com.alrex.parcool.common.action;
 
-import javax.annotation.Nullable;
 import java.util.TreeMap;
 
 public class ActionRegistry {
-    @Nullable
-    private static ActionRegistry instance = null;
-
-    public static ActionRegistry getInstance() {
-        if (instance == null) instance = new ActionRegistry();
-        return instance;
-    }
-
     private boolean frozen;
     private final TreeMap<String, ActionGroup> registeredGroups = new TreeMap<>();
 

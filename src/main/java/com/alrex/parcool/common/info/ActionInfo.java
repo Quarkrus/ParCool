@@ -18,15 +18,15 @@ public class ActionInfo {
 
     private ClientSetting clientSetting = ClientSetting.UNSYNCED_INSTANCE;
 
-    public ServerLimitation getServerLimitation() {
+    public CompiledLimitation getServerLimitation() {
         return serverLimitation;
 	}
 
-    public void setServerLimitation(ServerLimitation serverLimitation) {
+    public void setServerLimitation(CompiledLimitation serverLimitation) {
         this.serverLimitation = serverLimitation;
     }
 
-    private ServerLimitation serverLimitation = ServerLimitation.UNSYNCED_INSTANCE;
+    private CompiledLimitation serverLimitation = CompiledLimitation.UNSYNCED_INSTANCE;
 
 	public boolean can(Class<? extends Action> action) {
 		return ParCool.isActive()

@@ -1,7 +1,5 @@
 package com.alrex.parcool.config;
 
-import com.alrex.parcool.client.animation.Animator;
-import com.alrex.parcool.client.animation.AnimatorList;
 import com.alrex.parcool.client.gui.ColorTheme;
 import com.alrex.parcool.client.hud.Position;
 import com.alrex.parcool.client.hud.impl.HUDType;

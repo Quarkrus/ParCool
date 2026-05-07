@@ -3,10 +3,12 @@ package com.alrex.parcool;
 import com.alrex.parcool.api.Attributes;
 import com.alrex.parcool.api.Effects;
 import com.alrex.parcool.api.SoundEvents;
+import com.alrex.parcool.api.event.RegisterParCoolActionEvent;
 import com.alrex.parcool.client.renderer.Renderers;
+import com.alrex.parcool.common.action.ActionRegistry;
+import com.alrex.parcool.common.action.ParCoolActions;
 import com.alrex.parcool.common.block.Blocks;
 import com.alrex.parcool.common.block.TileEntities;
-import com.alrex.parcool.common.capability.capabilities.Capabilities;
 import com.alrex.parcool.common.entity.EntityTypes;
 import com.alrex.parcool.common.handlers.AddAttributesHandler;
 import com.alrex.parcool.common.item.Items;
@@ -55,13 +57,15 @@ public class ParCool {
 		return PROXY.ParCoolIsActive();
 	}
 
+	private final ActionRegistry actionRegistry = new ActionRegistry();
+
 	public ParCool() {
 		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		eventBus.addListener(this::setup);
-		eventBus.addListener(this::doClientStuff);
+		eventBus.addListener(this::setupClient);
 		eventBus.addListener(this::loaded);
 		eventBus.register(AddAttributesHandler.class);
-		eventBus.register(Capabilities.class);
+		eventBus.register(ParCoolActions.class);
 
 		PROXY.init();
 
@@ -85,6 +89,9 @@ public class ParCool {
 		AdditionalMods.init();
 		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> AdditionalMods::initInClient);
 		DistExecutor.unsafeRunWhenOn(Dist.DEDICATED_SERVER, () -> AdditionalMods::initInDedicatedServer);
+
+		FMLJavaModLoadingContext.get().getModEventBus().post(new RegisterParCoolActionEvent(actionRegistry));
+		actionRegistry.freeze();
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
@@ -92,7 +99,7 @@ public class ParCool {
 		PROXY.registerMessages(CHANNEL_INSTANCE);
 	}
 
-	private void doClientStuff(final FMLClientSetupEvent event) {
+	private void setupClient(final FMLClientSetupEvent event) {
 		Renderers.register();
 		Items.registerColors();
 	}

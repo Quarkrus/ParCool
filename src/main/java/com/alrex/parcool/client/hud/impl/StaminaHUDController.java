@@ -1,8 +1,8 @@
 package com.alrex.parcool.client.hud.impl;
 
 import com.alrex.parcool.api.client.gui.ParCoolHUDEvent;
+import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.capability.IStamina;
-import com.alrex.parcool.common.capability.Parkourability;
 import com.alrex.parcool.common.capability.stamina.ParCoolStamina;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.extern.AdditionalMods;

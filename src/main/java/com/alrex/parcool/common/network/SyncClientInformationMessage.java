@@ -1,7 +1,7 @@
 package com.alrex.parcool.common.network;
 
 import com.alrex.parcool.ParCool;
-import com.alrex.parcool.common.capability.Parkourability;
+import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.info.ClientSetting;
 import com.alrex.parcool.server.limitation.LimitationRegistry;
 import net.minecraft.client.Minecraft;

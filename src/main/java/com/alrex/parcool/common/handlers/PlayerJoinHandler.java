@@ -1,6 +1,6 @@
 package com.alrex.parcool.common.handlers;
 
-import com.alrex.parcool.common.capability.Parkourability;
+import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.info.ClientSetting;
 import com.alrex.parcool.common.network.SyncClientInformationMessage;
 import net.minecraft.client.player.LocalPlayer;

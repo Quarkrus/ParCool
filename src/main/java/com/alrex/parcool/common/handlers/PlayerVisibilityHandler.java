@@ -1,7 +1,7 @@
 package com.alrex.parcool.common.handlers;
 
+import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.impl.HideInBlock;
-import com.alrex.parcool.common.capability.Parkourability;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingEvent;

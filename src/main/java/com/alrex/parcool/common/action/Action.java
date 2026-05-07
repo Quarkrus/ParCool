@@ -1,21 +1,33 @@
 package com.alrex.parcool.common.action;
 
+import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.capability.IStamina;
-import com.alrex.parcool.common.capability.Parkourability;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.TickEvent;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
+import java.util.Collection;
+import java.util.Collections;
 
 public abstract class Action {
+	public Action(Parkourability parkourability, ActionEntry<? extends Action> entry) {
+		this.entry = entry;
+		this.parkourability = parkourability;
+	}
+
+	protected final Parkourability parkourability;
+	protected final ActionEntry<? extends Action> entry;
+	private final Collection<ActionEntry<? extends Action>> exclusiveActions = exclusiveActions();
+
 	private boolean doing = false;
 	private int doingTick = 0;
 	private int notDoingTick = 0;
 	private int tickFromStarted = -1;
+
+	protected Collection<ActionEntry<? extends Action>> exclusiveActions() {
+		return Collections.emptyList();
+	}
 
 	public boolean isJustStarted() {
 		return isDoing() && getDoingTick() == 0;
@@ -46,104 +58,128 @@ public abstract class Action {
 		}
 	}
 
-	public void start(Player player, Parkourability parkourability, ByteBuffer startInfo, @Nullable IStamina stamina) {
+	public void start(ByteBuffer startInfo, @Nullable IStamina stamina) {
+		if (doing) return;
 		doing = true;
 		tickFromStarted = 0;
-		onStart(player, parkourability, startInfo);
+		onStart(startInfo);
 		startInfo.rewind();
-		if (player.isLocalPlayer()) {
-			if (stamina == null) {
-				stamina = IStamina.get(player);
-			}
+		if (parkourability.player().isLocalPlayer()) {
 			if (stamina != null) {
-				onStartInLocalClient(player, parkourability, stamina, startInfo);
+				onStartInClient(startInfo);
+				onStartInLocalClient(startInfo);
 			}
 		} else {
-			if (player.level.isClientSide()) {
-				onStartInOtherClient(player, parkourability, startInfo);
+			if (parkourability.player().level.isClientSide()) {
+				onStartInClient(startInfo);
+				onStartInOtherClient(startInfo);
 			} else {
-				onStartInServer(player, parkourability, startInfo);
+				onStartInServer(startInfo);
 			}
 		}
 		startInfo.rewind();
 	}
 
-	public void finish(Player player) {
+	public void finish() {
+		if (!doing) return;
+		for (var child : entry.children()) {
+			parkourability.get(child).finish();
+		}
 		doing = false;
-		if (player.isLocalPlayer()) {
-			onStopInLocalClient(player);
+		if (parkourability.player().isLocalPlayer()) {
+			onStopInLocalClient();
+			onStopInClient();
 		} else {
-			if (player.level.isClientSide()) {
-				onStopInOtherClient(player);
+			if (parkourability.player().level.isClientSide()) {
+				onStopInOtherClient();
+				onStopInClient();
 			} else {
-				onStopInServer(player);
+				onStopInServer();
 			}
 		}
-		onStop(player);
+		onStop();
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public abstract boolean canStart(Player player, Parkourability parkourability, IStamina stamina, ByteBuffer startInfo);
-
-	@OnlyIn(Dist.CLIENT)
-	public abstract boolean canContinue(Player player, Parkourability parkourability, IStamina stamina);
-
-	public void onStart(Player player, Parkourability parkourability, ByteBuffer startInfo) {
-	}
-
-	public void onStartInServer(Player player, Parkourability parkourability, ByteBuffer startInfo) {
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	public void onStartInOtherClient(Player player, Parkourability parkourability, ByteBuffer startInfo) {
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	public void onStartInLocalClient(Player player, Parkourability parkourability, IStamina stamina, ByteBuffer startInfo) {
-	}
-
-	public void onStop(Player player) {
-	}
-
-	public void onStopInServer(Player player) {
-	}
-
-	public void onStopInOtherClient(Player player) {
-	}
-
-	public void onStopInLocalClient(Player player) {
-	}
-
-	public void onWorkingTick(Player player, Parkourability parkourability, IStamina stamina) {
-	}
-
-	public void onWorkingTickInServer(Player player, Parkourability parkourability, IStamina stamina) {
+	public boolean canStart(ByteBuffer startInfo) {
+		var parent = entry.parent();
+		if (parent != null && !parkourability.get(entry).isDoing()) {
+			return false;
+		}
+		for (var exclusiveAction : exclusiveActions) {
+			if (parkourability.get(exclusiveAction).isDoing()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void onWorkingTickInClient(Player player, Parkourability parkourability, IStamina stamina) {
+	public abstract boolean canContinue();
+
+	public void onStart(ByteBuffer startInfo) {
+	}
+
+	public void onStartInServer(ByteBuffer startInfo) {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void onWorkingTickInOtherClient(Player player, Parkourability parkourability, IStamina stamina) {
+	public void onStartInClient(ByteBuffer startInfo) {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void onWorkingTickInLocalClient(Player player, Parkourability parkourability, IStamina stamina) {
-	}
-
-	public void onTick(Player player, Parkourability parkourability, IStamina stamina) {
-	}
-
-	public void onServerTick(Player player, Parkourability parkourability, IStamina stamina) {
+	public void onStartInOtherClient(ByteBuffer startInfo) {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void onClientTick(Player player, Parkourability parkourability, IStamina stamina) {
+	public void onStartInLocalClient(ByteBuffer startInfo) {
+	}
+
+	public void onStop() {
+	}
+
+	public void onStopInServer() {
+	}
+
+	public void onStopInClient() {
+	}
+
+	public void onStopInOtherClient() {
+	}
+
+	public void onStopInLocalClient() {
+	}
+
+	public void onWorkingTick() {
+	}
+
+	public void onWorkingTickInServer() {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void onRenderTick(TickEvent.RenderTickEvent event, Player player, Parkourability parkourability) {
+	public void onWorkingTickInClient() {
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	public void onWorkingTickInOtherClient() {
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	public void onWorkingTickInLocalClient() {
+	}
+
+	public void onTick() {
+	}
+
+	public void onServerTick() {
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	public void onClientTick() {
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	public void onRenderTick() {
 	}
 
 	public void restoreSynchronizedState(ByteBuffer buffer) {
@@ -153,12 +189,12 @@ public abstract class Action {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public boolean wantsToShowStatusBar(LocalPlayer player, Parkourability parkourability) {
+	public boolean wantsToShowStatusBar() {
 		return false;
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public float getStatusValue(LocalPlayer player, Parkourability parkourability) {
+	public float getStatusValue() {
 		return 0;
 	}
 

@@ -1,10 +1,10 @@
 package com.alrex.parcool.server.limitation;
 
 import com.alrex.parcool.ParCool;
+import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.capability.IStamina;
-import com.alrex.parcool.common.capability.Parkourability;
-import com.alrex.parcool.common.info.ServerLimitation;
-import com.alrex.parcool.common.network.SyncServerInfoMessage;
+import com.alrex.parcool.common.info.CompiledLimitation;
+import com.alrex.parcool.common.network.ServerLimitationPacket;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -59,8 +59,12 @@ public class LimitationRegistry {
         return map;
     }
 
-    public Collection<Limitation> getLimitationsOf(UUID playerID) {
+    private Collection<Limitation> getLimitationsOf(UUID playerID) {
         return getLimitationMapOf(playerID).values();
+    }
+
+    public CompiledLimitation getLimitationSet(UUID playerID) {
+        return CompiledLimitation.compile(getLimitationsOf(playerID));
     }
 
     public Limitation createLimitationOf(UUID playerID, Limitation.ID id) {
@@ -104,20 +108,20 @@ public class LimitationRegistry {
     public void update(ServerPlayer player) {
         Parkourability parkourability = Parkourability.get(player);
         if (parkourability == null) return;
-        parkourability.getActionInfo().setServerLimitation(ServerLimitation.get(player));
+        parkourability.getActionInfo().setServerLimitation(CompiledLimitation.get(player));
         IStamina stamina = IStamina.get(player);
         if (stamina == null) {
-            SyncServerInfoMessage.sync(player);
+            ServerLimitationPacket.sync(player);
         } else {
-            SyncServerInfoMessage.syncWithStamina(player, stamina);
+            ServerLimitationPacket.syncWithStamina(player, stamina);
         }
     }
 
     public void updateOnlyLimitation(ServerPlayer player) {
         Parkourability parkourability = Parkourability.get(player);
         if (parkourability == null) return;
-        parkourability.getActionInfo().setServerLimitation(ServerLimitation.get(player));
-        SyncServerInfoMessage.sync(player);
+        parkourability.getActionInfo().setServerLimitation(CompiledLimitation.get(player));
+        ServerLimitationPacket.sync(player);
     }
 
     public SortedMap<Limitation.ID, Limitation> load(UUID playerID) {

@@ -1,55 +1,19 @@
 package com.alrex.parcool.proxy;
 
-import com.alrex.parcool.common.network.*;
+import com.alrex.parcool.common.network.ClientBoundParCoolLoginPacket;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 @OnlyIn(Dist.DEDICATED_SERVER)
 public class ServerProxy extends CommonProxy {
 	@Override
 	public void registerMessages(SimpleChannel instance) {
-		instance.registerMessage(
-				3,
-				StartBreakfallMessage.class,
-				StartBreakfallMessage::encode,
-				StartBreakfallMessage::decode,
-				StartBreakfallMessage::handleServer
-		);
-		instance.registerMessage(
-				10,
-				SyncStaminaMessage.class,
-				SyncStaminaMessage::encode,
-				SyncStaminaMessage::decode,
-				SyncStaminaMessage::handleServer
-		);
-		instance.registerMessage(
-				12,
-                SyncServerInfoMessage.class,
-                SyncServerInfoMessage::encode,
-                SyncServerInfoMessage::decode,
-				null
-		);
-		instance.registerMessage(
-				15,
-				SyncActionStateMessage.class,
-				SyncActionStateMessage::encode,
-				SyncActionStateMessage::decode,
-				SyncActionStateMessage::handleServer
-		);
-		instance.registerMessage(
-				17,
-				SyncClientInformationMessage.class,
-				SyncClientInformationMessage::encode,
-				SyncClientInformationMessage::decode,
-				SyncClientInformationMessage::handleServer
-		);
-		instance.registerMessage(
-				18,
-				SyncStaminaToClientMessage.class,
-				SyncStaminaToClientMessage::encode,
-				SyncStaminaToClientMessage::decode,
-				null
-		);
+		int index = 0;
+		instance.messageBuilder(ClientBoundParCoolLoginPacket.class, index++, NetworkDirection.LOGIN_TO_CLIENT)
+				.markAsLoginPacket()
+				.encoder(ClientBoundParCoolLoginPacket::encode)
+				.decoder(ClientBoundParCoolLoginPacket::decode);
 	}
 }

@@ -22,49 +22,6 @@ public class ParCoolActionEvent extends Event {
         this.action = action;
     }
 
-    @Deprecated
-    @Cancelable
-    public static class TryToStartEvent extends ParCoolActionEvent {
-
-        @Override
-        public boolean isCancelable() {
-            return true;
-        }
-
-        public TryToStartEvent(Player player, Action action) {
-            super(player, action);
-        }
-    }
-
-    @Deprecated
-    @Cancelable
-    public static class TryToContinueEvent extends ParCoolActionEvent {
-
-        @Override
-        public boolean isCancelable() {
-            return true;
-        }
-
-        public TryToContinueEvent(Player player, Action action) {
-            super(player, action);
-        }
-    }
-
-    @Deprecated
-    public static class StartEvent extends ParCoolActionEvent {
-        public StartEvent(Player player, Action action) {
-            super(player, action);
-        }
-    }
-
-    @Deprecated
-    public static class StopEvent extends ParCoolActionEvent {
-        public StopEvent(Player player, Action action) {
-            super(player, action);
-        }
-    }
-    // ======
-
     public static class TryToStart extends ParCoolActionEvent {
         @Override
         public boolean isCancelable() {

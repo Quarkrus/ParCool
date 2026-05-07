@@ -2,7 +2,7 @@ package com.alrex.parcool.common.handlers;
 
 import com.alrex.parcool.client.gui.SettingActionLimitationScreen;
 import com.alrex.parcool.client.input.KeyRecorder;
-import com.alrex.parcool.common.capability.Parkourability;
+import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;

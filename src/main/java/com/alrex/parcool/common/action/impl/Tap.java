@@ -1,12 +1,11 @@
 package com.alrex.parcool.common.action.impl;
 
 import com.alrex.parcool.client.animation.impl.TapAnimator;
+import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.action.BehaviorEnforcer;
-import com.alrex.parcool.common.action.StaminaConsumeTiming;
 import com.alrex.parcool.common.capability.Animation;
 import com.alrex.parcool.common.capability.IStamina;
-import com.alrex.parcool.common.capability.Parkourability;
 import net.minecraft.world.entity.player.Player;
 
 import java.nio.ByteBuffer;

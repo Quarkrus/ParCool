@@ -1,4 +1,19 @@
 package com.alrex.parcool.common.action;
 
+import com.alrex.parcool.ParCool;
+import com.alrex.parcool.api.event.RegisterParCoolActionEvent;
+import com.alrex.parcool.common.action.impl.Crawl;
+import com.alrex.parcool.common.action.impl.Slide;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+
 public class ParCoolActions {
+    private static final ActionGroup.Builder BUILDER = new ActionGroup.Builder(ParCool.MOD_ID);
+
+    private static final ActionEntry<Crawl> CRAWL = BUILDER.add("crawl", Crawl.class, Crawl::new, new StaminaConsumption());
+    private static final ActionEntry<Slide> SLIDE = BUILDER.add("slide", Slide.class, Slide::new, new StaminaConsumption(), CRAWL);
+
+    @SubscribeEvent
+    public static void onRegister(RegisterParCoolActionEvent event) {
+        event.register(BUILDER.build());
+    }
 }

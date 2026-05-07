@@ -1,10 +1,9 @@
-package com.alrex.parcool.common.capability;
+package com.alrex.parcool.common;
 
-import com.alrex.parcool.common.IParkourabilityHolder;
 import com.alrex.parcool.common.action.*;
 import com.alrex.parcool.common.info.ActionInfo;
 import com.alrex.parcool.common.info.ClientSetting;
-import com.alrex.parcool.common.info.ServerLimitation;
+import com.alrex.parcool.common.info.CompiledLimitation;
 import com.alrex.parcool.common.network.SyncClientInformationMessage;
 import com.alrex.parcool.config.ParCoolConfig;
 import net.minecraft.client.player.LocalPlayer;
@@ -13,8 +12,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.List;
 
 public class Parkourability {
 	@Nullable
@@ -29,36 +26,21 @@ public class Parkourability {
 	private final AdditionalProperties properties = new AdditionalProperties();
 	private final BehaviorEnforcer enforcer = new BehaviorEnforcer();
 	private final ActionSet actions;
-	private final HashMap<Class<? extends Action>, Action> actionsMap;
+	private final Player player;
 	private int synchronizeTrialCount = 0;
 
-	public Parkourability(ActionRegistry registry) {
-		actions = new ActionSet(registry);
-		actionsMap = new HashMap<>((int) (actions.size() * 1.5));
-		for (Action action : actions) {
-			actionsMap.put(action.getClass(), action);
-		}
+	public Parkourability(Player player, ActionRegistry registry) {
 		info = new ActionInfo();
+		this.player = player;
+		actions = new ActionSet(this, registry);
 	}
 
-	public <T extends Action> T get(Class<T> action) {
-		T value = (T) actionsMap.getOrDefault(action, null);
-		if (value == null) {
-			throw new IllegalArgumentException("The Action instance is not registered:" + action.getSimpleName());
-		}
-		return value;
+	public <T extends Action> T get(ActionEntry<T> entry) {
+		return actions.get(entry);
 	}
 
-	public short getActionID(Action instance) {
-		return ActionGroup.getIndexOf(instance.getClass());
-	}
-
-	@Nullable
-	public Action getActionFromID(short id) {
-		if (0 <= id && id < actions.size()) {
-			return actions.get(id);
-		}
-		return null;
+	public Player player() {
+		return player;
 	}
 
 	public AdditionalProperties getAdditionalProperties() {
@@ -77,12 +59,8 @@ public class Parkourability {
 		return info.getClientSetting();
 	}
 
-	public ServerLimitation getServerLimitation() {
+	public CompiledLimitation getServerLimitation() {
 		return info.getServerLimitation();
-	}
-
-	public List<Action> getList() {
-		return actions;
 	}
 
 	public void CopyFrom(Parkourability original) {

@@ -57,7 +57,7 @@ public abstract class Limitation implements ILimitationProvider {
             return value != null ? value : entry.defaultValue();
         }
 
-        public double get(ILimitationEntry.Real entry) {
+        public float get(ILimitationEntry.Real entry) {
             var value = reals.get(entry.index());
             return value != null ? value : entry.defaultValue();
         }
@@ -131,7 +131,7 @@ public abstract class Limitation implements ILimitationProvider {
             return entry.defaultValue();
         }
 
-        public double get(ILimitationEntry.Real entry) {
+        public float get(ILimitationEntry.Real entry) {
             var index = entry.index();
             if (0 <= index && index < reals.length) return reals[index];
             return entry.defaultValue();

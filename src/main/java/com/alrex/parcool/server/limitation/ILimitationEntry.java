@@ -22,6 +22,14 @@ public interface ILimitationEntry<T extends Comparable<T>> {
         return value;
     }
 
+    default T select(T v1, T v2) {
+        return switch (priority()) {
+            case HIGHER -> v1.compareTo(v2) >= 0 ? v1 : v2;
+            case LOWER -> v1.compareTo(v2) <= 0 ? v1 : v2;
+            default -> v1;
+        };
+    }
+
     @Nonnull
     T getLowestPriorityValue();
 

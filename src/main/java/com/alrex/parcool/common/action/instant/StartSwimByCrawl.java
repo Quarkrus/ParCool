@@ -1,10 +1,8 @@
 package com.alrex.parcool.common.action.instant;
 
 import com.alrex.parcool.client.input.KeyRecorder;
-import com.alrex.parcool.common.action.InstantAction;
-import com.alrex.parcool.common.action.StaminaConsumeTiming;
+import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.capability.IStamina;
-import com.alrex.parcool.common.capability.Parkourability;
 import net.minecraft.world.entity.player.Player;
 
 import java.nio.ByteBuffer;

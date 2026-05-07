@@ -5,5 +5,5 @@ public interface ILimitationProvider {
 
     short get(ILimitationEntry.Int entry);
 
-    double get(ILimitationEntry.Real entry);
+    float get(ILimitationEntry.Real entry);
 }

@@ -1,8 +1,8 @@
 package com.alrex.parcool.extern.epicfight;
 
 import com.alrex.parcool.api.Effects;
+import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.capability.IStamina;
-import com.alrex.parcool.common.capability.Parkourability;
 import com.alrex.parcool.common.capability.stamina.ParCoolStamina;
 import com.alrex.parcool.extern.AdditionalMods;
 import net.minecraft.server.level.ServerPlayer;
