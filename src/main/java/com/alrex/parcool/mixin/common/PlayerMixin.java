@@ -1,10 +1,14 @@
 package com.alrex.parcool.mixin.common;
 
+import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.IParkourabilityHolder;
 import com.alrex.parcool.common.Parkourability;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.ProfilePublicKey;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -13,11 +17,20 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.Nonnull;
+
 @Mixin(Player.class)
 public abstract class PlayerMixin extends LivingEntity implements IParkourabilityHolder {
     @Unique
-    private Parkourability parkourability = new Parkourability();
+    @Nonnull
+    private Parkourability parkourability = null;
 
+    @Inject(method = "<init>", at = @At("TAIL"))
+    public void onInit(Level level, BlockPos blockPos, float p_219729_, GameProfile profile, ProfilePublicKey publicKey, CallbackInfo ci) {
+        parkourability = new Parkourability((Player) (Object) this, ParCool.getActionRegistry());
+    }
+
+    @Nonnull
     @Override
     public Parkourability getParkourability() {
         return parkourability;

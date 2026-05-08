@@ -6,7 +6,7 @@ import com.google.gson.JsonPrimitive;
 
 import java.util.TreeMap;
 
-public abstract class Limitation implements ILimitationProvider {
+public abstract class Limitation implements ILimitation {
 
     //Whether this limitation is applied
     private boolean enabled = false;
@@ -191,7 +191,7 @@ public abstract class Limitation implements ILimitationProvider {
         return new PartialLimitation(id);
     }
 
-    public static Limitation readFromServerConfig(ParCoolConfig.ConfigLimitation configLimitation) {
+    public static Limitation readFromConfig(ParCoolConfig.ConfigLimitation configLimitation) {
         var limitation = new FullLimitation(LimitationRegistry.GLOBAL_ID);
         limitation.setEnabled(configLimitation.isEnabled());
         for (var entry : LimitationEntries.Bool.ENTRIES) {

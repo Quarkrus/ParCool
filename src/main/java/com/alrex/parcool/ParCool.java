@@ -4,7 +4,9 @@ import com.alrex.parcool.api.Attributes;
 import com.alrex.parcool.api.Effects;
 import com.alrex.parcool.api.SoundEvents;
 import com.alrex.parcool.api.event.RegisterParCoolActionEvent;
+import com.alrex.parcool.api.event.RegisterParCoolStaminaTypeEvent;
 import com.alrex.parcool.client.renderer.Renderers;
+import com.alrex.parcool.common.action.ActionProcessor;
 import com.alrex.parcool.common.action.ActionRegistry;
 import com.alrex.parcool.common.action.ParCoolActions;
 import com.alrex.parcool.common.block.Blocks;
@@ -15,6 +17,8 @@ import com.alrex.parcool.common.item.Items;
 import com.alrex.parcool.common.item.recipe.Recipes;
 import com.alrex.parcool.common.potion.PotionRecipeRegistry;
 import com.alrex.parcool.common.potion.Potions;
+import com.alrex.parcool.common.stamina.StaminaTypeRegistry;
+import com.alrex.parcool.common.stamina.StaminaTypes;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.extern.AdditionalMods;
 import com.alrex.parcool.proxy.ClientProxy;
@@ -23,6 +27,7 @@ import com.alrex.parcool.proxy.ServerProxy;
 import com.alrex.parcool.server.command.CommandRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -41,7 +46,7 @@ import org.apache.logging.log4j.Logger;
 public class ParCool {
 	public static final String MOD_ID = "parcool";
 	private static final String PROTOCOL_VERSION = "4.0.0.0";
-	public static final SimpleChannel CHANNEL_INSTANCE = NetworkRegistry.newSimpleChannel(
+	public static final SimpleChannel CONNECTION = NetworkRegistry.newSimpleChannel(
 			new ResourceLocation(ParCool.MOD_ID, "message"),
 			() -> PROTOCOL_VERSION,
 			PROTOCOL_VERSION::equals,
@@ -53,11 +58,21 @@ public class ParCool {
 	);
 	public static final Logger LOGGER = LogManager.getLogger();
 
-	public static boolean isActive() {
-		return PROXY.ParCoolIsActive();
+	private static final ActionRegistry actionRegistry = new ActionRegistry();
+	private static final StaminaTypeRegistry staminaTypeRegistry = new StaminaTypeRegistry();
+	private static final ActionProcessor actionProcessor = new ActionProcessor();
+
+	public static ActionRegistry getActionRegistry() {
+		return actionRegistry;
 	}
 
-	private final ActionRegistry actionRegistry = new ActionRegistry();
+	public static StaminaTypeRegistry getStaminaTypeRegistry() {
+		return staminaTypeRegistry;
+	}
+
+	public static ActionProcessor getActionProcessor() {
+		return actionProcessor;
+	}
 
 	public ParCool() {
 		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -66,8 +81,10 @@ public class ParCool {
 		eventBus.addListener(this::loaded);
 		eventBus.register(AddAttributesHandler.class);
 		eventBus.register(ParCoolActions.class);
+		eventBus.register(StaminaTypes.class);
 
 		PROXY.init();
+		MinecraftForge.EVENT_BUS.register(actionProcessor);
 
 		Effects.register(eventBus);
 		Potions.register(eventBus);
@@ -90,13 +107,15 @@ public class ParCool {
 		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> AdditionalMods::initInClient);
 		DistExecutor.unsafeRunWhenOn(Dist.DEDICATED_SERVER, () -> AdditionalMods::initInDedicatedServer);
 
+		FMLJavaModLoadingContext.get().getModEventBus().post(new RegisterParCoolStaminaTypeEvent(staminaTypeRegistry));
+		staminaTypeRegistry.freeze();
 		FMLJavaModLoadingContext.get().getModEventBus().post(new RegisterParCoolActionEvent(actionRegistry));
 		actionRegistry.freeze();
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
 		CommandRegistry.registerArgumentTypes(event);
-		PROXY.registerMessages(CHANNEL_INSTANCE);
+		PROXY.registerMessages(CONNECTION);
 	}
 
 	private void setupClient(final FMLClientSetupEvent event) {

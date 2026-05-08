@@ -1,26 +1,15 @@
 package com.alrex.parcool.common.action;
 
-import java.util.TreeMap;
+import com.alrex.parcool.common.BasicRegistry;
 
-public class ActionRegistry {
-    private boolean frozen;
-    private final TreeMap<String, ActionGroup> registeredGroups = new TreeMap<>();
+import java.util.Map;
 
-    public TreeMap<String, ActionGroup> getRegisteredGroups() {
-        return registeredGroups;
+public class ActionRegistry extends BasicRegistry<String, ActionGroup> {
+    public Map<String, ActionGroup> getRegisteredGroups() {
+        return getRegistry();
     }
 
     public void register(ActionGroup group) {
-        if (frozen) {
-            throw new IllegalStateException("This ActionRegistry is already frozen");
-        }
-        if (registeredGroups.containsKey(group.namespace())) {
-            throw new IllegalStateException(String.format("ActionGroup[%s] is already registered", group.namespace()));
-        }
-        registeredGroups.put(group.namespace(), group);
-    }
-
-    public void freeze() {
-        frozen = true;
+        register(group.namespace(), group);
     }
 }

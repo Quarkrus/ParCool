@@ -7,7 +7,10 @@ import com.alrex.parcool.common.handlers.EnableOrDisableParCoolHandler;
 import com.alrex.parcool.common.handlers.InputHandler;
 import com.alrex.parcool.common.handlers.OpenSettingsParCoolHandler;
 import com.alrex.parcool.common.handlers.PlayerJoinHandler;
+import com.alrex.parcool.common.network.ActionStateSetPacket;
 import com.alrex.parcool.common.network.ClientBoundParCoolLoginPacket;
+import com.alrex.parcool.common.network.MultiStaminaPacket;
+import com.alrex.parcool.common.network.StaminaPacket;
 import com.alrex.parcool.config.ParCoolConfig;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -45,7 +48,25 @@ public class ClientProxy extends CommonProxy {
 				.markAsLoginPacket()
 				.encoder(ClientBoundParCoolLoginPacket::encode)
 				.decoder(ClientBoundParCoolLoginPacket::decode)
-				.consumerMainThread(ClientBoundParCoolLoginPacket::handle);
-
+				.consumerMainThread(ClientBoundParCoolLoginPacket::handle)
+				.add();
+		instance.messageBuilder(StaminaPacket.class, index++)
+				.noResponse()
+				.decoder(StaminaPacket.HANDLER::decode)
+				.encoder(StaminaPacket.HANDLER::encode)
+				.consumerMainThread(StaminaPacket.HANDLER::handleInPhysicalClient)
+				.add();
+		instance.messageBuilder(MultiStaminaPacket.class, index++)
+				.noResponse()
+				.decoder((packet) -> MultiStaminaPacket.decode(MultiStaminaPacket::new, packet))
+				.encoder(MultiStaminaPacket::encode)
+				.consumerMainThread(MultiStaminaPacket::handleInPhysicalClient)
+				.add();
+		instance.messageBuilder(ActionStateSetPacket.class, index++)
+				.noResponse()
+				.decoder(ActionStateSetPacket::decode)
+				.encoder(ActionStateSetPacket::encode)
+				.consumerMainThread(ActionStateSetPacket::handleInPhysicalClient)
+				.add();
 	}
 }

@@ -2,19 +2,22 @@ package com.alrex.parcool.common;
 
 import com.alrex.parcool.common.action.*;
 import com.alrex.parcool.common.info.ActionInfo;
-import com.alrex.parcool.common.info.ClientSetting;
 import com.alrex.parcool.common.info.CompiledLimitation;
-import com.alrex.parcool.common.network.SyncClientInformationMessage;
+import com.alrex.parcool.common.stamina.IReadonlyStamina;
+import com.alrex.parcool.common.stamina.ReadonlyStamina;
 import com.alrex.parcool.config.ParCoolConfig;
+import com.alrex.parcool.server.limitation.ILimitationEntry;
+import com.alrex.parcool.server.limitation.Limitation;
+import com.alrex.parcool.server.limitation.LimitationRegistry;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
+import java.util.Collections;
 
 public class Parkourability {
-	@Nullable
 	public static Parkourability get(Player player) {
 		if (player instanceof IParkourabilityHolder holder) {
 			return holder.getParkourability();
@@ -22,21 +25,33 @@ public class Parkourability {
 		return null;
 	}
 
-	private final ActionInfo info;
+	private final ActionInfo info = new ActionInfo();
 	private final AdditionalProperties properties = new AdditionalProperties();
 	private final BehaviorEnforcer enforcer = new BehaviorEnforcer();
 	private final ActionSet actions;
 	private final Player player;
+	private IReadonlyStamina stamina;
 	private int synchronizeTrialCount = 0;
 
 	public Parkourability(Player player, ActionRegistry registry) {
-		info = new ActionInfo();
 		this.player = player;
-		actions = new ActionSet(this, registry);
+		this.actions = new ActionSet(this, registry);
+		if (player.isLocalPlayer()) {
+			this.info.setClientLimitation(CompiledLimitation.compile(Collections.singletonList(Limitation.readFromConfig(ParCoolConfig.CLIENT_CONFIG_LIMITATION))));
+		} else {
+			if (player instanceof ServerPlayer) {
+				this.info.setServerLimitation(LimitationRegistry.getInstance().getLimitationSet(player.getUUID()));
+			}
+			this.stamina = ReadonlyStamina.DEFAULT;
+		}
 	}
 
 	public <T extends Action> T get(ActionEntry<T> entry) {
 		return actions.get(entry);
+	}
+
+	public ActionSet getActions() {
+		return actions;
 	}
 
 	public Player player() {
@@ -55,45 +70,35 @@ public class Parkourability {
 		return info;
 	}
 
-	public ClientSetting getClientInfo() {
-		return info.getClientSetting();
-	}
-
 	public CompiledLimitation getServerLimitation() {
 		return info.getServerLimitation();
 	}
 
+	public IReadonlyStamina getStamina() {
+		return stamina;
+	}
+
+	public void updateStaminaInRemote(ReadonlyStamina newStamina) {
+		if (stamina instanceof ReadonlyStamina) {
+			stamina = newStamina;
+		}
+	}
+
 	public void CopyFrom(Parkourability original) {
-		getActionInfo().setClientSetting(original.getActionInfo().getClientSetting());
+		getActionInfo().setClientLimitation(original.getActionInfo().getClientLimitation());
 		getActionInfo().setServerLimitation(original.getActionInfo().getServerLimitation());
 	}
 
-	public boolean isDoingNothing() {
-		return actions.stream().noneMatch(Action::isDoing);
+	public boolean getLimitedValue(ILimitationEntry.Bool entry) {
+		return entry.select(getActionInfo().getClientLimitation().get(entry), getActionInfo().getServerLimitation().get(entry));
 	}
 
-	public boolean getLimitedValue(ParCoolConfig.Client.Booleans client, ParCoolConfig.Server.Booleans server) {
-		if (server.AdvantageousValue) {
-			return (getClientInfo().get(client) && getServerLimitation().get(server));
-		} else {
-			return !(getClientInfo().get(client) || getServerLimitation().get(server));
-		}
+	public int getLimitedValue(ILimitationEntry.Int entry) {
+		return entry.select(getActionInfo().getClientLimitation().get(entry), getActionInfo().getServerLimitation().get(entry));
 	}
 
-	public int getLimitedValue(ParCoolConfig.Client.Integers client, ParCoolConfig.Server.Integers server) {
-		if (server.Advantageous == ParCoolConfig.AdvantageousDirection.Higher) {
-			return Math.min(getClientInfo().get(client), getServerLimitation().get(server));
-		} else {
-			return Math.max(getClientInfo().get(client), getServerLimitation().get(server));
-		}
-	}
-
-	public double getLimitedValue(ParCoolConfig.Client.Doubles client, ParCoolConfig.Server.Doubles server) {
-		if (server.Advantageous == ParCoolConfig.AdvantageousDirection.Higher) {
-			return Math.min(getClientInfo().get(client), getServerLimitation().get(server));
-		} else {
-			return Math.max(getClientInfo().get(client), getServerLimitation().get(server));
-		}
+	public double getLimitedValue(ILimitationEntry.Real entry) {
+		return entry.select(getActionInfo().getClientLimitation().get(entry), getActionInfo().getServerLimitation().get(entry));
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -114,16 +119,5 @@ public class Parkourability {
 	@OnlyIn(Dist.CLIENT)
 	public boolean limitationIsNotSynced() {
 		return !getServerLimitation().isSynced();
-	}
-
-	@SafeVarargs
-	public final Boolean isDoingAny(Class<? extends Action>... actions) {
-		for (Class<? extends Action> action : actions) {
-			if (get(action).isDoing()) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 }

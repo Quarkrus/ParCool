@@ -49,7 +49,7 @@ public class LimitationRegistry {
     private final Path limitationFolderRootPath;
     private final SortedMap<UUID, SortedMap<Limitation.ID, Limitation>> loaded = new TreeMap<>();
     private final SortedSet<Limitation.ID> registeredID = new TreeSet<>();
-    private final Limitation globalLimitation = Limitation.readFromServerConfig(ParCoolConfig.SERVER_CONFIG_LIMITATION);
+    private final Limitation globalLimitation = Limitation.readFromConfig(ParCoolConfig.SERVER_CONFIG_LIMITATION);
 
     private SortedMap<Limitation.ID, Limitation> getLimitationMapOf(UUID playerID) {
         SortedMap<Limitation.ID, Limitation> map = loaded.get(playerID);

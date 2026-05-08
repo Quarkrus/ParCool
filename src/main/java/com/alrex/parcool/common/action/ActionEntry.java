@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 public class ActionEntry<T extends Action> {
-    private final int index;
+    private final short index;
     private final ResourceLocation name;
     private final Class<T> clazz;
     private final ActionConstructor<T> factory;
@@ -16,7 +16,7 @@ public class ActionEntry<T extends Action> {
     private final ArrayList<ActionEntry<? extends Action>> children = new ArrayList<>();
 
     public ActionEntry(
-            int index,
+            short index,
             ResourceLocation name,
             Class<T> clazz,
             ActionConstructor<T> factory,
@@ -34,7 +34,7 @@ public class ActionEntry<T extends Action> {
         }
     }
 
-    public int index() {
+    public short index() {
         return index;
     }
 

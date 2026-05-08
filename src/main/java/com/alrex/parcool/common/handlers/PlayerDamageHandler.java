@@ -3,7 +3,6 @@ package com.alrex.parcool.common.handlers;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.impl.*;
-import com.alrex.parcool.common.network.StartBreakfallMessage;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.util.WorldUtil;
 import net.minecraft.core.BlockPos;

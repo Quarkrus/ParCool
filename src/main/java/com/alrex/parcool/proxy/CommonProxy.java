@@ -1,6 +1,5 @@
 package com.alrex.parcool.proxy;
 
-import com.alrex.parcool.common.action.ActionProcessor;
 import com.alrex.parcool.common.handlers.*;
 import com.alrex.parcool.server.command.CommandRegistry;
 import com.alrex.parcool.server.limitation.LimitationRegistry;
@@ -22,6 +21,5 @@ public abstract class CommonProxy {
         MinecraftForge.EVENT_BUS.register(PlayerCloneHandler.class);
         MinecraftForge.EVENT_BUS.register(CommandRegistry.class);
         MinecraftForge.EVENT_BUS.register(LimitationRegistry.class);
-        MinecraftForge.EVENT_BUS.register(new ActionProcessor());
 	}
 }

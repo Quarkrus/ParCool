@@ -23,7 +23,7 @@ public record ActionGroup(String namespace, List<ActionEntry<? extends Action>> 
         }
 
         public <T extends Action> ActionEntry<T> add(String name, Class<T> clazz, ActionEntry.ActionConstructor<T> factory, StaminaConsumption consumption, ActionEntry<?> parent) {
-            var entry = new ActionEntry<>(registered.size(), new ResourceLocation(namespace, name), clazz, factory, consumption, parent);
+            var entry = new ActionEntry<>((short) registered.size(), new ResourceLocation(namespace, name), clazz, factory, consumption, parent);
             registered.addLast(entry);
             return entry;
         }

@@ -1,21 +1,22 @@
-package com.alrex.parcool.common.stamina;
+package com.alrex.parcool.common.stamina.impl;
 
+import com.alrex.parcool.common.stamina.AbstractLocalStamina;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
 
-public class NoneStamina extends AbstractStamina {
-    public NoneStamina(Player owner, @Nullable AbstractStamina __) {
+public class NoneStamina extends AbstractLocalStamina {
+    public NoneStamina(Player owner, @Nullable AbstractLocalStamina __) {
         super(owner);
     }
 
     @Override
-    public int getMax() {
+    public int max() {
         return 1;
     }
 
     @Override
-    public int getValue() {
+    public int value() {
         return 1;
     }
 

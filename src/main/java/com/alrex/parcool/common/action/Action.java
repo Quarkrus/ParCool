@@ -1,12 +1,10 @@
 package com.alrex.parcool.common.action;
 
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.capability.IStamina;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.LogicalSide;
 
-import javax.annotation.Nullable;
-import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -18,12 +16,25 @@ public abstract class Action {
 
 	protected final Parkourability parkourability;
 	protected final ActionEntry<? extends Action> entry;
+
+	public ActionEntry<? extends Action> getEntry() {
+		return entry;
+	}
+
 	private final Collection<ActionEntry<? extends Action>> exclusiveActions = exclusiveActions();
 
 	private boolean doing = false;
 	private int doingTick = 0;
 	private int notDoingTick = 0;
 	private int tickFromStarted = -1;
+
+	public SynchronizedDataHolder getSynchronizedData() {
+		return SynchronizedDataHolder.empty();
+	}
+
+	public LogicalSide getTriggeredSide() {
+		return LogicalSide.CLIENT;
+	}
 
 	protected Collection<ActionEntry<? extends Action>> exclusiveActions() {
 		return Collections.emptyList();
@@ -58,26 +69,21 @@ public abstract class Action {
 		}
 	}
 
-	public void start(ByteBuffer startInfo, @Nullable IStamina stamina) {
+	public void start() {
 		if (doing) return;
 		doing = true;
 		tickFromStarted = 0;
-		onStart(startInfo);
-		startInfo.rewind();
 		if (parkourability.player().isLocalPlayer()) {
-			if (stamina != null) {
-				onStartInClient(startInfo);
-				onStartInLocalClient(startInfo);
-			}
+			onStartInClient();
+			onStartInLocalClient();
 		} else {
 			if (parkourability.player().level.isClientSide()) {
-				onStartInClient(startInfo);
-				onStartInOtherClient(startInfo);
+				onStartInClient();
+				onStartInOtherClient();
 			} else {
-				onStartInServer(startInfo);
+				onStartInServer();
 			}
 		}
-		startInfo.rewind();
 	}
 
 	public void finish() {
@@ -101,7 +107,7 @@ public abstract class Action {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public boolean canStart(ByteBuffer startInfo) {
+	public boolean canStart() {
 		var parent = entry.parent();
 		if (parent != null && !parkourability.get(entry).isDoing()) {
 			return false;
@@ -117,22 +123,22 @@ public abstract class Action {
 	@OnlyIn(Dist.CLIENT)
 	public abstract boolean canContinue();
 
-	public void onStart(ByteBuffer startInfo) {
+	public void onStart() {
 	}
 
-	public void onStartInServer(ByteBuffer startInfo) {
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	public void onStartInClient(ByteBuffer startInfo) {
+	public void onStartInServer() {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void onStartInOtherClient(ByteBuffer startInfo) {
+	public void onStartInClient() {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void onStartInLocalClient(ByteBuffer startInfo) {
+	public void onStartInOtherClient() {
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	public void onStartInLocalClient() {
 	}
 
 	public void onStop() {
@@ -182,12 +188,6 @@ public abstract class Action {
 	public void onRenderTick() {
 	}
 
-	public void restoreSynchronizedState(ByteBuffer buffer) {
-	}
-
-	public void saveSynchronizedState(ByteBuffer buffer) {
-	}
-
 	@OnlyIn(Dist.CLIENT)
 	public boolean wantsToShowStatusBar() {
 		return false;
@@ -197,6 +197,4 @@ public abstract class Action {
 	public float getStatusValue() {
 		return 0;
 	}
-
-	public abstract StaminaConsumeTiming getStaminaConsumeTiming();
 }

@@ -1,9 +1,11 @@
 package com.alrex.parcool.common.stamina;
 
 public interface IReadonlyStamina {
-    int getMax();
+    int max();
 
-    int getValue();
+    int value();
 
     boolean isExhausted();
+
+    boolean imposePenalty();
 }

@@ -1,31 +1,32 @@
-package com.alrex.parcool.common.stamina;
+package com.alrex.parcool.common.stamina.impl;
 
+import com.alrex.parcool.common.stamina.AbstractLocalStamina;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
 
-public class ParCoolStamina extends AbstractStamina {
+public class ParCoolStamina extends AbstractLocalStamina {
     private final int max;
     private int value = 2000;
     private boolean exhausted = false;
     private int recoverCooldown = 0;
 
-    public ParCoolStamina(Player owner, @Nullable AbstractStamina old, int max) {
+    public ParCoolStamina(Player owner, @Nullable AbstractLocalStamina old, int max) {
         super(owner);
         this.max = max;
         if (old != null) {
-            setValue((int) (max * old.getValue() / (double) old.getMax()));
+            setValue((int) (max * old.value() / (double) old.max()));
             exhausted = old.isExhausted();
         }
     }
 
     @Override
-    public int getMax() {
+    public int max() {
         return max;
     }
 
     @Override
-    public int getValue() {
+    public int value() {
         return value;
     }
 

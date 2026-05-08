@@ -50,7 +50,7 @@ public class SyncActionStateMessage {
 			Player player;
 
 			player = contextSupplier.get().getSender();
-			ParCool.CHANNEL_INSTANCE.send(PacketDistributor.ALL.noArg(), this);
+			ParCool.CONNECTION.send(PacketDistributor.ALL.noArg(), this);
 			if (player == null) return;
 
 			Parkourability parkourability = Parkourability.get(player);
@@ -97,7 +97,7 @@ public class SyncActionStateMessage {
 				clientSide = true;
 			} else {
 				player = contextSupplier.get().getSender();
-				ParCool.CHANNEL_INSTANCE.send(PacketDistributor.ALL.noArg(), this);
+				ParCool.CONNECTION.send(PacketDistributor.ALL.noArg(), this);
 				if (player == null) return;
 				clientSide = false;
 			}
@@ -142,7 +142,7 @@ public class SyncActionStateMessage {
 		message.buffer = new byte[buffer1.limit()];
 		buffer1.get(message.buffer);
 
-		ParCool.CHANNEL_INSTANCE.sendToServer(message);
+		ParCool.CONNECTION.sendToServer(message);
 	}
 
 	public static class Encoder {
