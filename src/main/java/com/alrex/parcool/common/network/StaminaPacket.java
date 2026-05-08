@@ -43,7 +43,7 @@ public record StaminaPacket(UUID playerID, ReadonlyStamina stamina) {
 			var parkourability = Parkourability.get(player);
 			parkourability.updateStaminaInRemote(staminaPacket.stamina);
 
-			ParCool.getActionProcessor().getStaminaDepot().requestSync(player.getUUID(), staminaPacket.stamina);
+			ParCool.getActionProcessor().getStaminaSyncDepot().requestSync(player.getUUID(), staminaPacket.stamina);
 		}
 
 		@Override
@@ -63,7 +63,7 @@ public record StaminaPacket(UUID playerID, ReadonlyStamina stamina) {
 			parkourability.updateStaminaInRemote(staminaPacket.stamina);
 
 			if (isInLogicalServer) {
-				ParCool.getActionProcessor().getStaminaDepot().requestSync(player.getUUID(), staminaPacket.stamina);
+				ParCool.getActionProcessor().getStaminaSyncDepot().requestSync(player.getUUID(), staminaPacket.stamina);
 			}
 		}
 	};

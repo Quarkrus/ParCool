@@ -27,11 +27,16 @@ import java.util.TreeMap;
 
 public class ActionProcessor {
 	private final StaminaSynchronizationDepot staminaDepot = new StaminaSynchronizationDepot();
+	private final ActionSynchronizationDepot actionDepot = new ActionSynchronizationDepot();
 	private final Map<String, LinkedList<ActionStatePacket.Entry>> synchronizedData = new TreeMap<>();
 	private boolean dataDirty = false;
 
-	public StaminaSynchronizationDepot getStaminaDepot() {
+	public StaminaSynchronizationDepot getStaminaSyncDepot() {
 		return staminaDepot;
+	}
+
+	public ActionSynchronizationDepot getActionSyncDepot() {
+		return actionDepot;
 	}
 
 	@SubscribeEvent
@@ -67,6 +72,7 @@ public class ActionProcessor {
 
 	private void onTick$doPreprocessInServer(Parkourability parkourability) {
 		staminaDepot.tick();
+		actionDepot.tick();
 	}
 
 	@OnlyIn(Dist.CLIENT)
