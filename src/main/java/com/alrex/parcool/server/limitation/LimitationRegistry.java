@@ -4,7 +4,7 @@ import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.capability.IStamina;
 import com.alrex.parcool.common.info.CompiledLimitation;
-import com.alrex.parcool.common.network.ServerLimitationPacket;
+import com.alrex.parcool.common.network.LimitationPacket;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -111,9 +111,9 @@ public class LimitationRegistry {
         parkourability.getActionInfo().setServerLimitation(CompiledLimitation.get(player));
         IStamina stamina = IStamina.get(player);
         if (stamina == null) {
-            ServerLimitationPacket.sync(player);
+            LimitationPacket.sync(player);
         } else {
-            ServerLimitationPacket.syncWithStamina(player, stamina);
+            LimitationPacket.syncWithStamina(player, stamina);
         }
     }
 
@@ -121,7 +121,7 @@ public class LimitationRegistry {
         Parkourability parkourability = Parkourability.get(player);
         if (parkourability == null) return;
         parkourability.getActionInfo().setServerLimitation(CompiledLimitation.get(player));
-        ServerLimitationPacket.sync(player);
+        LimitationPacket.sync(player);
     }
 
     public SortedMap<Limitation.ID, Limitation> load(UUID playerID) {
@@ -164,7 +164,7 @@ public class LimitationRegistry {
                     )) {
                         var json = JsonParser.parseReader(reader);
                         if (json instanceof JsonObject object) {
-                            var limitation = Limitation.readFrom(limitationID, object);
+                            var limitation = Limitation.readFrom(limitationID, object, ParCool.getActionRegistry());
                             playerData.put(limitation.getID(), limitation);
                         } else {
                             throw new IOException("Root object of limitation must be Json Object");

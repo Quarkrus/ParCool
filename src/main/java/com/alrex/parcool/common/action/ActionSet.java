@@ -24,7 +24,7 @@ public class ActionSet implements Iterable<Action> {
         }
         while (!queue.isEmpty()) {
             var entry = queue.poll();
-            var action = actions.get(entry.name().getNamespace()).get(entry.index());
+            var action = actions.get(entry.id().getNamespace()).get(entry.index());
             list.add(action);
             for (var child : entry.children()) {
                 queue.add(child);
@@ -34,7 +34,7 @@ public class ActionSet implements Iterable<Action> {
     }
 
     public <T extends Action> T get(ActionEntry<T> entry) {
-        return (T) actions.get(entry.name().getNamespace()).get(entry.index());
+        return (T) actions.get(entry.id().getNamespace()).get(entry.index());
     }
 
     @Nonnull

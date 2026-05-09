@@ -96,9 +96,15 @@ public class ParCool {
 		EntityTypes.register(eventBus);
 		TileEntities.register(eventBus);
 
+		FMLJavaModLoadingContext.get().getModEventBus().post(new RegisterParCoolStaminaTypeEvent(staminaTypeRegistry));
+		staminaTypeRegistry.freeze();
+		FMLJavaModLoadingContext.get().getModEventBus().post(new RegisterParCoolActionEvent(actionRegistry));
+		actionRegistry.freeze();
+		ParCoolConfig.submitRegistries(actionRegistry, staminaTypeRegistry);
+
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParCoolConfig.Client.BUILT_CONFIG);
-		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParCoolConfig.CLIENT_CONFIG_LIMITATION.getBuiltConfig(), "parcool-client-limitation.toml");
-		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ParCoolConfig.SERVER_CONFIG_LIMITATION.getBuiltConfig(), "parcool-server-limitation.toml");
+		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParCoolConfig.getClientConfigLimitation().getBuiltConfig(), "parcool-client-limitation.toml");
+		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ParCoolConfig.getServerConfigLimitation().getBuiltConfig(), "parcool-server-limitation.toml");
 	}
 
 	private void loaded(FMLLoadCompleteEvent event) {
@@ -106,11 +112,6 @@ public class ParCool {
 		AdditionalMods.init();
 		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> AdditionalMods::initInClient);
 		DistExecutor.unsafeRunWhenOn(Dist.DEDICATED_SERVER, () -> AdditionalMods::initInDedicatedServer);
-
-		FMLJavaModLoadingContext.get().getModEventBus().post(new RegisterParCoolStaminaTypeEvent(staminaTypeRegistry));
-		staminaTypeRegistry.freeze();
-		FMLJavaModLoadingContext.get().getModEventBus().post(new RegisterParCoolActionEvent(actionRegistry));
-		actionRegistry.freeze();
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {

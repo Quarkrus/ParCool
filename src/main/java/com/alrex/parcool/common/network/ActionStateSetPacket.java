@@ -3,7 +3,7 @@ package com.alrex.parcool.common.network;
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.Parkourability;
-import net.minecraft.client.Minecraft;
+import com.alrex.parcool.util.NetworkUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
@@ -25,46 +25,31 @@ public class ActionStateSetPacket extends MultiComposablePacket<ActionStatePacke
     private static class Handler implements IHandler<ActionStateSetPacket> {
         @Override
         public void encode(ActionStateSetPacket actionStateSetPacket, FriendlyByteBuf packet) {
-            packet.writeLong(actionStateSetPacket.playerID.getMostSignificantBits());
-            packet.writeLong(actionStateSetPacket.playerID.getLeastSignificantBits());
+            packet.writeUUID(actionStateSetPacket.playerID);
             MultiComposablePacket.encode(actionStateSetPacket, packet);
         }
 
         @Override
         public ActionStateSetPacket decode(FriendlyByteBuf packet) {
-            var id = new UUID(packet.readLong(), packet.readLong());
+            var id = packet.readUUID();
             return ActionStateSetPacket.decode(() -> new ActionStateSetPacket(id), packet);
         }
 
         @Override
         public void handleInPhysicalServer(ActionStateSetPacket actionStateSetPacket, Supplier<NetworkEvent.Context> contextSupplier) {
-            Player player = contextSupplier.get().getSender();
+            var player = NetworkUtil.getPlayerInPhysicalServer(actionStateSetPacket.playerID, contextSupplier.get());
             if (player == null) return;
-            if (!player.getUUID().equals(actionStateSetPacket.playerID)) {
-                player = player.getLevel().getPlayerByUUID(actionStateSetPacket.playerID);
-            }
             processPlayer(actionStateSetPacket, player);
             ParCool.getActionProcessor().getActionSyncDepot().requestSync(actionStateSetPacket);
         }
 
         @Override
         public void handleInPhysicalClient(ActionStateSetPacket actionStateSetPacket, Supplier<NetworkEvent.Context> contextSupplier) {
-            Player player;
-            boolean isInLogicalServer = contextSupplier.get().getDirection().getReceptionSide() == LogicalSide.SERVER;
-            if (isInLogicalServer) {
-                player = contextSupplier.get().getSender();
-                if (player == null) return;
-                if (!player.getUUID().equals(actionStateSetPacket.playerID)) {
-                    player = player.getLevel().getPlayerByUUID(actionStateSetPacket.playerID);
-                }
-            } else {
-                var world = Minecraft.getInstance().level;
-                if (world == null) return;
-                player = world.getPlayerByUUID(actionStateSetPacket.playerID);
-            }
+            var context = contextSupplier.get();
+            var player = NetworkUtil.getPlayerInPhysicalClient(actionStateSetPacket.playerID, context);
             if (player == null) return;
             processPlayer(actionStateSetPacket, player);
-            if (isInLogicalServer) {
+            if (context.getDirection().getReceptionSide() == LogicalSide.SERVER) {
                 ParCool.getActionProcessor().getActionSyncDepot().requestSync(actionStateSetPacket);
             }
         }

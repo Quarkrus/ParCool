@@ -9,8 +9,13 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class ParCoolActions {
     private static final ActionGroup.Builder BUILDER = new ActionGroup.Builder(ParCool.MOD_ID);
 
-    private static final ActionEntry<Crawl> CRAWL = BUILDER.add("crawl", Crawl.class, Crawl::new, new StaminaConsumption());
-    private static final ActionEntry<Slide> SLIDE = BUILDER.add("slide", Slide.class, Slide::new, new StaminaConsumption(), CRAWL);
+    private static final ActionEntry<Crawl> CRAWL;
+    private static final ActionEntry<Slide> SLIDE;
+
+    static {
+        CRAWL = BUILDER.add("crawl", Crawl.class, Crawl::new, new StaminaConsumption());
+        SLIDE = BUILDER.add("slide", Slide.class, Slide::new, new StaminaConsumption(), CRAWL);
+    }
 
     @SubscribeEvent
     public static void onRegister(RegisterParCoolActionEvent event) {

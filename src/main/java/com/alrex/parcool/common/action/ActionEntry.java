@@ -3,12 +3,13 @@ package com.alrex.parcool.common.action;
 import com.alrex.parcool.common.Parkourability;
 import net.minecraft.resources.ResourceLocation;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
-public class ActionEntry<T extends Action> {
+public class ActionEntry<T extends Action> implements Comparable<ActionEntry<?>> {
     private final short index;
-    private final ResourceLocation name;
+    private final ResourceLocation id;
     private final Class<T> clazz;
     private final ActionConstructor<T> factory;
     private final StaminaConsumption defaultStaminaConsumption;
@@ -17,14 +18,14 @@ public class ActionEntry<T extends Action> {
 
     public ActionEntry(
             short index,
-            ResourceLocation name,
+            ResourceLocation id,
             Class<T> clazz,
             ActionConstructor<T> factory,
             StaminaConsumption defaultStaminaConsumption,
             @Nullable ActionEntry<? extends Action> parent
     ) {
         this.index = index;
-        this.name = name;
+        this.id = id;
         this.clazz = clazz;
         this.factory = factory;
         this.defaultStaminaConsumption = defaultStaminaConsumption;
@@ -38,8 +39,8 @@ public class ActionEntry<T extends Action> {
         return index;
     }
 
-    public ResourceLocation name() {
-        return name;
+    public ResourceLocation id() {
+        return id;
     }
 
     public StaminaConsumption defaultStaminaConsumption() {
@@ -57,6 +58,13 @@ public class ActionEntry<T extends Action> {
 
     public T createInstance(Parkourability parkourability) {
         return factory.construct(parkourability, this);
+    }
+
+    @Override
+    public int compareTo(@Nonnull ActionEntry<?> o) {
+        var strComp = this.id.getNamespace().compareTo(o.id.getNamespace());
+        if (strComp != 0) return strComp;
+        return Short.compare(this.index, o.index);
     }
 
     public interface ActionConstructor<T extends Action> {

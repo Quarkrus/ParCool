@@ -3,14 +3,22 @@ package com.alrex.parcool.config;
 import com.alrex.parcool.client.gui.ColorTheme;
 import com.alrex.parcool.client.hud.Position;
 import com.alrex.parcool.client.hud.impl.HUDType;
+import com.alrex.parcool.common.action.ActionEntry;
+import com.alrex.parcool.common.action.ActionRegistry;
+import com.alrex.parcool.common.action.StaminaConsumption;
 import com.alrex.parcool.common.action.impl.*;
+import com.alrex.parcool.common.stamina.StaminaTypeEntry;
+import com.alrex.parcool.common.stamina.StaminaTypeRegistry;
 import com.alrex.parcool.common.stamina.StaminaTypes;
+import com.alrex.parcool.server.limitation.ActionLimitationValue;
 import com.alrex.parcool.server.limitation.ILimitationEntry;
 import com.alrex.parcool.server.limitation.LimitationEntries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.TreeMap;
 
 public class ParCoolConfig {
 	public static class Client {
@@ -123,12 +131,49 @@ public class ParCoolConfig {
 		}
 	}
 
-	public static final ConfigLimitation CLIENT_CONFIG_LIMITATION = new ConfigLimitation(true, new ForgeConfigSpec.Builder());
-	public static final ConfigLimitation SERVER_CONFIG_LIMITATION = new ConfigLimitation(false, new ForgeConfigSpec.Builder());
+	@Nullable
+	private static ConfigLimitation CLIENT_CONFIG_LIMITATION = null;
+	@Nullable
+	private static ConfigLimitation SERVER_CONFIG_LIMITATION = null;
+
+	public static void submitRegistries(ActionRegistry actionRegistry, StaminaTypeRegistry staminaTypeRegistry) {
+		if (CLIENT_CONFIG_LIMITATION == null && SERVER_CONFIG_LIMITATION == null) {
+			CLIENT_CONFIG_LIMITATION = new ConfigLimitation(actionRegistry, staminaTypeRegistry, true);
+			SERVER_CONFIG_LIMITATION = new ConfigLimitation(actionRegistry, staminaTypeRegistry, false);
+		}
+	}
+
+	@Nullable
+	public static ConfigLimitation getClientConfigLimitation() {
+		return CLIENT_CONFIG_LIMITATION;
+	}
+
+	@Nullable
+	public static ConfigLimitation getServerConfigLimitation() {
+		return SERVER_CONFIG_LIMITATION;
+	}
 
 	public static class ConfigLimitation {
 		public ForgeConfigSpec getBuiltConfig() {
 			return builtConfig;
+		}
+
+		public record ActionValue(
+				ForgeConfigSpec.BooleanValue permit,
+				ForgeConfigSpec.IntValue costOnStart,
+				ForgeConfigSpec.IntValue costOnWorking,
+				ForgeConfigSpec.IntValue costOnFinish
+		) {
+			public ActionLimitationValue asLimitationValue() {
+				return new ActionLimitationValue(
+						permit().get(),
+						new StaminaConsumption(
+								costOnStart.get().shortValue(),
+								costOnWorking.get().shortValue(),
+								costOnFinish.get().shortValue()
+						)
+				);
+			}
 		}
 
 		private final ForgeConfigSpec builtConfig;
@@ -136,6 +181,7 @@ public class ParCoolConfig {
 		private final List<ForgeConfigSpec.IntValue> integers;
 		private final List<ForgeConfigSpec.DoubleValue> reals;
 		private final ForgeConfigSpec.ConfigValue<String> staminaTypeLocation;
+		private final TreeMap<ActionEntry<?>, ActionValue> actions;
 		@Nullable
 		private final ForgeConfigSpec.BooleanValue enabled;
 
@@ -151,6 +197,14 @@ public class ParCoolConfig {
 			return reals.get(entry.index());
 		}
 
+		public ForgeConfigSpec.ConfigValue<String> getStaminaTypeID() {
+			return staminaTypeLocation;
+		}
+
+		public ActionValue get(ActionEntry<?> entry) {
+			return actions.get(entry);
+		}
+
 		public void setEnabled(boolean enabled) {
 			if (this.enabled != null) this.enabled.set(enabled);
 		}
@@ -160,7 +214,8 @@ public class ParCoolConfig {
 			else return true;
 		}
 
-		private ConfigLimitation(boolean alwaysEnabled, ForgeConfigSpec.Builder builder) {
+		private ConfigLimitation(ActionRegistry actionRegistry, StaminaTypeRegistry staminaTypeRegistry, boolean alwaysEnabled) {
+			var builder = new ForgeConfigSpec.Builder();
 			if (!alwaysEnabled) {
 				enabled = builder.define("enabled", true);
 			} else {
@@ -187,10 +242,32 @@ public class ParCoolConfig {
 				)).toList();
 			}
 			builder.pop();
+			actions = new TreeMap<>();
+			builder.push("action");
+			{
+				for (var actionGroup : actionRegistry.getRegisteredGroups().values()) {
+					for (var actionEntry : actionGroup.actions()) {
+						var path = actionEntry.id().getNamespace() + "_" + actionEntry.id().getPath();
+						builder.push(path);
+						{
+							actions.put(actionEntry,
+									new ActionValue(
+											builder.define(path + "_permit", true),
+											builder.defineInRange(path + "_cost_start", actionEntry.defaultStaminaConsumption().onStart(), 0, Short.MAX_VALUE),
+											builder.defineInRange(path + "_cost_working", actionEntry.defaultStaminaConsumption().onWorking(), 0, Short.MAX_VALUE),
+											builder.defineInRange(path + "_cost_finish", actionEntry.defaultStaminaConsumption().onFinish(), 0, Short.MAX_VALUE)
+									)
+							);
+						}
+						builder.pop();
+					}
+				}
+			}
+			builder.pop();
 			builder.push("other");
 			{
 				staminaTypeLocation = builder
-						.comment(String.format("built-in types:[%s,%s]", StaminaTypes.NONE_STAMINA.id(), StaminaTypes.PARCOOL_STAMINA.id()))
+						.comment("Available values:" + staminaTypeRegistry.getEntries().stream().map(StaminaTypeEntry::id).map(ResourceLocation::toString).reduce((reduced, id) -> reduced + "/" + id).orElse("nothing"))
 						.define("stamina_type", StaminaTypes.PARCOOL_STAMINA.id().toString());
 			}
 			builder.pop();

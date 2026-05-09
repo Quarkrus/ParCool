@@ -172,7 +172,7 @@ public class ActionProcessor {
 		}
 		var data = action.getSynchronizedData().packToEntry(type, action.getEntry());
 		if (data != null) {
-			var list = synchronizedData.computeIfAbsent(data.entry().name().getNamespace(), __ -> new LinkedList<>());
+			var list = synchronizedData.computeIfAbsent(data.entry().id().getNamespace(), __ -> new LinkedList<>());
 			list.add(data);
 		}
 	}
