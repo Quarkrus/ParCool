@@ -3,6 +3,7 @@ package com.alrex.parcool.common.network;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.function.Supplier;
 
@@ -16,6 +17,10 @@ public abstract class MultiComposablePacket<T> {
 
     public void add(T packet) {
         msgList.add(packet);
+    }
+
+    protected Collection<T> getSubPacket() {
+        return msgList;
     }
 
     public static <U, V extends MultiComposablePacket<U>> void encode(V msg, FriendlyByteBuf packet) {

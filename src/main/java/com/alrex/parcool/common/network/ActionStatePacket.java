@@ -59,12 +59,12 @@ public record ActionStatePacket(String groupName, List<Entry> entries) {
 
         @Override
         public void handleInPhysicalServer(ActionStatePacket actionStatePacket, Supplier<NetworkEvent.Context> contextSupplier) {
-            //TODO
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public void handleInPhysicalClient(ActionStatePacket actionStatePacket, Supplier<NetworkEvent.Context> contextSupplier) {
-            //TODO
+            throw new UnsupportedOperationException();
         }
     }
 }

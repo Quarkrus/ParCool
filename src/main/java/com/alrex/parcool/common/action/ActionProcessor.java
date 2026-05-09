@@ -19,6 +19,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.network.PacketDistributor;
 import org.apache.logging.log4j.Level;
 
 import java.util.LinkedList;
@@ -28,8 +29,6 @@ import java.util.TreeMap;
 public class ActionProcessor {
 	private final StaminaSynchronizationDepot staminaDepot = new StaminaSynchronizationDepot();
 	private final ActionSynchronizationDepot actionDepot = new ActionSynchronizationDepot();
-	private final Map<String, LinkedList<ActionStatePacket.Entry>> synchronizedData = new TreeMap<>();
-	private boolean dataDirty = false;
 
 	public StaminaSynchronizationDepot getStaminaSyncDepot() {
 		return staminaDepot;
@@ -40,12 +39,19 @@ public class ActionProcessor {
 	}
 
 	@SubscribeEvent
-	public void onTick(TickEvent.PlayerTickEvent event) {
+	public void onTickPlayer(TickEvent.LevelTickEvent event) {
+		if (event.phase == TickEvent.Phase.START) return;
+		staminaDepot.tick();
+		actionDepot.tick();
+	}
+
+	@SubscribeEvent
+	public void onTickPlayer(TickEvent.PlayerTickEvent event) {
 		if (event.phase == TickEvent.Phase.START) return;
 
 		var player = event.player;
 		var parkourability = Parkourability.get(player);
-
+		Map<String, LinkedList<ActionStatePacket.Entry>> synchronizedData = new TreeMap<>();
 		if (event.side.isClient()) {
 			onTick$doPreprocessInClient(parkourability);
 		} else {
@@ -58,21 +64,15 @@ public class ActionProcessor {
 		parkourability.getAdditionalProperties().onTick(player, parkourability);
 		for (Action action : parkourability.getActions()) {
 			MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Tick.Pre(player, action));
-			processAction(parkourability, event.side, action);
+			processAction(parkourability, event.side, action, synchronizedData);
 			MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Tick.Post(player, action));
 		}
-		if (dataDirty) {
-			onTick$sendSyncPacket(parkourability);
-			for (var list : synchronizedData.values()) {
-				list.clear();
-			}
-			dataDirty = false;
+		if (!synchronizedData.isEmpty()) {
+			onTick$sendSyncPacket(parkourability, event.side, synchronizedData);
 		}
 	}
 
 	private void onTick$doPreprocessInServer(Parkourability parkourability) {
-		staminaDepot.tick();
-		actionDepot.tick();
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -82,7 +82,7 @@ public class ActionProcessor {
 		}
 	}
 
-	private void onTick$sendSyncPacket(Parkourability parkourability) {
+	private void onTick$sendSyncPacket(Parkourability parkourability, LogicalSide side, Map<String, LinkedList<ActionStatePacket.Entry>> synchronizedData) {
 		var list = new LinkedList<ActionStatePacket>();
 		for (var entry : synchronizedData.entrySet()) {
 			if (entry.getValue().isEmpty()) continue;
@@ -94,7 +94,11 @@ public class ActionProcessor {
 		for (var subPacket : list) {
 			packet.add(subPacket);
 		}
-		//TODO: send(packet)
+		if (side.isClient()) {
+			ParCool.CONNECTION.send(PacketDistributor.SERVER.noArg(), packet);
+		} else {
+			actionDepot.requestSync(packet);
+		}
 	}
     @OnlyIn(Dist.CLIENT)
 	private void onTick$checkLimitationSynchronization(Player player, Parkourability parkourability) {
@@ -116,7 +120,7 @@ public class ActionProcessor {
 		}
 	}
 
-	private void processAction(Parkourability parkourability, LogicalSide logicalSide, Action action) {
+	private void processAction(Parkourability parkourability, LogicalSide logicalSide, Action action, Map<String, LinkedList<ActionStatePacket.Entry>> synchronizedData) {
 		var player = parkourability.player();
 		var triggeredSide = action.getTriggeredSide();
 		boolean needSync = (triggeredSide.isClient() && player.isLocalPlayer())
@@ -170,7 +174,6 @@ public class ActionProcessor {
 		if (data != null) {
 			var list = synchronizedData.computeIfAbsent(data.entry().name().getNamespace(), __ -> new LinkedList<>());
 			list.add(data);
-			dataDirty = true;
 		}
 	}
 
