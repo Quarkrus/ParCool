@@ -13,7 +13,7 @@ public class ActionEntry<T extends Action> implements Comparable<ActionEntry<?>>
     private final Class<T> clazz;
     private final ActionConstructor<T> factory;
     private final StaminaConsumption defaultStaminaConsumption;
-    private final @Nullable ActionEntry<? extends Action> parent;
+    private final @Nullable ActionEntry<? extends ContinuableAction> parent;
     private final ArrayList<ActionEntry<? extends Action>> children = new ArrayList<>();
 
     public ActionEntry(
@@ -22,7 +22,7 @@ public class ActionEntry<T extends Action> implements Comparable<ActionEntry<?>>
             Class<T> clazz,
             ActionConstructor<T> factory,
             StaminaConsumption defaultStaminaConsumption,
-            @Nullable ActionEntry<? extends Action> parent
+            @Nullable ActionEntry<? extends ContinuableAction> parent
     ) {
         this.index = index;
         this.id = id;
@@ -48,7 +48,7 @@ public class ActionEntry<T extends Action> implements Comparable<ActionEntry<?>>
     }
 
     @Nullable
-    public ActionEntry<? extends Action> parent() {
+    public ActionEntry<? extends ContinuableAction> parent() {
         return parent;
     }
 

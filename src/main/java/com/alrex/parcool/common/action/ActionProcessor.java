@@ -9,7 +9,6 @@ import com.alrex.parcool.common.stamina.AbstractLocalStamina;
 import com.alrex.parcool.common.stamina.StaminaSynchronizationDepot;
 import com.alrex.parcool.config.ParCoolConfig;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -134,14 +133,14 @@ public class ActionProcessor {
 		}
 		ActionStatePacket.Type type = ActionStatePacket.Type.DATA;
 		if (needSync) {
-			if (action.isDoing()) {
+			if (action instanceof ContinuableAction continuableAction && continuableAction.isDoing()) {
 				boolean canContinue = //TODO:parkourability.getActionInfo().can(action.getClass()) &&
-						!MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToContinue(parkourability.player(), action))
-								&& action.canContinue();
+						!MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToContinue(parkourability.player(), continuableAction))
+								&& continuableAction.canContinue();
 				if (!canContinue) {
-					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Pre(parkourability.player(), action));
-					action.finish();
-					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Post(parkourability.player(), action));
+					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Pre(parkourability.player(), continuableAction));
+					continuableAction.finish();
+					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Post(parkourability.player(), continuableAction));
 					type = ActionStatePacket.Type.FINISH;
 				}
 			} else {
@@ -157,35 +156,23 @@ public class ActionProcessor {
 				}
 			}
 		}
-		if (action.isDoing()) {
-			action.onWorkingTick();
+		if (action instanceof ContinuableAction continuableAction && continuableAction.isDoing()) {
+			continuableAction.onWorkingTick();
 			if (logicalSide.isClient()) {
-				action.onWorkingTickInClient();
+				continuableAction.onWorkingTickInClient();
 				if (parkourability.player().isLocalPlayer()) {
-					action.onWorkingTickInLocalClient();
+					continuableAction.onWorkingTickInLocalClient();
 				} else {
-					action.onWorkingTickInOtherClient();
+					continuableAction.onWorkingTickInOtherClient();
 				}
 			} else {
-				action.onWorkingTickInServer();
+				continuableAction.onWorkingTickInServer();
 			}
 		}
 		var data = action.getSynchronizedData().packToEntry(type, action.getEntry());
 		if (data != null) {
 			var list = synchronizedData.computeIfAbsent(data.entry().id().getNamespace(), __ -> new LinkedList<>());
 			list.add(data);
-		}
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	@SubscribeEvent
-	public void onRenderTick(TickEvent.RenderTickEvent event) {
-		Player clientPlayer = Minecraft.getInstance().player;
-		if (clientPlayer == null) return;
-		for (Player player : clientPlayer.level.players()) {
-			for (Action action : Parkourability.get(player).getActions()) {
-				action.onRenderTick();
-			}
 		}
 	}
 }
