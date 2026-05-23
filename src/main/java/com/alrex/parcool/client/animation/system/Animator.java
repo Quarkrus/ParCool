@@ -1,12 +1,9 @@
 package com.alrex.parcool.client.animation.system;
 
-import com.alrex.parcool.api.unstable.animation.AnimationPart;
 import com.alrex.parcool.client.animation.system.math.EasingFunctions;
-import com.alrex.parcool.client.animation.system.registration.ID;
 import net.minecraft.client.player.AbstractClientPlayer;
 
 import javax.annotation.Nullable;
-import java.util.EnumMap;
 
 public class Animator {
     private final AnimationSet animationSet;
@@ -42,7 +39,7 @@ public class Animator {
         return animation != null ? animation.getTransformation(player, tick + partialTick) : null;
     }
 
-    public float getBlendFactor(float partialTick) {
+    public float getFadeInBlendFactor(float partialTick) {
         float tick = primaryTick + partialTick;
         float fadeInTick = animationSet.fadingInDuration();
         return fadeInTick <= tick ? 1f : EasingFunctions.QUAD.easeInOut(tick / fadeInTick);

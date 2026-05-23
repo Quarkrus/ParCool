@@ -3,6 +3,7 @@ package com.alrex.parcool.client.animation.system;
 import com.alrex.parcool.client.animation.system.registration.AnimationSets;
 import com.alrex.parcool.client.animation.system.registration.ID;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -82,8 +83,25 @@ public class AnimationProcessor {
         }
     }
 
+    @Nullable
     private WorkingAnimation getCurrentAnimation() {
+        if (animators.isEmpty()) return null;
         return animators.get(animators.size() - 1);
+    }
+
+    @Nullable
+    public Animator getCurrentAnimator() {
+        if (animators.isEmpty()) return null;
+        return animators.get(animators.size() - 1).animator();
+    }
+
+    @Nullable
+    public Animator getFadingOutAnimator() {
+        return fadingOutAnimator;
+    }
+
+    public float getFadeOutBlendFactor(float partialTick) {
+        return Mth.clamp((fadingOutTick + partialTick) / fadingOutTickDuration, 0, 1);
     }
 
     private void fadeOut(Animator animator, int fadingOutDurationTick) {
