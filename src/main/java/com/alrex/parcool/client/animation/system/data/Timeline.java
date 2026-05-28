@@ -1,4 +1,4 @@
-package com.alrex.parcool.client.animation.system;
+package com.alrex.parcool.client.animation.system.data;
 
 import java.util.TreeMap;
 
@@ -7,7 +7,7 @@ public class Timeline {
 
     public Timeline(Iterable<Transition> transitions) {
         for (var transition : transitions) {
-            this.transitions.put(transition.getStart().tick(), transition);
+            this.transitions.put(transition.getStart().time(), transition);
         }
     }
 

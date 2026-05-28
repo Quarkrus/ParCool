@@ -1,6 +1,6 @@
 package com.alrex.parcool.client.animation.system.resource.json;
 
-import com.alrex.parcool.client.animation.system.Transition;
+import com.alrex.parcool.client.animation.system.data.Transition;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;

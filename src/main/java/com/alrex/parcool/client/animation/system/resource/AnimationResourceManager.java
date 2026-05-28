@@ -1,6 +1,9 @@
 package com.alrex.parcool.client.animation.system.resource;
 
-import com.alrex.parcool.client.animation.system.*;
+import com.alrex.parcool.client.animation.system.AnimatableModelPart;
+import com.alrex.parcool.client.animation.system.AnimatableProperty;
+import com.alrex.parcool.client.animation.system.data.*;
+import com.alrex.parcool.client.animation.system.registration.AnimationProgresses;
 import com.alrex.parcool.client.animation.system.registration.BlendingFactors;
 import com.alrex.parcool.client.animation.system.resource.json.*;
 import com.alrex.parcool.client.animation.system.util.IResult;
@@ -10,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +29,12 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
             .registerTypeAdapter(ResourceLocation.class, new ResourceLocationAdapter())
             .registerTypeAdapter(TimedValue.class, new TimedValueAdapter())
             .create();
+    private static AnimationResourceManager INSTANCE = null;
+
+    public static AnimationResourceManager getInstance() {
+        if (INSTANCE == null) INSTANCE = new AnimationResourceManager();
+        return INSTANCE;
+    }
 
     private AnimationResource resource = AnimationResource.empty();
 
@@ -108,12 +118,13 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
         return new AnimationResource(componentInstances, componentGroupInstances, animationSetInstances);
     }
 
-    private TreeMap<ResourceLocation, AnimationComponent> constructComponents(
+    private TreeMap<ResourceLocation, StaticAnimationComponent> constructComponents(
             TreeMap<ResourceLocation, JsonAnimationComponent> jsonComponents
     ) {
-        var componentInstances = new TreeMap<ResourceLocation, AnimationComponent>();
+        var componentInstances = new TreeMap<ResourceLocation, StaticAnimationComponent>();
         for (var componentJson : jsonComponents.entrySet()) {
             var map = new EnumMap<AnimatableModelPart, EnumMap<AnimatableProperty, Timeline>>(AnimatableModelPart.class);
+            int duration = 0;
             for (var part : AnimatableModelPart.values()) {
                 var partTimelines = componentJson.getValue().get(part);
                 if (partTimelines == null) continue;
@@ -121,7 +132,7 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
                 propertyLoop:
                 for (var property : AnimatableProperty.values()) {
                     var timeline = partTimelines.get(property);
-                    if (timeline == null) continue;
+                    if (timeline == null || timeline.isEmpty()) continue;
                     var list = new ArrayList<Transition>();
                     for (int i = 0; i < timeline.size(); i++) {
                         var result = timeline.get(i).parse();
@@ -133,19 +144,21 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
                             list.add(success.result());
                         }
                     }
+                    var end = list.get(list.size() - 1).getStart();
+                    if (duration < end.time()) duration = Mth.ceil(end.time());
                     list.sort((t1, t2) -> Float.compare(t1.getStart().value(), t2.getStart().value()));
                     timelineMap.put(property, new Timeline(list));
                 }
                 map.put(part, timelineMap);
             }
-            componentInstances.put(componentJson.getKey(), new AnimationComponent(map));
+            componentInstances.put(componentJson.getKey(), new StaticAnimationComponent(map, duration));
         }
         return componentInstances;
     }
 
     private TreeMap<ResourceLocation, AnimationComponentGroup> constructComponentGroups(
             TreeMap<ResourceLocation, JsonAnimationComponentGroup> jsonComponentGroups,
-            TreeMap<ResourceLocation, AnimationComponent> components
+            TreeMap<ResourceLocation, StaticAnimationComponent> components
     ) {
         var instances = new TreeMap<ResourceLocation, AnimationComponentGroup>();
         for (var compGroupEntry : jsonComponentGroups.entrySet()) {
@@ -157,13 +170,15 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
                     continue;
                 }
                 var blend = compEntry.getBlend();
+                var progress = compEntry.getProgress();
                 componentList.add(new AnimationComponentGroup.ComponentEntry(
                         comp,
                         blend == null ? null : BlendingFactors.get(
                                 blend.getName(),
                                 blend.getsArgs() != null ? blend.getsArgs() : Collections.EMPTY_MAP,
                                 blend.getfArgs() != null ? blend.getfArgs() : Collections.EMPTY_MAP
-                        )
+                        ),
+                        progress == null ? AnimationProgresses.TIME : AnimationProgresses.getID(progress)
                 ));
             }
             instances.put(compGroupEntry.getKey(), new AnimationComponentGroup(

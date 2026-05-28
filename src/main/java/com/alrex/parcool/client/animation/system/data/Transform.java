@@ -1,4 +1,4 @@
-package com.alrex.parcool.client.animation.system;
+package com.alrex.parcool.client.animation.system.data;
 
 import com.alrex.parcool.client.animation.system.math.MathUtil;
 import com.alrex.parcool.client.animation.system.math.Vec3f;

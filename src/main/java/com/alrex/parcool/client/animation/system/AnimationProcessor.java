@@ -1,7 +1,9 @@
 package com.alrex.parcool.client.animation.system;
 
+import com.alrex.parcool.client.animation.system.data.AnimationSet;
 import com.alrex.parcool.client.animation.system.registration.AnimationSets;
 import com.alrex.parcool.client.animation.system.registration.ID;
+import com.alrex.parcool.client.animation.system.resource.AnimationResourceManager;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.util.Mth;
 
@@ -9,12 +11,12 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 public class AnimationProcessor {
-    private record WorkingAnimation(AnimationSets.Entry registration, Animator animator) {
+    private record WorkingAnimationEntry(AnimationSets.Entry registration, WorkingAnimationSet animator) {
     }
 
-    private final ArrayList<WorkingAnimation> animators = new ArrayList<>();
+    private final ArrayList<WorkingAnimationEntry> animators = new ArrayList<>();
     @Nullable
-    private Animator fadingOutAnimator;
+    private WorkingAnimationSet fadingOutAnimator;
     private int fadingOutTick;
     private int fadingOutTickDuration;
 
@@ -35,68 +37,70 @@ public class AnimationProcessor {
     }
 
     public void start(ID<AnimationSet> id) {
-        var entry = getWorkingAnimator(id);
-        if (entry != null) {
+        if (!startIfNotWorking(id)) {
+            var entry = getWorkingAnimator(id);
+            if (entry == null) return;
             entry.animator.enter(AnimationPhase.INTRO);
-        } else {
-            var current = getCurrentAnimation();
-            var animEntry = AnimationSets.getInstance().get(id);
-            if (animEntry == null) return;
-            if (animEntry.parent() != null) {
-                startIfNotWorking(animEntry.parent().id());
-            }
-            animators.add(new WorkingAnimation(animEntry, new Animator(animEntry.instance(), animEntry.controllerSupplier().get())));
-            fadeOut(current.animator, animEntry.instance().fadingInDuration());
         }
     }
 
-    public void startIfNotWorking(ID<AnimationSet> id) {
-        if (!isWorking(id)) {
-            var animEntry = AnimationSets.getEntry(id);
-            if (animEntry == null) return;
-            if (animEntry.parent() != null) {
-                startIfNotWorking(animEntry.parent().id());
-            }
-            animators.add(new WorkingAnimation(animEntry, new Animator(animEntry.instance(), animEntry.controllerSupplier().get())));
+    public boolean startIfNotWorking(ID<AnimationSet> id) {
+        if (isWorking(id)) return false;
+
+        var current = getCurrentAnimation();
+        var animEntry = AnimationSets.getInstance().get(id);
+        if (animEntry == null) return true;
+        var newAnimationSet = AnimationResourceManager.getInstance().getResource().getAnimationSet(id);
+        if (newAnimationSet == null) return true;
+        if (animEntry.parent() != null) {
+            startIfNotWorking(animEntry.parent().id());
         }
+        animators.add(new WorkingAnimationEntry(animEntry, new WorkingAnimationSet(newAnimationSet, animEntry.controllerSupplier().get())));
+        if (current != null) {
+            fadeOut(current.animator, newAnimationSet.fadingInDuration());
+        }
+        return true;
     }
 
     public void stop(ID<AnimationSet> id) {
         var currentAnimation = getCurrentAnimation();
         int i = animators.size();
+        boolean currentAnimationWasRemoved = false;
         while ((--i) >= 0) {
             var animation = animators.get(i);
             if (animation.registration.id() == id) {
                 animators.remove(i);
+                if (currentAnimation == animation) currentAnimationWasRemoved = true;
                 break;
             }
             if (animation.registration.isDescendantOf(id)) {
                 animators.remove(i);
+                if (currentAnimation == animation) currentAnimationWasRemoved = true;
             }
         }
-        if (currentAnimation.registration.isDescendantOf(id)) {
+        if (currentAnimationWasRemoved) {
             var newAnimation = getCurrentAnimation();
-            if (currentAnimation.animator.getAnimationSet().outroAnimation() != null) {
+            if (currentAnimation.animator.getOutroAnimation() != null) {
                 currentAnimation.animator.enter(AnimationPhase.OUTRO);
             }
-            fadeOut(currentAnimation.animator, newAnimation != null ? newAnimation.animator.getAnimationSet().fadingInDuration() : 5);
+            fadeOut(currentAnimation.animator, newAnimation != null ? (int) newAnimation.animator.getFadeInTick() : 5);
         }
     }
 
     @Nullable
-    private WorkingAnimation getCurrentAnimation() {
+    private WorkingAnimationEntry getCurrentAnimation() {
         if (animators.isEmpty()) return null;
         return animators.get(animators.size() - 1);
     }
 
     @Nullable
-    public Animator getCurrentAnimator() {
+    public WorkingAnimationSet getCurrentAnimator() {
         if (animators.isEmpty()) return null;
         return animators.get(animators.size() - 1).animator();
     }
 
     @Nullable
-    public Animator getFadingOutAnimator() {
+    public WorkingAnimationSet getFadingOutAnimator() {
         return fadingOutAnimator;
     }
 
@@ -104,14 +108,14 @@ public class AnimationProcessor {
         return Mth.clamp((fadingOutTick + partialTick) / fadingOutTickDuration, 0, 1);
     }
 
-    private void fadeOut(Animator animator, int fadingOutDurationTick) {
+    private void fadeOut(WorkingAnimationSet animator, int fadingOutDurationTick) {
         fadingOutAnimator = animator;
         fadingOutTick = 0;
         fadingOutTickDuration = fadingOutDurationTick;
     }
 
     @Nullable
-    private WorkingAnimation getWorkingAnimator(ID<AnimationSet> id) {
+    private WorkingAnimationEntry getWorkingAnimator(ID<AnimationSet> id) {
         for (var animator : animators) {
             if (animator.registration.id() == id) return animator;
         }

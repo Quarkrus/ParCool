@@ -1,4 +1,4 @@
-package com.alrex.parcool.client.animation.system;
+package com.alrex.parcool.client.animation.system.data;
 
 import com.alrex.parcool.client.animation.system.math.EasingFunctions;
 import com.alrex.parcool.client.animation.system.math.IEasingFunction;
@@ -22,10 +22,10 @@ public abstract class Transition {
         if (next == null) {
             return this.start.value();
         }
-        return getValue(Mth.clamp((tick - start.tick()) / (next.start.tick() - start.tick()), 0f, 1f), next.start);
+        return getValue(Mth.clamp((tick - start.time()) / (next.start.time() - start.time()), 0f, 1f), next.start);
     }
 
-    /// @param t : Special variable, which indices the time between start.tick and next.start.tick in [0,1]
+    /// @param t : Special variable, which indices the time between start.time and next.start.time in [0,1]
     protected abstract float getValue(float t, @Nonnull TimedValue end);
 
     public static class End extends Transition {

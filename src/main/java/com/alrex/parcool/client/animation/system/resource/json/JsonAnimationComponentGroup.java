@@ -28,13 +28,21 @@ public class JsonAnimationComponentGroup {
         private ResourceLocation name;
         @Nullable
         private BlendingFactor blend;
+        @Nullable
+        private ResourceLocation progress;
 
         public ResourceLocation getName() {
             return name;
         }
 
+        @Nullable
         public BlendingFactor getBlend() {
             return blend;
+        }
+
+        @Nullable
+        public ResourceLocation getProgress() {
+            return progress;
         }
 
         public static class BlendingFactor {

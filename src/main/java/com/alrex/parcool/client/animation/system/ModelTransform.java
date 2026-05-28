@@ -1,5 +1,7 @@
 package com.alrex.parcool.client.animation.system;
 
+import com.alrex.parcool.client.animation.system.data.Transform;
+
 import java.util.EnumMap;
 
 public record ModelTransform(EnumMap<AnimatableModelPart, Transform> transforms) {

@@ -1,6 +1,6 @@
 package com.alrex.parcool.client.animation.system.resource.json;
 
-import com.alrex.parcool.client.animation.system.TimedValue;
+import com.alrex.parcool.client.animation.system.data.TimedValue;
 import com.google.gson.*;
 
 import java.lang.reflect.Type;

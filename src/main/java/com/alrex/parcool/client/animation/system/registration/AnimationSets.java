@@ -1,7 +1,7 @@
 package com.alrex.parcool.client.animation.system.registration;
 
-import com.alrex.parcool.client.animation.system.AnimationSet;
 import com.alrex.parcool.client.animation.system.IAnimationController;
+import com.alrex.parcool.client.animation.system.data.AnimationSet;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -36,7 +36,7 @@ public class AnimationSets {
 
     public ID<AnimationSet> register(ResourceLocation location, Supplier<IAnimationController> controllerSupplier, @Nullable ID<AnimationSet> parent) {
         if (freeze) {
-            throw new IllegalStateException(String.format("Animation set [%s] is tried to be registered, into freezed registry"));
+            throw new IllegalStateException(String.format("Animation set [%s] is tried to be registered, into freezed registry", location));
         }
         var id = idProvider.newID();
         Entry parentEntry = null;

@@ -123,7 +123,7 @@ public class FastRun extends Action {
 		return ParCoolConfig.Client.Booleans.SubstituteSprintForFastRun.get() ? player.isSprinting() : this.isDoing();
 	}
 
-	//return sprinting tick if substitute sprint is on
+	//return sprinting time if substitute sprint is on
 	@OnlyIn(Dist.CLIENT)
 	public int getDashTick(AdditionalProperties properties) {
 		return ParCoolConfig.Client.Booleans.SubstituteSprintForFastRun.get() ? properties.getSprintingTick() : this.getDoingTick();

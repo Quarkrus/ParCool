@@ -2,8 +2,8 @@ package com.alrex.parcool.client.animation.system.resource.json;
 
 import com.alrex.parcool.client.animation.system.AnimatableModelPart;
 import com.alrex.parcool.client.animation.system.AnimatableProperty;
-import com.alrex.parcool.client.animation.system.TimedValue;
-import com.alrex.parcool.client.animation.system.Transition;
+import com.alrex.parcool.client.animation.system.data.TimedValue;
+import com.alrex.parcool.client.animation.system.data.Transition;
 import com.alrex.parcool.client.animation.system.util.IResult;
 import com.google.gson.annotations.SerializedName;
 
@@ -112,7 +112,7 @@ public class JsonAnimationComponent {
                         if (this.i.cp1 == null || this.i.cp2 == null) {
                             return new IResult.Error<>("Bazier interpolation has not enough control points");
                         }
-                        if (!(this.t <= this.i.cp1.tick() && this.i.cp1.tick() <= this.i.cp2.tick())) {
+                        if (!(this.t <= this.i.cp1.time() && this.i.cp1.time() <= this.i.cp2.time())) {
                             return new IResult.Error<>("Bazier control points are not placed in time-increasing order");
                         }
                         return new IResult.Success<>(new Transition.BazierCubic(currentKeyFrame, this.i.cp1, this.i.cp2));

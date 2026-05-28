@@ -2,7 +2,7 @@ package com.alrex.parcool.mixin.client;
 
 import com.alrex.parcool.client.animation.system.AnimatableModelPart;
 import com.alrex.parcool.client.animation.system.IPlayerAnimatorHolder;
-import com.alrex.parcool.client.animation.system.Transform;
+import com.alrex.parcool.client.animation.system.data.Transform;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;

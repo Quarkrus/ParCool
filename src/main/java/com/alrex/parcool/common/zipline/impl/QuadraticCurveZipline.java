@@ -102,7 +102,7 @@ public class QuadraticCurveZipline extends Zipline {
         // Identify form of squared distance function
         // ...
 
-        // note : this approach may be a bit complex and take too much time for calculation many times in 1 tick
+        // note : this approach may be a bit complex and take too much time for calculation many times in 1 time
          */
         throw new UnsupportedOperationException("Not Implemented");
     }

@@ -1,8 +1,8 @@
 package com.alrex.parcool.client.animation.system.resource;
 
-import com.alrex.parcool.client.animation.system.AnimationComponentGroup;
-import com.alrex.parcool.client.animation.system.AnimationComponent;
-import com.alrex.parcool.client.animation.system.AnimationSet;
+import com.alrex.parcool.client.animation.system.data.AnimationComponentGroup;
+import com.alrex.parcool.client.animation.system.data.AnimationSet;
+import com.alrex.parcool.client.animation.system.data.StaticAnimationComponent;
 import com.alrex.parcool.client.animation.system.registration.AnimationSets;
 import com.alrex.parcool.client.animation.system.registration.ID;
 import net.minecraft.resources.ResourceLocation;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class AnimationResource {
-    private final Map<ResourceLocation, AnimationComponent> componentMap;
+    private final Map<ResourceLocation, StaticAnimationComponent> componentMap;
     private final Map<ResourceLocation, AnimationComponentGroup> animationGroupMap;
     private final Map<ResourceLocation, AnimationSet> animationSetMap;
     private final Map<ID<AnimationSet>, AnimationSet> idAnimationSetMap;
@@ -23,7 +23,7 @@ public class AnimationResource {
     }
 
     public AnimationResource(
-            Map<ResourceLocation, AnimationComponent> componentMap,
+            Map<ResourceLocation, StaticAnimationComponent> componentMap,
             Map<ResourceLocation, AnimationComponentGroup> animationGroupMap,
             Map<ResourceLocation, AnimationSet> animationSetMap
     ) {

@@ -1,5 +1,7 @@
-package com.alrex.parcool.client.animation.system;
+package com.alrex.parcool.client.animation.system.data;
 
+import com.alrex.parcool.client.animation.system.AnimatableModelPart;
+import com.alrex.parcool.client.animation.system.AnimatableProperty;
 import com.alrex.parcool.client.animation.system.math.Vec3f;
 import com.mojang.math.Quaternion;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -7,15 +9,18 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import javax.annotation.Nullable;
 import java.util.EnumMap;
 
-public class AnimationComponent {
-    public AnimationComponent(EnumMap<AnimatableModelPart, EnumMap<AnimatableProperty, Timeline>> animationCurves) {
-        this.animationCurves = animationCurves;
+public record StaticAnimationComponent(
+        EnumMap<AnimatableModelPart, EnumMap<AnimatableProperty, Timeline>> animationCurves,
+        int duration
+) implements IAnimationComponent {
+    @Override
+    public boolean loops() {
+        return false;
     }
 
-    private final EnumMap<AnimatableModelPart, EnumMap<AnimatableProperty, Timeline>> animationCurves;
-
+    @Override
     @Nullable
-    public Transform getTransform(AnimatableModelPart part, float tick) {
+    public Transform getTransform(AbstractClientPlayer __, AnimatableModelPart part, float progress) {
         var curves = animationCurves.get(part);
         if (curves == null) return null;
         var translation = new float[3];
@@ -23,7 +28,7 @@ public class AnimationComponent {
             var property = AnimatableProperty.TRANSLATIONS.get(i);
             var curve = curves.get(property);
             translation[i] = curve != null
-                    ? curve.getValue(tick)
+                    ? curve.getValue(progress)
                     : property.getDefaultValue();
         }
         var rotation = new float[4];
@@ -31,7 +36,7 @@ public class AnimationComponent {
             var property = AnimatableProperty.ROTATIONS.get(i);
             var curve = curves.get(property);
             rotation[i] = curve != null
-                    ? curve.getValue(tick)
+                    ? curve.getValue(progress)
                     : property.getDefaultValue();
         }
 
