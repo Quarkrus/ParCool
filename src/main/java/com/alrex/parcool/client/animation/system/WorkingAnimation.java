@@ -47,12 +47,11 @@ public class WorkingAnimation implements IWorkingAnimation {
                 for (var component : components) {
                     component.progress().reset();
                 }
-                return;
             } else {
                 finished = true;
                 tick = getDuration();
-                return;
             }
+            return;
         }
         for (var component : components) {
             component.progress().update(player);

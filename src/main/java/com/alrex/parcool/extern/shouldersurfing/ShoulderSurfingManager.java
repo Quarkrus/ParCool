@@ -1,7 +1,5 @@
 package com.alrex.parcool.extern.shouldersurfing;
 
-import com.alrex.parcool.common.action.impl.Dodge;
-import com.alrex.parcool.common.action.impl.Dodge.DodgeDirection;
 import com.alrex.parcool.extern.ModManager;
 import com.github.exopandora.shouldersurfing.api.client.ShoulderSurfing;
 import net.minecraft.client.Minecraft;

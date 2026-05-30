@@ -2,8 +2,6 @@ package com.alrex.parcool.common.action;
 
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.api.event.RegisterParCoolActionEvent;
-import com.alrex.parcool.common.action.impl.Crawl;
-import com.alrex.parcool.common.action.impl.Slide;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ParCoolActions {

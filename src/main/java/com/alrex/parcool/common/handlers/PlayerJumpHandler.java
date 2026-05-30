@@ -1,9 +1,6 @@
 package com.alrex.parcool.common.handlers;
 
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.action.impl.ChargeJump;
-import com.alrex.parcool.common.action.impl.Dive;
-import com.alrex.parcool.common.action.impl.Flipping;
 import com.alrex.parcool.common.capability.IStamina;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingEvent;

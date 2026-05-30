@@ -1,7 +1,6 @@
 package com.alrex.parcool.mixin.common;
 
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.action.impl.HideInBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;

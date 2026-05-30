@@ -1,7 +1,6 @@
 package com.alrex.parcool.mixin.client;
 
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.action.impl.HideInBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
