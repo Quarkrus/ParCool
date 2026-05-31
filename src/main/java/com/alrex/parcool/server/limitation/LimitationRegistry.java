@@ -35,15 +35,15 @@ public class LimitationRegistry {
     private static final Gson GSON = new Gson();
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public LimitationRegistry(ParCoolConfig.ConfigLimitation serverConfigLimitation) {
-        this.globalLimitation = Limitation.readFromConfig(serverConfigLimitation, ParCool.getActionRegistry(), ParCool.getStaminaTypeRegistry());
+    public LimitationRegistry() {
     }
 
     @Nullable
     private Path limitationFolderRootPath;
     private final SortedMap<UUID, SortedMap<Limitation.ID, Limitation>> loaded = new TreeMap<>();
     private final SortedSet<Limitation.ID> registeredID = new TreeSet<>();
-    private final Limitation globalLimitation;
+    @Nullable
+    private Limitation globalLimitation;
 
     private SortedMap<Limitation.ID, Limitation> getLimitationMapOf(UUID playerID) {
         SortedMap<Limitation.ID, Limitation> map = loaded.get(playerID);
@@ -231,6 +231,7 @@ public class LimitationRegistry {
     public void onServerStarting(ServerAboutToStartEvent event) {
         Path configPath = getServerConfigPath(event.getServer());
         var limitationFolderRootPath = configPath.resolve("parcool").resolve("limitations");
+        globalLimitation = Limitation.readFromConfig(ParCoolConfig.getServerConfigLimitation(), ParCool.getActionRegistry(), ParCool.getStaminaTypeRegistry());
         File limitationFolder = limitationFolderRootPath.toFile();
         if (!limitationFolder.exists()) {
             limitationFolder.mkdirs();

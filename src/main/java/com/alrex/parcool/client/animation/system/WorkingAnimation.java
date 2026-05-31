@@ -5,32 +5,40 @@ import com.alrex.parcool.client.animation.system.data.IAnimationComponent;
 import com.alrex.parcool.client.animation.system.data.Transform;
 import com.alrex.parcool.client.animation.system.registration.AnimationProgresses;
 import net.minecraft.client.player.AbstractClientPlayer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.List;
 
 public class WorkingAnimation implements IWorkingAnimation {
+    private static final Logger log = LoggerFactory.getLogger(WorkingAnimation.class);
+
     public record Component(IAnimationComponent component, @Nullable IBlendingFactor blendingFactor,
                             IAnimationProgress progress) {
     }
 
     private final List<Component> components;
     private int tick = 0;
+    private final int duration;
+    private final boolean loop;
     private boolean finished = false;
 
     public WorkingAnimation(AnimationComponentGroup group) {
         components = group.components().stream().map(it -> new Component(it.component(), it.blendingFactor(), AnimationProgresses.getNewInstance(it.progressID(), group.loops(), 0f, group.duration()))).toList();
+        duration = group.duration();
+        loop = group.loops();
     }
 
     @Override
     public int getDuration() {
-        return 0;
+        return duration;
     }
 
     @Override
     public boolean loops() {
-        return false;
+        return loop;
     }
 
     @Override

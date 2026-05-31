@@ -47,7 +47,15 @@ public class PlayerAnimator {
         return null;
     }
 
-    public void updateTransformation(AbstractClientPlayer player, float partialTick) {
+    public void tick(AbstractClientPlayer player) {
+        manager.tick(player);
+    }
+
+    public void onRenderTick(AbstractClientPlayer player, float partialTick) {
+        updateTransformation(player, partialTick);
+    }
+
+    private void updateTransformation(AbstractClientPlayer player, float partialTick) {
         currentTransformation = getTransform(player, partialTick);
     }
 

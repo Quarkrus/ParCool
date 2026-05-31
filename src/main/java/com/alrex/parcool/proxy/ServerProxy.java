@@ -12,7 +12,7 @@ public class ServerProxy extends CommonProxy {
 	public void registerMessages(SimpleChannel instance) {
 		int index = 0;
 		instance.messageBuilder(ClientBoundParCoolLoginPacket.class, index++, NetworkDirection.LOGIN_TO_CLIENT)
-				.markAsLoginPacket()
+                //.markAsLoginPacket()
 				.encoder(ClientBoundParCoolLoginPacket::encode)
 				.decoder(ClientBoundParCoolLoginPacket::decode)
 				.add();

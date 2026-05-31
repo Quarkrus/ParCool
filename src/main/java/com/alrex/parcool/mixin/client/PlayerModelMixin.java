@@ -50,6 +50,7 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 	protected void onSetupAnimHead(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo info) {
 		if (entity instanceof IPlayerAnimatorHolder holder) {
 			var transform = holder.getParCoolPlayerAnimator().getCurrentTransformation();
+			parcool$resetModel();
 			if (transform == null) return;
 			if (transform.isOverwriting()) {
 				transform.transformation().transforms().get(AnimatableModelPart.HEAD).apply(head);
@@ -85,5 +86,53 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 		leftSleeve.copyFrom(this.leftArm);
 		rightSleeve.copyFrom(this.rightArm);
 		jacket.copyFrom(this.body);
+	}
+
+	@Unique
+	public void parcool$resetModel() {
+		parcool$resetPart(this.head);
+		parcool$resetPart(this.hat);
+		parcool$resetPart(this.jacket);
+		parcool$resetPart(this.body);
+		{
+			parcool$resetPart(this.rightArm);
+			this.rightArm.x = -5.0F;
+			this.rightArm.y = 2.0F;
+			this.rightArm.z = 0.0F;
+			this.rightSleeve.copyFrom(this.rightArm);
+		}
+		{
+			parcool$resetPart(this.leftArm);
+			this.leftArm.x = 5.0F;
+			this.leftArm.y = 2.0F;
+			this.leftArm.z = 0.0F;
+			this.leftSleeve.copyFrom(this.leftArm);
+		}
+		{
+			parcool$resetPart(this.leftLeg);
+			this.leftLeg.x = 1.9F;
+			this.leftLeg.y = 12.0F;
+			this.leftLeg.z = 0.0F;
+
+			this.leftPants.copyFrom(this.leftLeg);
+		}
+		{
+			parcool$resetPart(this.rightLeg);
+			this.rightLeg.x = -1.9F;
+			this.rightLeg.y = 12.0F;
+			this.rightLeg.z = 0.0F;
+
+			this.rightPants.copyFrom(this.rightLeg);
+		}
+	}
+
+	@Unique
+	public void parcool$resetPart(ModelPart model) {
+		model.xRot = 0;
+		model.yRot = 0;
+		model.zRot = 0;
+		model.x = 0;
+		model.y = 0;
+		model.z = 0;
 	}
 }

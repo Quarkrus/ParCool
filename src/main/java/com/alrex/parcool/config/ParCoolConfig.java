@@ -61,7 +61,6 @@ public class ParCoolConfig {
 
 		static {
 			ForgeConfigSpec.Builder builder = BUILDER;
-			builder.pop();
 			builder.push("HUD");
 			{
 				STAMINA_HUD_TYPE = builder.defineEnum("stamina_hud_type", HUDType.Light);
@@ -76,7 +75,6 @@ public class ParCoolConfig {
 			builder.pop();
 			builder.push("Animations");
 			{
-				builder.pop();
 				ENABLE_ANIMATION = builder.define("enable_animation", true);
 				ENABLE_FALLING_ANIMATION = builder.define("enable_falling_animation", true);
 				ENABLE_FPV_ANIMATION = builder.define("enable_fpv_animation", true);
@@ -208,9 +206,14 @@ public class ParCoolConfig {
 			}
 			builder.push("bool");
 			{
-				booleans = LimitationEntries.Bool.ENTRIES.stream().map(e -> builder.comment(e.description()).define(
-						e.name(), (boolean) e.getLowestPriorityValue()
-				)).toList();
+                booleans = LimitationEntries.Bool.ENTRIES.stream().map(e -> {
+                    if (!e.description().isEmpty()) {
+                        builder.comment(e.description());
+                    }
+                    return builder.define(
+                            e.name(), (boolean) e.getLowestPriorityValue()
+                    );
+                }).toList();
 			}
 			builder.pop();
 			builder.push("int");

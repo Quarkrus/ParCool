@@ -1,5 +1,7 @@
 package com.alrex.parcool.proxy;
 
+import com.alrex.parcool.client.animation.system.handle.TickEventHandler;
+import com.alrex.parcool.client.animation.system.registration.ParCoolAnimations;
 import com.alrex.parcool.client.hud.HUDRegistry;
 import com.alrex.parcool.client.input.KeyBindings;
 import com.alrex.parcool.client.input.KeyRecorder;
@@ -34,13 +36,15 @@ public class ClientProxy extends CommonProxy {
 		MinecraftForge.EVENT_BUS.register(OpenSettingsParCoolHandler.class);
 		MinecraftForge.EVENT_BUS.register(PlayerJoinHandler.class);
 		MinecraftForge.EVENT_BUS.register(InputHandler.class);
+        MinecraftForge.EVENT_BUS.register(TickEventHandler.class);
+        ParCoolAnimations.register();
 	}
 
 	@Override
 	public void registerMessages(SimpleChannel instance) {
 		int index = 0;
 		instance.messageBuilder(ClientBoundParCoolLoginPacket.class, index++, NetworkDirection.LOGIN_TO_CLIENT)
-				.markAsLoginPacket()
+                //.markAsLoginPacket()
 				.encoder(ClientBoundParCoolLoginPacket::encode)
 				.decoder(ClientBoundParCoolLoginPacket::decode)
 				.consumerMainThread(ClientBoundParCoolLoginPacket::handle)

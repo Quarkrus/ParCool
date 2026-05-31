@@ -126,7 +126,8 @@ public abstract class Transition {
 
         @Override
         protected float getValue(float t, @Nonnull TimedValue end) {
-            return 0;
+            //TODO: implement bazier, currently using simple linear interpolation
+            return Mth.lerp(t, start.value(), end.value());
         }
     }
 }

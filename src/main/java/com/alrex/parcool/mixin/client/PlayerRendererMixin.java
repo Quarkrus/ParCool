@@ -4,6 +4,7 @@ import com.alrex.parcool.client.animation.system.AnimatableModelPart;
 import com.alrex.parcool.client.animation.system.IPlayerAnimatorHolder;
 import com.alrex.parcool.client.animation.system.data.Transform;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -32,6 +33,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 			bodyTransformation = Transform.NO_TRANSFORMATION.morph(bodyTransformation, transform.blendFactor());
 			var translation = bodyTransformation.translation();
 			stack.translate(translation.x(), translation.y(), translation.z());
+			stack.mulPose(Vector3f.YP.rotationDegrees(180.0F - yRot));
 			stack.translate(0, 0.9, 0);
 			stack.mulPose(bodyTransformation.rotation());
 			stack.translate(0, -0.9, 0);

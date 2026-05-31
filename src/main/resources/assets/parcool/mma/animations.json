@@ -1,0 +1,7 @@
+[
+  {
+    "name": "parcool:test",
+    "fade_in_duration": 5,
+    "main": "parcool:test_anim_group.json"
+  }
+]

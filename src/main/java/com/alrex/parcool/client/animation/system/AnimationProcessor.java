@@ -9,6 +9,7 @@ import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class AnimationProcessor {
     private record WorkingAnimationEntry(AnimationSets.Entry registration, WorkingAnimationSet animator) {
@@ -22,11 +23,18 @@ public class AnimationProcessor {
 
     public void tick(AbstractClientPlayer player) {
         boolean shouldTickFadingOutAnimator = false;
+        var finished = new LinkedList<WorkingAnimationEntry>();
         for (var working : animators) {
             if (working.animator == fadingOutAnimator) {
                 shouldTickFadingOutAnimator = true;
             }
             working.animator.tick(player);
+            if (working.animator.isFinished()) {
+                finished.addFirst(working);
+            }
+        }
+        for (var finishedAnim : finished) {
+            remove(finishedAnim);
         }
         if (shouldTickFadingOutAnimator) {
             fadingOutAnimator.tick(player);
@@ -62,6 +70,19 @@ public class AnimationProcessor {
         return true;
     }
 
+    private void remove(WorkingAnimationEntry entry) {
+        int i = animators.size();
+        while ((--i) >= 0) {
+            var animation = animators.get(i);
+            if (animation == entry) {
+                animators.remove(i);
+                break;
+            }
+            if (animation.registration.isDescendantOf(entry.registration.id())) {
+                animators.remove(i);
+            }
+        }
+    }
     public void stop(ID<AnimationSet> id) {
         var currentAnimation = getCurrentAnimation();
         int i = animators.size();

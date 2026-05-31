@@ -6,9 +6,8 @@ import com.alrex.parcool.common.info.ActionInfo;
 import com.alrex.parcool.common.info.CompiledLimitation;
 import com.alrex.parcool.common.stamina.IReadonlyStamina;
 import com.alrex.parcool.common.stamina.ReadonlyStamina;
-import com.alrex.parcool.config.ParCoolConfig;
+import com.alrex.parcool.common.stamina.StaminaTypes;
 import com.alrex.parcool.server.limitation.ILimitationEntry;
-import com.alrex.parcool.server.limitation.Limitation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -36,12 +35,12 @@ public class Parkourability {
 		this.actions = new ActionSet(this, registry);
 		if (player.isLocalPlayer()) {
 			this.info.setClientLimitation(CompiledLimitation.compile(Collections.singletonList(
-					Limitation.readFromConfig(
-							ParCoolConfig.getClientConfigLimitation(),
-							ParCool.getActionRegistry(),
-							ParCool.getStaminaTypeRegistry()
-					)
+                    ParCool.getLimitationRegistry().getGlobalLimitation()
 			)));
+            this.stamina = ParCool.getStaminaTypeRegistry().getRegistry()
+                    .get(StaminaTypes.PARCOOL_STAMINA.id())
+                    .provider()
+                    .newInstance(player, null);
 		} else {
 			if (player instanceof ServerPlayer) {
 				this.info.setServerLimitation(ParCool.getLimitationRegistry().getLimitationSet(player.getUUID()));

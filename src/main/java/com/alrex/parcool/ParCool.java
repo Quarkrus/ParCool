@@ -5,6 +5,8 @@ import com.alrex.parcool.api.Effects;
 import com.alrex.parcool.api.SoundEvents;
 import com.alrex.parcool.api.event.RegisterParCoolActionEvent;
 import com.alrex.parcool.api.event.RegisterParCoolStaminaTypeEvent;
+import com.alrex.parcool.client.animation.system.registration.AnimationSets;
+import com.alrex.parcool.client.animation.system.resource.AnimationResourceManager;
 import com.alrex.parcool.client.renderer.Renderers;
 import com.alrex.parcool.common.action.ActionProcessor;
 import com.alrex.parcool.common.action.ActionRegistry;
@@ -28,6 +30,7 @@ import com.alrex.parcool.server.command.CommandRegistry;
 import com.alrex.parcool.server.limitation.LimitationRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -89,12 +92,14 @@ public class ParCool {
 		eventBus.addListener(this::setup);
 		eventBus.addListener(this::setupClient);
 		eventBus.addListener(this::loaded);
+        eventBus.addListener(this::registerResource);
 		eventBus.register(AddAttributesHandler.class);
 		eventBus.register(ParCoolActions.class);
 		eventBus.register(StaminaTypes.class);
 
 		PROXY.init();
 		MinecraftForge.EVENT_BUS.register(actionProcessor);
+        MinecraftForge.EVENT_BUS.register(limitationRegistry = new LimitationRegistry());
 
 		Effects.register(eventBus);
 		Potions.register(eventBus);
@@ -115,7 +120,6 @@ public class ParCool {
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParCoolConfig.Client.BUILT_CONFIG);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParCoolConfig.getClientConfigLimitation().getBuiltConfig(), "parcool-client-limitation.toml");
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ParCoolConfig.getServerConfigLimitation().getBuiltConfig(), "parcool-server-limitation.toml");
-        FMLJavaModLoadingContext.get().getModEventBus().register(limitationRegistry = new LimitationRegistry(ParCoolConfig.getServerConfigLimitation()));
 	}
 
 	private void loaded(FMLLoadCompleteEvent event) {
@@ -133,5 +137,10 @@ public class ParCool {
 	private void setupClient(final FMLClientSetupEvent event) {
 		Renderers.register();
 		Items.registerColors();
+        AnimationSets.getInstance().freeze();
+    }
+
+    private void registerResource(final RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(AnimationResourceManager.getInstance());
 	}
 }
