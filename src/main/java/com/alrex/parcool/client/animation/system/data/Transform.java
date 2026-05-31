@@ -26,29 +26,20 @@ public record Transform(Vec3f translation, Quaternion rotation) {
         );
     }
 
+    public Transform append(Transform after, float t) {
+        var afterConj = after.rotation.copy();
+        afterConj.conj();
+        var rot = after.rotation.copy();
+        rot.mul(this.rotation);
+        rot.mul(afterConj);
+        return new Transform(this.translation.add(after.translation.scale(t)), rot);
+    }
+
     public void apply(ModelPart part, float blendingFactor) {
-        var q = rotation;
-        float xRot, zRot, yRot = (float) Math.asin(2 * (-q.i() * q.k() + q.j() * q.r()));
-        double cosY = Math.cos(yRot);
-        if (Math.abs(cosY) > 1e-4) {
-            xRot = (float) Math.atan2(
-                    q.j() * q.k() + q.i() * q.r(),
-                    q.r() * q.r() + q.k() * q.k() - 0.5
-            );
-            zRot = (float) Math.atan2(
-                    q.i() * q.j() + q.k() * q.r(),
-                    q.r() * q.r() + q.i() * q.i() - 0.5
-            );
-        } else {
-            xRot = 0;
-            zRot = (float) Math.atan2(
-                    -q.i() * q.j() + q.k() * q.r(),
-                    q.r() * q.r() + q.j() * q.j() - 0.5
-            );
-        }
-        part.xRot += MathUtil.rotLerp(blendingFactor, part.xRot, xRot);
-        part.yRot += MathUtil.rotLerp(blendingFactor, part.yRot, yRot);
-        part.zRot += MathUtil.rotLerp(blendingFactor, part.zRot, zRot);
+        var xyzAngle = rotation.toXYZ();
+        part.xRot += MathUtil.rotLerp(blendingFactor, part.xRot, xyzAngle.x());
+        part.yRot += MathUtil.rotLerp(blendingFactor, part.yRot, xyzAngle.y());
+        part.zRot += MathUtil.rotLerp(blendingFactor, part.zRot, xyzAngle.z());
         part.x = Mth.lerp(blendingFactor, part.x, translation.x());
         part.y = Mth.lerp(blendingFactor, part.y, translation.y());
         part.z = Mth.lerp(blendingFactor, part.z, translation.z());

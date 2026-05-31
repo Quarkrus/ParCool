@@ -66,7 +66,7 @@ public class WorkingAnimation implements IWorkingAnimation {
             for (var component : components) {
                 var componentTransform = component.component.getTransform(player, modelPart, component.progress.getProgress(partialTick));
                 if (componentTransform != null) {
-                    transform = transform.morph(
+                    transform = transform.append(
                             componentTransform,
                             component.blendingFactor != null ? component.blendingFactor.getFactor(player) : 1f
                     );

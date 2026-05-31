@@ -9,6 +9,10 @@ public record Vec3f(float x, float y, float z) {
         return new Vec3f(x * v, y * v, z * v);
     }
 
+    public Vec3f add(Vec3f v) {
+        return new Vec3f(this.x + v.x, this.y + v.y, this.z + v.z);
+    }
+
     public Vector3f toVector3f() {
         return new Vector3f(x, y, z);
     }
