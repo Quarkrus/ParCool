@@ -32,6 +32,7 @@ public record StaticAnimationComponent(
                     : property.getDefaultValue();
         }
         var rotation = new float[4];
+        rotation[0] = 1f;
         for (int i = 0; i < 4; i++) {
             var property = AnimatableProperty.ROTATIONS.get(i);
             var curve = curves.get(property);
