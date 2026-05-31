@@ -2,8 +2,7 @@ package com.alrex.parcool.client.hud.impl;
 
 import com.alrex.parcool.api.Effects;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.action.Action;
-import com.alrex.parcool.common.capability.IStamina;
+import com.alrex.parcool.common.stamina.IReadonlyStamina;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.util.MathUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -22,16 +21,16 @@ public class LightStaminaHUD extends GuiComponent {
 	private long changingTimeTick = 0;
 	private int randomOffset = 0;
 	private boolean justBecameMax = false;
+	private int oldValue = 0;
 
 	private float statusValue = 0f;
 	private float oldStatusValue = 0f;
 	private boolean showStatus = false;
 
 	public void onTick(TickEvent.ClientTickEvent event, LocalPlayer player) {
-		IStamina stamina = IStamina.get(player);
 		Parkourability parkourability = Parkourability.get(player);
-		if (stamina == null || parkourability == null) return;
-		changingSign = (int) Math.signum(stamina.get() - stamina.getOldValue());
+		var stamina = parkourability.getStamina();
+		changingSign = 0;//(int) Math.signum(stamina.get() - stamina.getOldValue());
 		final long gameTime = player.level.getGameTime();
 		if (changingSign != lastChangingSign) {
 			lastChangingSign = changingSign;
@@ -44,14 +43,15 @@ public class LightStaminaHUD extends GuiComponent {
 		} else {
 			randomOffset = 0;
 		}
-		if (stamina.get() != stamina.getOldValue() || stamina.isExhausted()) {
+		if (stamina.value() != oldValue || stamina.isExhausted()) {
 			lastStaminaChangedTick = gameTime;
 		}
-		justBecameMax = stamina.getOldValue() < stamina.get() && stamina.get() == stamina.getActualMaxStamina();
+		justBecameMax = oldValue < stamina.value() && stamina.value() == stamina.max();
 
 		oldStatusValue = statusValue;
 		boolean oldShowStatus = showStatus;
 		showStatus = false;
+		/*
         if (ParCoolConfig.Client.Booleans.ShowActionStatusBar.get()) {
             for (Action a : parkourability.getList()) {
                 if (a.wantsToShowStatusBar(player, parkourability)) {
@@ -66,12 +66,14 @@ public class LightStaminaHUD extends GuiComponent {
                 }
 			}
 		}
+		 */
 		if (!oldShowStatus && showStatus) {
 			oldStatusValue = statusValue;
 		}
+		oldValue = stamina.value();
 	}
 
-	public void render(ForgeGui gui, PoseStack stack, Parkourability parkourability, IStamina stamina, float partialTick, int width, int height) {
+	public void render(ForgeGui gui, PoseStack stack, Parkourability parkourability, IReadonlyStamina stamina, float partialTick, int width, int height) {
 		var player = Minecraft.getInstance().player;
 		if (player == null) return;
 		final boolean inexhaustible = player.hasEffect(Effects.INEXHAUSTIBLE.get());
@@ -79,10 +81,10 @@ public class LightStaminaHUD extends GuiComponent {
 
 		if (!showStatus) {
 			long gameTime = player.level.getGameTime();
-			if (gameTime - lastStaminaChangedTick > 40 && !ParCoolConfig.Client.Booleans.ShowLightStaminaHUDAlways.get())
+			if (gameTime - lastStaminaChangedTick > 40 && !ParCoolConfig.Client.STAMINA_HUD_SHOW_ALWAYS.get())
 				return;
 		}
-		float staminaScale = (float) stamina.get() / stamina.getActualMaxStamina();
+		float staminaScale = (float) stamina.value() / stamina.max();
 		if (staminaScale < 0) staminaScale = 0;
 		if (staminaScale > 1) staminaScale = 1;
 
@@ -91,8 +93,8 @@ public class LightStaminaHUD extends GuiComponent {
 
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 		RenderSystem.setShaderTexture(0, StaminaHUD.STAMINA);
-		int baseX = width / 2 + 91 + ParCoolConfig.Client.Integers.HorizontalOffsetOfLightStaminaHUD.get();
-		int baseY = height - gui.rightHeight + ParCoolConfig.Client.Integers.VerticalOffsetOfLightStaminaHUD.get();
+		int baseX = width / 2 + 91 + ParCoolConfig.Client.STAMINA_HUD_HORIZONTAL_OFFSET.get();
+		int baseY = height - gui.rightHeight + ParCoolConfig.Client.STAMINA_HUD_VERTICAL_OFFSET.get();
 		for (int i = 0; i < 10; i++) {
 			int x = baseX - i * 8 - 9;
 			int offsetY = 0;

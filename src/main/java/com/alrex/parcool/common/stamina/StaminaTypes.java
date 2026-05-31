@@ -14,7 +14,7 @@ public class StaminaTypes {
     private static final ResourceLocation HUNGER_ID = new ResourceLocation(ParCool.MOD_ID, "hunger");
 
     public static final StaminaTypeEntry<NoneStamina> NONE_STAMINA = new StaminaTypeEntry<>(NONE_ID, NONE_ID.getPath(), NoneStamina::new);
-    public static final StaminaTypeEntry<ParCoolStamina> PARCOOL_STAMINA = new StaminaTypeEntry<>(PARCOOL_ID, PARCOOL_ID.getPath(), ParCoolStamina::new);
+    public static final StaminaTypeEntry<ParCoolStamina> PARCOOL_STAMINA = new StaminaTypeEntry<>(PARCOOL_ID, PARCOOL_ID.getPath(), (player, stamina) -> new ParCoolStamina(player, stamina, 2000));
     public static final StaminaTypeEntry<HungerStamina> HUNGER_STAMINA = new StaminaTypeEntry<>(HUNGER_ID, HUNGER_ID.getPath(), HungerStamina::new);
 
     @SubscribeEvent

@@ -1,6 +1,5 @@
 package com.alrex.parcool.common.handlers;
 
-import com.alrex.parcool.client.input.KeyBindings;
 import com.alrex.parcool.common.Parkourability;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -14,6 +13,7 @@ public class InputHandler {
         if (player == null) return;
         Parkourability parkourability = Parkourability.get(player);
         if (parkourability == null) return;
+        /*
         if (parkourability.get(HideInBlock.class).isDoing()) {
             event.setSwingHand(false);
             event.setCanceled(true);
@@ -41,6 +41,8 @@ public class InputHandler {
                     return;
                 }
             }
+
         }
+         */
     }
 }

@@ -1,6 +1,6 @@
 package com.alrex.parcool.server.command.args;
 
-import com.alrex.parcool.config.ParCoolConfig;
+import com.alrex.parcool.server.limitation.ILimitationEntry;
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -49,26 +49,26 @@ public class LimitationItemArgumentType implements ArgumentType<Object> {
         enumConstants = clazz.getEnumConstants();
         paths = new ArrayList<>(enumConstants.length);
         for (Object enumConstant : enumConstants) {
-            ParCoolConfig.Item<?> item = (ParCoolConfig.Item<?>) enumConstant;
-            paths.add(item.getPath());
+            var item = (ILimitationEntry<?>) enumConstant;
+            paths.add(item.name());
         }
     }
 
     public static class Booleans extends LimitationItemArgumentType {
         Booleans() {
-            super(ParCoolConfig.Server.Booleans.class);
+            super(ILimitationEntry.Bool.class);
         }
     }
 
     public static class Integers extends LimitationItemArgumentType {
         Integers() {
-            super(ParCoolConfig.Server.Integers.class);
+            super(ILimitationEntry.Int.class);
         }
     }
 
     public static class Doubles extends LimitationItemArgumentType {
         Doubles() {
-            super(ParCoolConfig.Server.Doubles.class);
+            super(ILimitationEntry.Real.class);
         }
     }
 
@@ -84,15 +84,15 @@ public class LimitationItemArgumentType implements ArgumentType<Object> {
         return new Doubles();
     }
 
-    public static ParCoolConfig.Server.Booleans getBool(CommandContext<?> context, String name) {
-        return context.getArgument(name, ParCoolConfig.Server.Booleans.class);
+    public static ILimitationEntry.Bool getBool(CommandContext<?> context, String name) {
+        return context.getArgument(name, ILimitationEntry.Bool.class);
     }
 
-    public static ParCoolConfig.Server.Integers getInt(CommandContext<?> context, String name) {
-        return context.getArgument(name, ParCoolConfig.Server.Integers.class);
+    public static ILimitationEntry.Int getInt(CommandContext<?> context, String name) {
+        return context.getArgument(name, ILimitationEntry.Int.class);
     }
 
-    public static ParCoolConfig.Server.Doubles getDouble(CommandContext<?> context, String name) {
-        return context.getArgument(name, ParCoolConfig.Server.Doubles.class);
+    public static ILimitationEntry.Real getDouble(CommandContext<?> context, String name) {
+        return context.getArgument(name, ILimitationEntry.Real.class);
     }
 }

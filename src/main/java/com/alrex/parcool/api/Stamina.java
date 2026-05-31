@@ -1,6 +1,8 @@
 package com.alrex.parcool.api;
 
-import com.alrex.parcool.common.capability.IStamina;
+import com.alrex.parcool.common.Parkourability;
+import com.alrex.parcool.common.stamina.AbstractLocalStamina;
+import com.alrex.parcool.common.stamina.IReadonlyStamina;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -10,25 +12,25 @@ import javax.annotation.Nullable;
 public class Stamina {
 	@Nullable
 	public static Stamina get(Player player) {
-		IStamina instance = IStamina.get(player);
+        var instance = Parkourability.get(player).getStamina();
 		if (instance == null) {
 			return null;
 		}
 		return new Stamina(instance);
 	}
 
-	private final IStamina staminaInstance;
+    private final IReadonlyStamina staminaInstance;
 
-	private Stamina(IStamina staminaInstance) {
+    private Stamina(IReadonlyStamina staminaInstance) {
 		this.staminaInstance = staminaInstance;
 	}
 
 	public int getMaxValue() {
-		return staminaInstance.getActualMaxStamina();
+        return staminaInstance.max();
 	}
 
 	public int getValue() {
-		return staminaInstance.get();
+        return staminaInstance.value();
 	}
 
 	public boolean isExhausted() {
@@ -37,21 +39,27 @@ public class Stamina {
 
 	@OnlyIn(Dist.CLIENT)
 	public void setValue(int value) {
-		if (value < 0) {
-			value = 0;
-		} else if (value > getMaxValue()) {
-			value = getMaxValue();
-		}
-		staminaInstance.set(value);
+        if (staminaInstance instanceof AbstractLocalStamina localStamina) {
+            if (value < 0) {
+                value = 0;
+            } else if (value > getMaxValue()) {
+                value = getMaxValue();
+            }
+            localStamina.setValue(value);
+        }
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	public void consume(int value) {
-		staminaInstance.consume(value);
+        if (staminaInstance instanceof AbstractLocalStamina localStamina) {
+            localStamina.consume(value);
+        }
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	public void recover(int value) {
-		staminaInstance.recover(value);
+        if (staminaInstance instanceof AbstractLocalStamina localStamina) {
+            localStamina.recover(value);
+        }
 	}
 }

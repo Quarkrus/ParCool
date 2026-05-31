@@ -2,7 +2,6 @@ package com.alrex.parcool.server.limitation;
 
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.capability.IStamina;
 import com.alrex.parcool.common.info.CompiledLimitation;
 import com.alrex.parcool.common.network.LimitationPacket;
 import com.alrex.parcool.config.ParCoolConfig;
@@ -16,6 +15,7 @@ import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,21 +35,15 @@ public class LimitationRegistry {
     private static final Gson GSON = new Gson();
     private static final Logger LOGGER = LogManager.getLogger();
 
+    public LimitationRegistry(ParCoolConfig.ConfigLimitation serverConfigLimitation) {
+        this.globalLimitation = Limitation.readFromConfig(serverConfigLimitation, ParCool.getActionRegistry(), ParCool.getStaminaTypeRegistry());
+    }
+
     @Nullable
-    private static LimitationRegistry instance = null;
-
-    public static LimitationRegistry getInstance() {
-        return instance;
-    }
-
-    private LimitationRegistry(Path limitationFolderRootPath) {
-        this.limitationFolderRootPath = limitationFolderRootPath;
-    }
-
-    private final Path limitationFolderRootPath;
+    private Path limitationFolderRootPath;
     private final SortedMap<UUID, SortedMap<Limitation.ID, Limitation>> loaded = new TreeMap<>();
     private final SortedSet<Limitation.ID> registeredID = new TreeSet<>();
-    private final Limitation globalLimitation = Limitation.readFromConfig(ParCoolConfig.SERVER_CONFIG_LIMITATION);
+    private final Limitation globalLimitation;
 
     private SortedMap<Limitation.ID, Limitation> getLimitationMapOf(UUID playerID) {
         SortedMap<Limitation.ID, Limitation> map = loaded.get(playerID);
@@ -105,23 +99,11 @@ public class LimitationRegistry {
         return getLimitationMapOf(playerID).get(id);
     }
 
-    public void update(ServerPlayer player) {
+    public void updateServerLimitation(ServerPlayer player) {
         Parkourability parkourability = Parkourability.get(player);
-        if (parkourability == null) return;
-        parkourability.getActionInfo().setServerLimitation(CompiledLimitation.get(player));
-        IStamina stamina = IStamina.get(player);
-        if (stamina == null) {
-            LimitationPacket.sync(player);
-        } else {
-            LimitationPacket.syncWithStamina(player, stamina);
-        }
-    }
-
-    public void updateOnlyLimitation(ServerPlayer player) {
-        Parkourability parkourability = Parkourability.get(player);
-        if (parkourability == null) return;
-        parkourability.getActionInfo().setServerLimitation(CompiledLimitation.get(player));
-        LimitationPacket.sync(player);
+        var limitation = CompiledLimitation.compile(getLimitationsOf(player.getUUID()));
+        parkourability.getActionInfo().setServerLimitation(limitation);
+        ParCool.CONNECTION.send(PacketDistributor.ALL.noArg(), new LimitationPacket(player.getUUID(), true, limitation));
     }
 
     public SortedMap<Limitation.ID, Limitation> load(UUID playerID) {
@@ -164,7 +146,7 @@ public class LimitationRegistry {
                     )) {
                         var json = JsonParser.parseReader(reader);
                         if (json instanceof JsonObject object) {
-                            var limitation = Limitation.readFrom(limitationID, object, ParCool.getActionRegistry());
+                            var limitation = Limitation.readFrom(limitationID, object, ParCool.getActionRegistry(), ParCool.getStaminaTypeRegistry());
                             playerData.put(limitation.getID(), limitation);
                         } else {
                             throw new IOException("Root object of limitation must be Json Object");
@@ -246,22 +228,19 @@ public class LimitationRegistry {
     }
 
     @SubscribeEvent
-    public static void onServerStarting(ServerAboutToStartEvent event) {
+    public void onServerStarting(ServerAboutToStartEvent event) {
         Path configPath = getServerConfigPath(event.getServer());
         var limitationFolderRootPath = configPath.resolve("parcool").resolve("limitations");
         File limitationFolder = limitationFolderRootPath.toFile();
         if (!limitationFolder.exists()) {
             limitationFolder.mkdirs();
         }
-        instance = new LimitationRegistry(limitationFolderRootPath);
+        this.limitationFolderRootPath = limitationFolderRootPath;
     }
 
     @SubscribeEvent
-    public static void onServerStopping(ServerStoppingEvent event) {
-        if (getInstance() == null) {
-            throw new IllegalStateException("When Saving Limitation, Initialization is not completed yet");
-        }
-        getInstance().save();
+    public void onServerStopping(ServerStoppingEvent event) {
+        save();
     }
 
     private static Path getServerConfigPath(final MinecraftServer server) {

@@ -24,8 +24,7 @@ public abstract class ParCoolSettingScreen extends Screen {
 		serverPermissionReceived = info.getServerLimitation()::isSynced;
 		color = theme;
 		screenList = new ScreenSet[]{
-				new ScreenSet<>(Component.translatable("parcool.gui.text.action"), () -> new SettingActionLimitationScreen(title, info, theme)),
-				new ScreenSet<>(Component.literal(I18n.get("parcool.gui.text.config") + "1"), () -> new SettingBooleanConfigScreen(titleIn, info, theme)),
+				//new ScreenSet<>(Component.translatable("parcool.gui.text.action"), () -> new SettingActionLimitationScreen(title, info, theme)),
 				new ScreenSet<>(Component.literal(I18n.get("parcool.gui.text.config") + "2"), () -> new SettingEnumConfigScreen(titleIn, info, theme)),
 				new ScreenSet<>(Component.translatable("parcool.gui.text.limitation"), () -> new SettingShowLimitationsScreen(titleIn, info, theme)),
 		};

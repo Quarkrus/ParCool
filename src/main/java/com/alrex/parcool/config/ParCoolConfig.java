@@ -6,7 +6,6 @@ import com.alrex.parcool.client.hud.impl.HUDType;
 import com.alrex.parcool.common.action.ActionEntry;
 import com.alrex.parcool.common.action.ActionRegistry;
 import com.alrex.parcool.common.action.StaminaConsumption;
-import com.alrex.parcool.common.action.impl.*;
 import com.alrex.parcool.common.stamina.StaminaTypeEntry;
 import com.alrex.parcool.common.stamina.StaminaTypeRegistry;
 import com.alrex.parcool.common.stamina.StaminaTypes;
@@ -26,16 +25,9 @@ public class ParCoolConfig {
 		public static final ForgeConfigSpec BUILT_CONFIG;
 
 		public static final ForgeConfigSpec.EnumValue<HUDType> STAMINA_HUD_TYPE;
-		public static final ForgeConfigSpec.EnumValue<Vault.TypeSelectionMode> VAULT_ANIMATION_MODE;
 		public static final ForgeConfigSpec.EnumValue<Position.Horizontal> STAMINA_HUD_ALIGN_HORIZONTAL;
 		public static final ForgeConfigSpec.EnumValue<Position.Vertical> STAMINA_HUD_ALIGN_VERTICAL;
 		public static final ForgeConfigSpec.EnumValue<ColorTheme> GUI_COLOR_THEME;
-		public static final ForgeConfigSpec.EnumValue<FastRun.ControlType> FAST_RUN_CONTROL;
-		public static final ForgeConfigSpec.EnumValue<Crawl.ControlType> CRAWL_CONTROL;
-		public static final ForgeConfigSpec.EnumValue<Flipping.ControlType> FLIP_CONTROL;
-		public static final ForgeConfigSpec.EnumValue<HorizontalWallRun.ControlType> H_WALL_RUN_CONTROL;
-		public static final ForgeConfigSpec.EnumValue<WallJump.ControlType> WALL_JUMP_CONTROL;
-		public static final ForgeConfigSpec.EnumValue<ClingToCliff.ControlType> CLING_TO_CLIFF_CONTROL;
 		public static final ForgeConfigSpec.BooleanValue ENABLE_ANIMATION;
 		public static final ForgeConfigSpec.BooleanValue ENABLE_FALLING_ANIMATION;
 		public static final ForgeConfigSpec.BooleanValue ENABLE_LEAN_ANIMATION_OF_FAST_RUN;
@@ -101,12 +93,6 @@ public class ParCoolConfig {
 			builder.pop();
 			builder.push("Control");
 			{
-				FAST_RUN_CONTROL = builder.defineEnum("fast-run_control", FastRun.ControlType.PressKey);
-				CRAWL_CONTROL = builder.defineEnum("crawl_control", Crawl.ControlType.PressKey);
-				FLIP_CONTROL = builder.defineEnum("flip_control", Flipping.ControlType.TapMovementAndJump);
-				H_WALL_RUN_CONTROL = builder.defineEnum("h-wall-run_control", HorizontalWallRun.ControlType.PressKey);
-				WALL_JUMP_CONTROL = builder.defineEnum("wall-jump_control", WallJump.ControlType.PressKey);
-				CLING_TO_CLIFF_CONTROL = builder.defineEnum("cling-to-cliff_control", ClingToCliff.ControlType.PressKey);
 				ENABLE_DOUBLE_TAPPING_FOR_DODGE = builder.define("enable_double_tap_dodge", false);
 				ENABLE_CRAWL_IN_AIR = builder.define("enable_crawl_in_air", true);
 				ENABLE_VAULT_IN_AIR = builder.define("enable_vault_in_air", true);
@@ -119,7 +105,6 @@ public class ParCoolConfig {
 			builder.pop();
 			builder.push("Other");
 			{
-				VAULT_ANIMATION_MODE = builder.comment("Vault Animation(Dynamic is to select animation dynamically)").defineEnum("vault_animation_mode", Vault.TypeSelectionMode.Dynamic);
 				GUI_COLOR_THEME = builder.comment("Color theme of Setting GUI").defineEnum("gui_color_theme", ColorTheme.Blue);
 				ENABLE_ACTION_SOUNDS = builder.define("enable_sounds", true);
 				ENABLE_3D_RENDERING_FOR_ZIPLINE = builder.define("enable_zipline_3d_rendering", true);

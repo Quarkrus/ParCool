@@ -1,36 +1,7 @@
 package com.alrex.parcool.server.command.impl;
 
-import com.alrex.parcool.api.unstable.Limitation;
-import com.alrex.parcool.common.action.Action;
-import com.alrex.parcool.common.action.ActionGroup;
-import com.alrex.parcool.config.ParCoolConfig;
-import com.alrex.parcool.server.command.args.ActionArgumentType;
-import com.alrex.parcool.server.command.args.LimitationIDArgumentType;
-import com.alrex.parcool.server.command.args.LimitationItemArgumentType;
-import com.alrex.parcool.server.limitation.LimitationRegistry;
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
-
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.Function;
-
 public class ControlLimitationCommand {
+    /*
     private static final String ARGS_NAME_PLAYERS = "targets";
     private static final String ARGS_NAME_PLAYER = "target";
     private static final String ARGS_NAME_ACTION = "action";
@@ -269,9 +240,11 @@ public class ControlLimitationCommand {
     }
 
     private static List<Limitation> getLimitationInstance(Collection<ServerPlayer> players, @Nullable Limitation.ID id, @Nullable MinecraftServer server) {
+        var limitationRegistry=ParCool.getLimitationRegistry();
+        if (limitationRegistry == null) return Collections.emptyList();
         if (players.isEmpty()) {
             if (server != null) {// global limitation
-                return Collections.singletonList(Limitation.getGlobal(server));
+                return Collections.singletonList(limitationRegistry.getGlobalLimitation());
             } else if (id == null) {
                 // limitation for all players
                 // not implemented
@@ -279,13 +252,13 @@ public class ControlLimitationCommand {
         } else if (id != null) {// limitation
             LinkedList<Limitation> list = new LinkedList<>();
             for (ServerPlayer player : players) {
-                list.add(Limitation.get(player, id));
+                list.add(limitationRegistry.getLimitationOf(player.getUUID(), id));
             }
             return list;
         } else {//individual limitation
             LinkedList<Limitation> list = new LinkedList<>();
             for (ServerPlayer player : players) {
-                list.add(Limitation.getIndividual(player));
+                list.add(limitationRegistry.getLimitationOf(player.getUUID(), LimitationRegistry.INDIVIDUAL_ID));
             }
             return list;
         }
@@ -298,7 +271,7 @@ public class ControlLimitationCommand {
                 hasID ? LimitationIDArgumentType.getLimitationID(context, ARGS_NAME_LIMITATION_ID) : null,
                 context.getSource().getServer()
         );
-        ParCoolConfig.Server.Booleans item = LimitationItemArgumentType.getBool(context, ARGS_NAME_CONFIG_ITEM);
+        var item = LimitationItemArgumentType.getBool(context, ARGS_NAME_CONFIG_ITEM);
         context.getSource().sendSuccess(
                 Component.literal(
                         Boolean.toString(limitations.get(0).get(item))
@@ -314,7 +287,7 @@ public class ControlLimitationCommand {
                 hasID ? LimitationIDArgumentType.getLimitationID(context, ARGS_NAME_LIMITATION_ID) : null,
                 context.getSource().getServer()
         );
-        ParCoolConfig.Server.Integers item = LimitationItemArgumentType.getInt(context, ARGS_NAME_CONFIG_ITEM);
+        var item = LimitationItemArgumentType.getInt(context, ARGS_NAME_CONFIG_ITEM);
         context.getSource().sendSuccess(
                 Component.literal(
                         Integer.toString(limitations.get(0).get(item))
@@ -330,7 +303,7 @@ public class ControlLimitationCommand {
                 hasID ? LimitationIDArgumentType.getLimitationID(context, ARGS_NAME_LIMITATION_ID) : null,
                 context.getSource().getServer()
         );
-        ParCoolConfig.Server.Doubles item = LimitationItemArgumentType.getDouble(context, ARGS_NAME_CONFIG_ITEM);
+        var item = LimitationItemArgumentType.getDouble(context, ARGS_NAME_CONFIG_ITEM);
         context.getSource().sendSuccess(
                 Component.literal(
                         Double.toString(limitations.get(0).get(item))
@@ -346,10 +319,13 @@ public class ControlLimitationCommand {
                 hasID ? LimitationIDArgumentType.getLimitationID(context, ARGS_NAME_LIMITATION_ID) : null,
                 context.getSource().getServer()
         );
-        Class<? extends Action> action = ActionArgumentType.getAction(context, ARGS_NAME_ACTION);
+        if (limitations.isEmpty()){
+            context.getSource().sendFailure(Component.literal("No such limiation entry is not found"));
+        }
+        var action = ActionArgumentType.getAction(context, ARGS_NAME_ACTION);
         context.getSource().sendSuccess(
                 Component.literal(
-                        Boolean.toString(limitations.get(0).isPermitted(action))
+                        limitations.stream().map(it->it.get(action).possible()).map(Object::toString).reduce((a,b)->a+":"+b).get()
                 ),
                 false
         );
@@ -428,7 +404,7 @@ public class ControlLimitationCommand {
                 hasID ? LimitationIDArgumentType.getLimitationID(context, ARGS_NAME_LIMITATION_ID) : null,
                 context.getSource().getServer()
         );
-        ParCoolConfig.Server.Booleans item = LimitationItemArgumentType.getBool(context, ARGS_NAME_CONFIG_ITEM);
+        var item = LimitationItemArgumentType.getBool(context, ARGS_NAME_CONFIG_ITEM);
         boolean value = BoolArgumentType.getBool(context, ARGS_NAME_VALUE);
         int num = 0;
         for (Limitation limitation : limitations) {
@@ -446,7 +422,7 @@ public class ControlLimitationCommand {
                 hasID ? LimitationIDArgumentType.getLimitationID(context, ARGS_NAME_LIMITATION_ID) : null,
                 context.getSource().getServer()
         );
-        ParCoolConfig.Server.Integers item = LimitationItemArgumentType.getInt(context, ARGS_NAME_CONFIG_ITEM);
+        var item = LimitationItemArgumentType.getInt(context, ARGS_NAME_CONFIG_ITEM);
         int value = IntegerArgumentType.getInteger(context, ARGS_NAME_VALUE);
         if (value < item.Min) {
             value = item.Min;
@@ -470,7 +446,7 @@ public class ControlLimitationCommand {
                 hasID ? LimitationIDArgumentType.getLimitationID(context, ARGS_NAME_LIMITATION_ID) : null,
                 context.getSource().getServer()
         );
-        ParCoolConfig.Server.Doubles item = LimitationItemArgumentType.getDouble(context, ARGS_NAME_CONFIG_ITEM);
+        var item = LimitationItemArgumentType.getDouble(context, ARGS_NAME_CONFIG_ITEM);
         double value = DoubleArgumentType.getDouble(context, ARGS_NAME_VALUE);
         if (value < item.Min) {
             value = item.Min;
@@ -568,4 +544,6 @@ public class ControlLimitationCommand {
         context.getSource().sendSuccess(Component.translatable("parcool.command.message.success.setPermissionOfAction", num, action.getSimpleName(), newValue), true);
         return 0;
     }
+
+     */
 }

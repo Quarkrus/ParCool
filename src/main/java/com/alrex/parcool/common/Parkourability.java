@@ -1,5 +1,6 @@
 package com.alrex.parcool.common;
 
+import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.action.*;
 import com.alrex.parcool.common.info.ActionInfo;
 import com.alrex.parcool.common.info.CompiledLimitation;
@@ -8,8 +9,6 @@ import com.alrex.parcool.common.stamina.ReadonlyStamina;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.server.limitation.ILimitationEntry;
 import com.alrex.parcool.server.limitation.Limitation;
-import com.alrex.parcool.server.limitation.LimitationRegistry;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -31,16 +30,21 @@ public class Parkourability {
 	private final ActionSet actions;
 	private final Player player;
 	private IReadonlyStamina stamina;
-	private int synchronizeTrialCount = 0;
 
 	public Parkourability(Player player, ActionRegistry registry) {
 		this.player = player;
 		this.actions = new ActionSet(this, registry);
 		if (player.isLocalPlayer()) {
-			this.info.setClientLimitation(CompiledLimitation.compile(Collections.singletonList(Limitation.readFromConfig(ParCoolConfig.CLIENT_CONFIG_LIMITATION))));
+			this.info.setClientLimitation(CompiledLimitation.compile(Collections.singletonList(
+					Limitation.readFromConfig(
+							ParCoolConfig.getClientConfigLimitation(),
+							ParCool.getActionRegistry(),
+							ParCool.getStaminaTypeRegistry()
+					)
+			)));
 		} else {
 			if (player instanceof ServerPlayer) {
-				this.info.setServerLimitation(LimitationRegistry.getInstance().getLimitationSet(player.getUUID()));
+				this.info.setServerLimitation(ParCool.getLimitationRegistry().getLimitationSet(player.getUUID()));
 			}
 			this.stamina = ReadonlyStamina.DEFAULT;
 		}
@@ -84,6 +88,10 @@ public class Parkourability {
 		}
 	}
 
+	public boolean can(ActionEntry<?> actionEntry) {
+		return getActionInfo().getServerLimitation().get(actionEntry).possible() && getActionInfo().getClientLimitation().get(actionEntry).possible();
+	}
+
 	public void CopyFrom(Parkourability original) {
 		getActionInfo().setClientLimitation(original.getActionInfo().getClientLimitation());
 		getActionInfo().setServerLimitation(original.getActionInfo().getServerLimitation());
@@ -99,21 +107,6 @@ public class Parkourability {
 
 	public double getLimitedValue(ILimitationEntry.Real entry) {
 		return entry.select(getActionInfo().getClientLimitation().get(entry), getActionInfo().getServerLimitation().get(entry));
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	public void trySyncLimitation(LocalPlayer player) {
-		synchronizeTrialCount++;
-		SyncClientInformationMessage.sync(player, true);
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	public int getSynchronizeTrialCount() {
-		return synchronizeTrialCount;
-	}
-
-	public void incrementSynchronizeTrialCount() {
-		synchronizeTrialCount++;
 	}
 
 	@OnlyIn(Dist.CLIENT)

@@ -3,7 +3,6 @@ package com.alrex.parcool.proxy;
 import com.alrex.parcool.client.hud.HUDRegistry;
 import com.alrex.parcool.client.input.KeyBindings;
 import com.alrex.parcool.client.input.KeyRecorder;
-import com.alrex.parcool.common.handlers.EnableOrDisableParCoolHandler;
 import com.alrex.parcool.common.handlers.InputHandler;
 import com.alrex.parcool.common.handlers.OpenSettingsParCoolHandler;
 import com.alrex.parcool.common.handlers.PlayerJoinHandler;
@@ -21,7 +20,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 public class ClientProxy extends CommonProxy {
 	@Override
 	public boolean ParCoolIsActive() {
-		return ParCoolConfig.Client.Booleans.ParCoolIsActive.get();
+		return ParCoolConfig.Client.PARCOOL_IS_ACTIVE.get();
 	}
 
 	@Override
@@ -33,7 +32,6 @@ public class ClientProxy extends CommonProxy {
 		MinecraftForge.EVENT_BUS.register(HUDRegistry.getInstance());
 		MinecraftForge.EVENT_BUS.register(KeyRecorder.class);
 		MinecraftForge.EVENT_BUS.register(OpenSettingsParCoolHandler.class);
-		MinecraftForge.EVENT_BUS.register(EnableOrDisableParCoolHandler.class);
 		MinecraftForge.EVENT_BUS.register(PlayerJoinHandler.class);
 		MinecraftForge.EVENT_BUS.register(InputHandler.class);
 	}

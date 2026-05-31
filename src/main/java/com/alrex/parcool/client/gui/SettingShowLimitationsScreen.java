@@ -1,7 +1,7 @@
 package com.alrex.parcool.client.gui;
 
 import com.alrex.parcool.common.info.ActionInfo;
-import com.alrex.parcool.config.ParCoolConfig;
+import com.alrex.parcool.server.limitation.LimitationEntries;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 
@@ -15,14 +15,14 @@ public class SettingShowLimitationsScreen extends ParCoolSettingScreen {
         super(titleIn, info, theme);
         currentScreen = 3;
         LinkedList<InfoSet> infoSets = new LinkedList<>();
-        for (ParCoolConfig.Server.Booleans item : ParCoolConfig.Server.Booleans.values()) {
-            infoSets.add(new InfoSet(item.Path, Boolean.toString(info.getServerLimitation().get(item))));
+        for (var item : LimitationEntries.Bool.ENTRIES) {
+            infoSets.add(new InfoSet(item.name(), Boolean.toString(info.getServerLimitation().get(item))));
         }
-        for (ParCoolConfig.Server.Integers item : ParCoolConfig.Server.Integers.values()) {
-            infoSets.add(new InfoSet(item.Path, Integer.toString(info.getServerLimitation().get(item))));
+        for (var item : LimitationEntries.Int.ENTRIES) {
+            infoSets.add(new InfoSet(item.name(), Integer.toString(info.getServerLimitation().get(item))));
         }
-        for (ParCoolConfig.Server.Doubles item : ParCoolConfig.Server.Doubles.values()) {
-            infoSets.add(new InfoSet(item.Path, Double.toString(info.getServerLimitation().get(item))));
+        for (var item : LimitationEntries.Real.ENTRIES) {
+            infoSets.add(new InfoSet(item.name(), Double.toString(info.getServerLimitation().get(item))));
         }
         infoList = infoSets.toArray(new InfoSet[0]);
     }

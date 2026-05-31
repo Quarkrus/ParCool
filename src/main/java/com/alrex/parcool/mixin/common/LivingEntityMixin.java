@@ -1,6 +1,5 @@
 package com.alrex.parcool.mixin.common;
 
-import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.tags.BlockTags;
 import net.minecraft.core.BlockPos;
@@ -15,7 +14,6 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.ForgeConfig;
-import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -42,26 +40,6 @@ public abstract class LivingEntityMixin extends Entity {
 			}
 			Parkourability parkourability = Parkourability.get(player);
 			if (parkourability == null) {
-				return;
-			}
-			if (!parkourability.getActionInfo().can(ClimbPoles.class)
-					|| MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, parkourability.get(ClimbPoles.class)))
-					|| MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(player, parkourability.get(ClimbPoles.class)))
-			) {
-				return;
-            }
-            if (parkourability.get(ClimbUp.class).isDoing()) {
-                return;
-			}
-			ChargeJump chargeJump = parkourability.get(ChargeJump.class);
-			if (chargeJump.isDoing() || chargeJump.isCharging()) {
-				return;
-			}
-			BlockPos blockpos = this.blockPosition();
-			BlockState blockstate = this.getFeetBlockState();
-			boolean onLadder = parCool$isLivingOnCustomLadder(blockstate, entity.level, blockpos, entity);
-			if (onLadder) {
-				cir.setReturnValue(true);
 			}
 		}
 	}

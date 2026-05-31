@@ -1,7 +1,7 @@
 package com.alrex.parcool.common.handlers;
 
+import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.server.limitation.LimitationRegistry;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -14,7 +14,7 @@ public class LoginLogoutHandler {
 		Parkourability parkourability = Parkourability.get(player);
 		if (parkourability == null) return;
 		if (player instanceof ServerPlayer) {
-            LimitationRegistry.unload(player.getUUID());
+            ParCool.getLimitationRegistry().unload(player.getUUID());
 		}
 	}
 	/*

@@ -4,7 +4,7 @@ package com.alrex.parcool.client.hud.impl;
 import com.alrex.parcool.client.hud.Position;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.Action;
-import com.alrex.parcool.common.capability.IStamina;
+import com.alrex.parcool.common.stamina.IReadonlyStamina;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.util.MathUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -45,7 +45,8 @@ public class StaminaHUD extends GuiComponent {
 		oldStatusValue = statusValue;
 		boolean oldShowStatus = showStatus;
 		showStatus = false;
-		for (Action a : parkourability.getList()) {
+		for (Action a : parkourability.getActions()) {
+			/*
 			if (a.wantsToShowStatusBar(player, parkourability)) {
 				showStatus = true;
 				statusValue = a.getStatusValue(player, parkourability);
@@ -56,24 +57,26 @@ public class StaminaHUD extends GuiComponent {
 				}
 				break;
 			}
+
+			 */
 		}
 		if (!oldShowStatus && showStatus) {
 			oldStatusValue = statusValue;
 		}
 	}
 
-	public void render(ForgeGui gui, PoseStack stack, Parkourability parkourability, IStamina stamina, float partialTick, int width, int height) {
+	public void render(ForgeGui gui, PoseStack stack, Parkourability parkourability, IReadonlyStamina stamina, float partialTick, int width, int height) {
 		Position position = new Position(
 				ParCoolConfig.Client.STAMINA_HUD_ALIGN_HORIZONTAL.get(),
 				ParCoolConfig.Client.STAMINA_HUD_ALIGN_VERTICAL.get(),
-				ParCoolConfig.Client.Integers.HorizontalOffsetOfStaminaHUD.get(),
-				ParCoolConfig.Client.Integers.VerticalOffsetOfStaminaHUD.get()
+				ParCoolConfig.Client.STAMINA_HUD_HORIZONTAL_OFFSET.get(),
+				ParCoolConfig.Client.STAMINA_HUD_VERTICAL_OFFSET.get()
 		);
 		final int boxWidth = 91;
 		final int boxHeight = 17;
 		final Tuple<Integer, Integer> pos = position.calculate(boxWidth, boxHeight, width, height);
 
-		float staminaScale = (float) stamina.get() / stamina.getActualMaxStamina();
+		float staminaScale = (float) stamina.value() / stamina.max();
 		float statusScale = showStatus ? MathUtil.lerp(oldStatusValue, statusValue, partialTick) : 0f;
 
 		if (staminaScale < 0) staminaScale = 0;

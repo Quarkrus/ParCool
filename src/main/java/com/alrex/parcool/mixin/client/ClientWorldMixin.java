@@ -31,7 +31,5 @@ public abstract class ClientWorldMixin extends Level {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
         Parkourability parkourability = Parkourability.get(player);
-        if (parkourability == null) return;
-        parkourability.get(HideInBlock.class).notifyBlockChanged(pos);
     }
 }

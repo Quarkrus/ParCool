@@ -62,7 +62,7 @@ public class ZiplineRopeRenderer extends EntityRenderer<ZiplineRopeEntity> {
         Vec3 startPosOffset = startPos.subtract(entityPos);
         Vec3 endOffsetFromStart = zipline.getOffsetToEndFromStart();
 
-        boolean render3d = ParCoolConfig.Client.Booleans.Enable3DRenderingForZipline.get();
+        boolean render3d = ParCoolConfig.Client.ENABLE_3D_RENDERING_FOR_ZIPLINE.get();
 
         matrixStack.pushPose();
         {

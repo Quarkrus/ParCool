@@ -7,10 +7,11 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Half;
-import net.minecraft.world.level.block.state.properties.WallSide;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -217,78 +218,6 @@ public class WorldUtil {
 			}
 		}
 		return entity.getBbHeight();
-	}
-
-	@Nullable
-	public static HangDown.BarAxis getHangableBars(LivingEntity entity) {
-		final double bbWidth = entity.getBbWidth() / 4;
-		final double bbHeight = 0.35;
-		AABB bb = new AABB(
-				entity.getX() - bbWidth,
-				entity.getY() + entity.getBbHeight(),
-				entity.getZ() - bbWidth,
-				entity.getX() + bbWidth,
-				entity.getY() + entity.getBbHeight() + bbHeight,
-				entity.getZ() + bbWidth
-		);
-		if (entity.level.noCollision(entity, bb)) return null;
-		BlockPos pos = new BlockPos(
-				entity.getX(),
-				entity.getY() + entity.getBbHeight() + 0.4,
-				entity.getZ()
-		);
-		if (!entity.level.isLoaded(pos)) return null;
-		BlockState state = entity.level.getBlockState(pos);
-		Block block = state.getBlock();
-		HangDown.BarAxis axis = null;
-		if (block instanceof RotatedPillarBlock) {
-			if (state.isCollisionShapeFullBlock(entity.level, pos)) {
-				return null;
-			}
-			Direction.Axis pillarAxis = state.getValue(RotatedPillarBlock.AXIS);
-			switch (pillarAxis) {
-				case X:
-					axis = HangDown.BarAxis.X;
-					break;
-				case Z:
-					axis = HangDown.BarAxis.Z;
-					break;
-			}
-		} else if (block instanceof EndRodBlock) {
-			if (state.isCollisionShapeFullBlock(entity.level, pos)) {
-				return null;
-			}
-			Direction direction = state.getValue(DirectionalBlock.FACING);
-			switch (direction) {
-				case EAST:
-				case WEST:
-					axis = HangDown.BarAxis.X;
-					break;
-				case NORTH:
-				case SOUTH:
-					axis = HangDown.BarAxis.Z;
-			}
-		} else if (block instanceof CrossCollisionBlock) {
-			int zCount = 0;
-			int xCount = 0;
-			if (state.getValue(CrossCollisionBlock.NORTH)) zCount++;
-			if (state.getValue(CrossCollisionBlock.SOUTH)) zCount++;
-			if (state.getValue(CrossCollisionBlock.EAST)) xCount++;
-			if (state.getValue(CrossCollisionBlock.WEST)) xCount++;
-			if (zCount > 0 && xCount == 0) axis = HangDown.BarAxis.Z;
-			if (xCount > 0 && zCount == 0) axis = HangDown.BarAxis.X;
-		} else if (block instanceof WallBlock) {
-			int zCount = 0;
-			int xCount = 0;
-			if (state.getValue(WallBlock.NORTH_WALL) != WallSide.NONE) zCount++;
-			if (state.getValue(WallBlock.SOUTH_WALL) != WallSide.NONE) zCount++;
-			if (state.getValue(WallBlock.EAST_WALL) != WallSide.NONE) xCount++;
-			if (state.getValue(WallBlock.WEST_WALL) != WallSide.NONE) xCount++;
-			if (zCount > 0 && xCount == 0) axis = HangDown.BarAxis.Z;
-			if (xCount > 0 && zCount == 0) axis = HangDown.BarAxis.X;
-		}
-
-		return axis;
 	}
 
 	public static boolean existsSpaceBelow(LivingEntity entity) {

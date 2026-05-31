@@ -1,10 +1,7 @@
 package com.alrex.parcool.mixin.common;
 
 import com.alrex.parcool.common.Parkourability;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,6 +23,7 @@ public abstract class EntityMixin extends CapabilityProvider<Entity> {
 
         Parkourability parkourability = Parkourability.get(player);
         if (parkourability == null) return;
+        /*
         HideInBlock ability = parkourability.get(HideInBlock.class);
         Tuple<BlockPos, BlockPos> area = ability.getHidingArea();
         if (ability.isDoing() && area != null) {
@@ -38,6 +36,8 @@ public abstract class EntityMixin extends CapabilityProvider<Entity> {
             }
             return;
         }
+
+         */
     }
 
     @Inject(method = "isInWall", at = @At("HEAD"), cancellable = true)
@@ -47,9 +47,11 @@ public abstract class EntityMixin extends CapabilityProvider<Entity> {
         }
         Parkourability parkourability = Parkourability.get(player);
         if (parkourability == null) return;
+        /*
         HideInBlock hideInBlock = parkourability.get(HideInBlock.class);
         if (hideInBlock.isDoing() || hideInBlock.getNotDoingTick() < 2) {
             cir.setReturnValue(false);
         }
+         */
     }
 }

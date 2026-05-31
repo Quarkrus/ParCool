@@ -1,6 +1,7 @@
 package com.alrex.parcool.api.unstable.action;
 
 import com.alrex.parcool.common.action.Action;
+import com.alrex.parcool.common.action.ContinuableAction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
@@ -41,7 +42,7 @@ public class ParCoolActionEvent extends Event {
             return true;
         }
 
-        public TryToContinue(Player player, Action action) {
+        public TryToContinue(Player player, ContinuableAction action) {
             super(player, action);
         }
     }
@@ -65,18 +66,18 @@ public class ParCoolActionEvent extends Event {
     }
 
     public static class Finish extends ParCoolActionEvent {
-        private Finish(Player player, Action action) {
+        private Finish(Player player, ContinuableAction action) {
             super(player, action);
         }
 
         public static class Pre extends Finish {
-            public Pre(Player player, Action action) {
+            public Pre(Player player, ContinuableAction action) {
                 super(player, action);
             }
         }
 
         public static class Post extends Finish {
-            public Post(Player player, Action action) {
+            public Post(Player player, ContinuableAction action) {
                 super(player, action);
             }
         }

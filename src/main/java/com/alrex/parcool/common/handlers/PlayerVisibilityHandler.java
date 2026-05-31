@@ -13,9 +13,12 @@ public class PlayerVisibilityHandler {
         if (entity instanceof Player player) {
             Parkourability parkourability = Parkourability.get(player);
             if (parkourability == null) return;
+            /*
             if (parkourability.get(HideInBlock.class).isDoing()) {
                 event.modifyVisibility(event.getVisibilityModifier() * 0.1);
             }
+
+             */
         }
 
     }

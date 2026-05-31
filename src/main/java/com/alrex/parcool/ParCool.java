@@ -25,6 +25,7 @@ import com.alrex.parcool.proxy.ClientProxy;
 import com.alrex.parcool.proxy.CommonProxy;
 import com.alrex.parcool.proxy.ServerProxy;
 import com.alrex.parcool.server.command.CommandRegistry;
+import com.alrex.parcool.server.limitation.LimitationRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -41,6 +42,8 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
 
 @Mod(ParCool.MOD_ID)
 public class ParCool {
@@ -61,6 +64,8 @@ public class ParCool {
 	private static final ActionRegistry actionRegistry = new ActionRegistry();
 	private static final StaminaTypeRegistry staminaTypeRegistry = new StaminaTypeRegistry();
 	private static final ActionProcessor actionProcessor = new ActionProcessor();
+    @Nullable
+    private static LimitationRegistry limitationRegistry = null;
 
 	public static ActionRegistry getActionRegistry() {
 		return actionRegistry;
@@ -73,6 +78,11 @@ public class ParCool {
 	public static ActionProcessor getActionProcessor() {
 		return actionProcessor;
 	}
+
+    @Nullable
+    public static LimitationRegistry getLimitationRegistry() {
+        return limitationRegistry;
+    }
 
 	public ParCool() {
 		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -105,6 +115,7 @@ public class ParCool {
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParCoolConfig.Client.BUILT_CONFIG);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParCoolConfig.getClientConfigLimitation().getBuiltConfig(), "parcool-client-limitation.toml");
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ParCoolConfig.getServerConfigLimitation().getBuiltConfig(), "parcool-server-limitation.toml");
+        FMLJavaModLoadingContext.get().getModEventBus().register(limitationRegistry = new LimitationRegistry(ParCoolConfig.getServerConfigLimitation()));
 	}
 
 	private void loaded(FMLLoadCompleteEvent event) {

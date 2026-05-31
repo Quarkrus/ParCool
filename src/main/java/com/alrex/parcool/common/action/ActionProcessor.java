@@ -7,10 +7,6 @@ import com.alrex.parcool.common.network.ActionStatePacket;
 import com.alrex.parcool.common.network.ActionStateSetPacket;
 import com.alrex.parcool.common.stamina.AbstractLocalStamina;
 import com.alrex.parcool.common.stamina.StaminaSynchronizationDepot;
-import com.alrex.parcool.config.ParCoolConfig;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -19,7 +15,6 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.network.PacketDistributor;
-import org.apache.logging.log4j.Level;
 
 import java.util.LinkedList;
 import java.util.Map;
@@ -101,6 +96,7 @@ public class ActionProcessor {
 	}
     @OnlyIn(Dist.CLIENT)
 	private void onTick$checkLimitationSynchronization(Player player, Parkourability parkourability) {
+		/*
 		if (player.isLocalPlayer() && player.tickCount > 127 && player.tickCount % 256 == 0 && parkourability.limitationIsNotSynced()) {
 			if (player instanceof LocalPlayer localPlayer) {
 				int trialCount = parkourability.getSynchronizeTrialCount();
@@ -117,6 +113,8 @@ public class ActionProcessor {
 				}
 			}
 		}
+
+		 */
 	}
 
 	private void processAction(Parkourability parkourability, LogicalSide logicalSide, Action action, Map<String, LinkedList<ActionStatePacket.Entry>> synchronizedData) {
@@ -145,7 +143,7 @@ public class ActionProcessor {
 				}
 			} else {
 				boolean start = !parkourability.player().isSpectator() //TODO
-						&& parkourability.getActionInfo().can(action.getClass())
+						&& parkourability.can(action.getEntry())
 						&& !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(parkourability.player(), action))
 						&& action.canStart();
 				if (start) {

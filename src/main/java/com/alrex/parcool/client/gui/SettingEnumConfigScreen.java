@@ -1,28 +1,19 @@
 package com.alrex.parcool.client.gui;
 
-import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.info.ActionInfo;
-import com.alrex.parcool.common.info.ClientSetting;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.ForgeConfigSpec;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class SettingEnumConfigScreen extends ParCoolSettingScreen {
     private final EnumConfigSet<?>[] enumConfigList = new EnumConfigSet[]{
             new EnumConfigSet<>(ParCoolConfig.Client.STAMINA_HUD_ALIGN_HORIZONTAL),
             new EnumConfigSet<>(ParCoolConfig.Client.STAMINA_HUD_ALIGN_VERTICAL),
-            new EnumConfigSet<>(ParCoolConfig.Client.FAST_RUN_CONTROL),
-            new EnumConfigSet<>(ParCoolConfig.Client.CRAWL_CONTROL),
-            new EnumConfigSet<>(ParCoolConfig.Client.FLIP_CONTROL),
-            new EnumConfigSet<>(ParCoolConfig.Client.H_WALL_RUN_CONTROL),
-            new EnumConfigSet<>(ParCoolConfig.Client.CLING_TO_CLIFF_CONTROL),
-            new EnumConfigSet<>(ParCoolConfig.Client.VAULT_ANIMATION_MODE),
             new EnumConfigSet<>(ParCoolConfig.Client.GUI_COLOR_THEME),
             new EnumConfigSet<>(ParCoolConfig.Client.STAMINA_HUD_TYPE),
     };
@@ -87,12 +78,7 @@ public class SettingEnumConfigScreen extends ParCoolSettingScreen {
 
     @Override
     protected void save() {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) return;
-        Parkourability parkourability = Parkourability.get(player);
-        if (parkourability == null) return;
-        parkourability.getActionInfo().setClientSetting(ClientSetting.readFromLocalConfig());
-        SyncClientInformationMessage.sync(player, true);
+        Arrays.stream(enumConfigList).forEach(it -> it.configInstance.save());
     }
 
     private static class EnumConfigSet<T extends Enum<T>> {

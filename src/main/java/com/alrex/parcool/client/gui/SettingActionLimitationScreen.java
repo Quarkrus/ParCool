@@ -1,22 +1,6 @@
 package com.alrex.parcool.client.gui;
 
-import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.action.Action;
-import com.alrex.parcool.common.action.ActionGroup;
-import com.alrex.parcool.common.info.ActionInfo;
-import com.alrex.parcool.common.info.ClientSetting;
-import com.alrex.parcool.config.ParCoolConfig;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Checkbox;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
-import net.minecraftforge.common.ForgeConfigSpec;
-
-import java.util.Collections;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-
+/*
 public class SettingActionLimitationScreen extends ParCoolSettingScreen {
     private final ActionConfigSet[] actionList = new ActionConfigSet[ActionGroup.ACTIONS.size()];
     private final Checkbox[] actionButtons = new Checkbox[actionList.length];
@@ -118,3 +102,5 @@ public class SettingActionLimitationScreen extends ParCoolSettingScreen {
         }
     }
 }
+
+ */

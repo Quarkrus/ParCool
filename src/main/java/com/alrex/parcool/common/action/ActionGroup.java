@@ -22,7 +22,7 @@ public record ActionGroup(String namespace, List<ActionEntry<? extends Action>> 
             return add(name, clazz, factory, consumption, null);
         }
 
-        public <T extends Action> ActionEntry<T> add(String name, Class<T> clazz, ActionEntry.ActionConstructor<T> factory, StaminaConsumption consumption, ActionEntry<?> parent) {
+        public <T extends Action> ActionEntry<T> add(String name, Class<T> clazz, ActionEntry.ActionConstructor<T> factory, StaminaConsumption consumption, ActionEntry<? extends ContinuableAction> parent) {
             var entry = new ActionEntry<>((short) registered.size(), new ResourceLocation(namespace, name), clazz, factory, consumption, parent);
             registered.addLast(entry);
             return entry;

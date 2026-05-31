@@ -13,7 +13,6 @@ public abstract class CommonProxy {
 	public abstract void registerMessages(SimpleChannel instance);
 
 	public void init() {
-        MinecraftForge.EVENT_BUS.register(AttachCapabilityHandler.class);
         MinecraftForge.EVENT_BUS.register(LoginLogoutHandler.class);
         MinecraftForge.EVENT_BUS.register(PlayerJumpHandler.class);
         MinecraftForge.EVENT_BUS.register(PlayerVisibilityHandler.class);
