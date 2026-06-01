@@ -115,19 +115,79 @@ public abstract class Transition {
     }
 
     public static class BazierCubic extends Transition {
-        private final TimedValue firstControlPoint;
-        private final TimedValue secondControlPoint;
+        private final float[] cache;
+        private final float lastCacheDuration;
+        private final float timeBetweenCache;
 
-        public BazierCubic(TimedValue startValue, TimedValue firstControlPoint, TimedValue secondControlPoint) {
+        public BazierCubic(TimedValue startValue, TimedValue firstControlPoint, TimedValue secondControlPoint, TimedValue endValue) {
+            this(startValue, firstControlPoint, secondControlPoint, endValue, 0.5f);
+        }
+
+        public BazierCubic(TimedValue startValue, TimedValue firstControlPoint, TimedValue secondControlPoint, TimedValue endValue, float timeBetweenCache) {
             super(startValue);
-            this.firstControlPoint = firstControlPoint;
-            this.secondControlPoint = secondControlPoint;
+            assert (startValue.time() <= firstControlPoint.time());
+            assert (firstControlPoint.time() <= secondControlPoint.time());
+            assert (secondControlPoint.time() <= endValue.time());
+
+            var duration = endValue.time() - startValue.time();
+            this.cache = new float[Math.max((int) (duration / timeBetweenCache), 0) + 1];
+            this.cache[0] = startValue.value();
+            this.lastCacheDuration = duration - timeBetweenCache * (cache.length - 1);
+            this.timeBetweenCache = timeBetweenCache;
+            // Cache bazier curve
+            {
+                float x0 = startValue.time(), x1 = firstControlPoint.time(), x2 = secondControlPoint.time(), x3 = endValue.time();
+                float y0 = startValue.value(), y1 = firstControlPoint.value(), y2 = secondControlPoint.value(), y3 = endValue.value();
+                float vx1 = -x0 + 3 * x1 - 3 * x2 + x3;
+                float vx2 = x0 - 2 * x1 + x2;
+                float vx3 = -x0 + x1;
+                float vy1 = -y0 + 3 * y1 - 3 * y2 + y3;
+                float vy2 = y0 - 2 * y1 + y2;
+                float vy3 = -y0 + y1;
+                for (var i = 1; i < cache.length; i++) {
+                    var timeAtThisCachePoint = startValue.time() + i * timeBetweenCache;
+
+                    // t is auxiliary variable of bazier curve
+                    var t = i / (cache.length - 1f);
+                    // Newton's method
+                    for (var j = 0; j < 10; j++) {
+                        var timeByT = vx1 * t * t * t
+                                + 3 * vx2 * t * t
+                                + 3 * vx3 * t
+                                + x0 - timeAtThisCachePoint;
+                        var timeGradByT = 3 * vx1 * t * t
+                                + 6 * vx2
+                                + 3 * vx3;
+
+                        var tNew = t - (timeByT) / timeGradByT;
+                        var diff = Math.abs(tNew - t);
+                        t = tNew;
+                        if (diff < 1e-4) {
+                            break;
+                        }
+                    }
+                    cache[i] = vy1 * t * t * t
+                            + 3 * vy2 * t * t
+                            + 3 * vy3 * t
+                            + y0;
+                }
+            }
         }
 
         @Override
         protected float getValue(float t, @Nonnull TimedValue end) {
-            //TODO: implement bazier, currently using simple linear interpolation
-            return Mth.lerp(t, start.value(), end.value());
+            t = Mth.clamp(t, 0f, 1f);
+            float cacheIndex = ((cache.length - 1) * t);
+            int intCacheIndex = (int) cacheIndex;
+            float subPartial = cacheIndex - intCacheIndex;
+            if (intCacheIndex >= cache.length - 1) {
+                subPartial = (timeBetweenCache * subPartial) / lastCacheDuration;
+                if (subPartial >= 1) {
+                    return end.value();
+                }
+                return Mth.lerp(subPartial, cache[cache.length - 1], end.value());
+            }
+            return Mth.lerp(subPartial, cache[intCacheIndex], cache[intCacheIndex + 1]);
         }
     }
 }

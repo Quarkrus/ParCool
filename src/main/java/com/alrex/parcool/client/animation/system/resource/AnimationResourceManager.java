@@ -135,7 +135,7 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
                     if (timeline == null || timeline.isEmpty()) continue;
                     var list = new ArrayList<Transition>();
                     for (int i = 0; i < timeline.size(); i++) {
-                        var result = timeline.get(i).parse();
+                        var result = timeline.get(i).parse(i + 1 < timeline.size() ? timeline.get(i + 1) : null);
                         if (result instanceof IResult.Error<Transition, String> error) {
                             LOGGER.warn("Failed to parse [{}:{}:{}:{}] : {}", componentJson.getKey(), part, property, i, error.error());
                             continue propertyLoop;

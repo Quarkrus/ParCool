@@ -96,10 +96,13 @@ public class JsonAnimationComponent {
                 private Transition.Easing.Type ease;
             }
 
-            public IResult<Transition, String> parse() {
+            public IResult<Transition, String> parse(@Nullable TransitionEntry nextKeyframe) {
                 var currentKeyFrame = new TimedValue(this.t, this.v);
                 if (this.i == null) {
                     return new IResult.Success<>(new Transition.End(currentKeyFrame));
+                }
+                if (nextKeyframe == null) {
+                    return new IResult.Error<>("A transition has no interpolation information, but next keyframe is not given");
                 }
                 switch (this.i.typ) {
                     case "CONST" -> {
@@ -115,7 +118,7 @@ public class JsonAnimationComponent {
                         if (!(this.t <= this.i.cp1.time() && this.i.cp1.time() <= this.i.cp2.time())) {
                             return new IResult.Error<>("Bazier control points are not placed in time-increasing order");
                         }
-                        return new IResult.Success<>(new Transition.BazierCubic(currentKeyFrame, this.i.cp1, this.i.cp2));
+                        return new IResult.Success<>(new Transition.BazierCubic(currentKeyFrame, this.i.cp1, this.i.cp2, new TimedValue(nextKeyframe.t, nextKeyframe.v)));
                     }
                     case "SINE", "QUAD", "CUBIC", "CIRCLE" -> {
                         if (this.i.ease == null) {
