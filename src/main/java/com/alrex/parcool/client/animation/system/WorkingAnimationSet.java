@@ -12,11 +12,15 @@ public class WorkingAnimationSet {
     private final IWorkingAnimation introAnimation;
     @Nullable
     private final IWorkingAnimation outroAnimation;
+    @Nullable
+    private IWorkingAnimation currentAnimation;
     private final IAnimationController controller;
     private int tickInPhase = 0;
     private int primaryTick = 0;
-    private final float fadeInTick;
-    private final float fadeOutTick;
+    private final int fadeInTick;
+    private final int fadeOutTick;
+    private boolean forceFinishing = true;
+    private int forceFinishingTick = 0;
     private AnimationPhase phase;
 
     public WorkingAnimationSet(AnimationSet animationSet, IAnimationController controller) {
@@ -27,6 +31,7 @@ public class WorkingAnimationSet {
         this.fadeInTick = animationSet.fadeInDuration();
         this.fadeOutTick = animationSet.fadeOutDuration();
         this.phase = animationSet.introAnimation() != null ? AnimationPhase.INTRO : AnimationPhase.MAIN;
+        this.currentAnimation = getAnimation(phase);
     }
 
     @Nullable
@@ -67,11 +72,15 @@ public class WorkingAnimationSet {
         if ((phase == AnimationPhase.INTRO || phase == AnimationPhase.MAIN) && !controller.continueAnimation(player)) {
             enter(AnimationPhase.OUTRO);
         } else {
-            var animation = getAnimation(phase);
-            if (animation == null) return;
-            animation.tick(player);
-            if (animation.isFinished()) {
+            if (currentAnimation == null) return;
+            currentAnimation.tick(player);
+            if (currentAnimation.isFinished()) {
                 nextPhase();
+            }
+        }
+        if (forceFinishing) {
+            if (forceFinishingTick < fadeOutTick) {
+                forceFinishingTick++;
             }
         }
     }
@@ -82,8 +91,11 @@ public class WorkingAnimationSet {
         return animation != null ? animation.getTransformation(player, partialTick) : null;
     }
 
-    public float getCurrentAnimationBlendFactor(float partialTick) {
+    public float getCurrentBlendFactor(float partialTick) {
         float tick = primaryTick + partialTick;
+        if (forceFinishing) {
+            return EasingFunctions.QUAD.easeInOut(1 - ((forceFinishingTick + partialTick) / fadeOutTick));
+        }
         if (tick < fadeInTick) return EasingFunctions.QUAD.easeInOut(tick / fadeInTick);
         if (isOnFinalPhase()) {
             var animation = getAnimation(phase);
@@ -107,19 +119,24 @@ public class WorkingAnimationSet {
             default -> phase;
         };
         this.phase = phase;
+        this.currentAnimation = getAnimation(phase);
         this.tickInPhase = 0;
     }
 
     public void nextPhase() {
         enter(switch (phase) {
             case INTRO -> AnimationPhase.MAIN;
-            case MAIN -> AnimationPhase.OUTRO;
+            case MAIN -> outroAnimation != null ? AnimationPhase.OUTRO : AnimationPhase.END;
             case OUTRO, END -> AnimationPhase.END;
         });
     }
 
     public boolean isFinished() {
-        return phase == AnimationPhase.END;
+        return phase == AnimationPhase.END || forceFinishingTick >= fadeOutTick;
+    }
+
+    public void startForceFinishing() {
+        forceFinishing = true;
     }
 
     public boolean isOnFinalPhase() {

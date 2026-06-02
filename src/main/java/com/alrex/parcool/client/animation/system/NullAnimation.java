@@ -24,6 +24,11 @@ public class NullAnimation implements IWorkingAnimation {
     }
 
     @Override
+    public void reset() {
+
+    }
+
+    @Override
     public ModelTransform getTransformation(AbstractClientPlayer player, float partialTick) {
         return ModelTransform.NO_TRANSFORMATION;
     }

@@ -11,5 +11,7 @@ public interface IWorkingAnimation {
 
     boolean isFinished();
 
+    void reset();
+
     ModelTransform getTransformation(AbstractClientPlayer player, float partialTick);
 }
