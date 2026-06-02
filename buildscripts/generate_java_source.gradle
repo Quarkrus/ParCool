@@ -54,7 +54,7 @@ public static class Bool{
             def min = it.getValue().asJsonObject.get("min")
             def max = it.getValue().asJsonObject.get("max")
             def minValue = min == null ? (short) 0 : min.asJsonPrimitive.asNumber.shortValue()
-            def maxValue = max == null ? "Short.MAX_VALUE" : min.asJsonPrimitive.asNumber.shortValue().toString()
+            def maxValue = max == null ? "Short.MAX_VALUE" : max.asJsonPrimitive.asNumber.shortValue().toString()
             def priority = it.getValue().asJsonObject.get("priority").asJsonPrimitive.asString
             def description = it.getValue().asJsonObject.get("description").asJsonPrimitive.asString
             stringBuilder
@@ -75,7 +75,7 @@ public static class Bool{
             def min = it.getValue().asJsonObject.get("min")
             def max = it.getValue().asJsonObject.get("max")
             def minValue = min == null ? (short) 0 : min.asJsonPrimitive.asNumber.floatValue()
-            def maxValue = max == null ? "Float.POSITIVE_INFINITY" : min.asJsonPrimitive.asNumber.floatValue().toString()
+            def maxValue = max == null ? "Float.POSITIVE_INFINITY" : max.asJsonPrimitive.asNumber.floatValue().toString()
             def priority = it.getValue().asJsonObject.get("priority").asJsonPrimitive.asString
             def description = it.getValue().asJsonObject.get("description").asJsonPrimitive.asString
             stringBuilder

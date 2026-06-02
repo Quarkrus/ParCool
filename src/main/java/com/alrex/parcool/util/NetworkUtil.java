@@ -18,12 +18,12 @@ public class NetworkUtil {
             if (!player.getUUID().equals(playerID)) {
                 return player.getLevel().getPlayerByUUID(playerID);
             }
+            return player;
         } else {
             var world = Minecraft.getInstance().level;
             if (world == null) return null;
             return world.getPlayerByUUID(playerID);
         }
-        return null;
     }
 
     @Nullable
