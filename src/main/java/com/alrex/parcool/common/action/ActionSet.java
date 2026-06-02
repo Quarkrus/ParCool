@@ -53,10 +53,10 @@ public class ActionSet implements Iterable<Action> {
         return (T) actions.get(entry.id().getNamespace()).get(entry.index());
     }
 
-    public <T extends ActionExtension> Iterable<T> getExtensionListeners(Class<T> clazz) {
+    public <T extends ActionExtension> Iterable<? extends T> getExtensionListeners(Class<T> clazz) {
         for (var extHandler : extHandlers) {
             if (extHandler.match(clazz)) {
-                return (List<T>) extHandler.getListeners();
+                return (List<? extends T>) extHandler.getListeners();
             }
         }
         throw new IllegalStateException(String.format("Extension class [%s] is not registered", clazz));
