@@ -12,8 +12,6 @@ import com.alrex.parcool.server.limitation.ILimitationEntry;
 import com.alrex.parcool.server.limitation.Limitation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class Parkourability {
 	public static Parkourability get(Player player) {
@@ -110,10 +108,5 @@ public class Parkourability {
 
 	public double getLimitedValue(ILimitationEntry.Real entry) {
 		return entry.select(getActionInfo().getClientLimitation().get(entry), getActionInfo().getServerLimitation().get(entry));
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	public boolean limitationIsNotSynced() {
-		return !getServerLimitation().isSynced();
 	}
 }

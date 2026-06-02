@@ -3,10 +3,14 @@ package com.alrex.parcool.common.action;
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.Parkourability;
+import com.alrex.parcool.common.info.CompiledLimitation;
 import com.alrex.parcool.common.network.ActionStatePacket;
 import com.alrex.parcool.common.network.ActionStateSetPacket;
+import com.alrex.parcool.common.network.LimitationPacket;
 import com.alrex.parcool.common.stamina.AbstractLocalStamina;
 import com.alrex.parcool.common.stamina.StaminaSynchronizationDepot;
+import com.alrex.parcool.config.ParCoolConfig;
+import com.alrex.parcool.server.limitation.Limitation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -96,25 +100,18 @@ public class ActionProcessor {
 	}
     @OnlyIn(Dist.CLIENT)
 	private void onTick$checkLimitationSynchronization(Player player, Parkourability parkourability) {
-		/*
-		if (player.isLocalPlayer() && player.tickCount > 127 && player.tickCount % 256 == 0 && parkourability.limitationIsNotSynced()) {
-			if (player instanceof LocalPlayer localPlayer) {
-				int trialCount = parkourability.getSynchronizeTrialCount();
-				if (trialCount < 5) {
-					parkourability.trySyncLimitation(localPlayer);
-					if (ParCoolConfig.Client.SHOW_AUTO_RESYNCHRONIZATION_NOTIFICATION.get()) {
-						player.displayClientMessage(Component.translatable("parcool.message.error.limitation.not_synced"), false);
-					}
-					ParCool.LOGGER.log(Level.WARN, "Detected ParCool Limitation is not synced. Sending synchronization request...");
-				} else if (trialCount == 5) {
-					parkourability.incrementSynchronizeTrialCount();
-					player.displayClientMessage(Component.translatable("parcool.message.error.limitation.fail_sync").withStyle(ChatFormatting.DARK_RED), false);
-					ParCool.LOGGER.log(Level.ERROR, "Failed to synchronize ParCool Limitation. There may be problems about server connection. Please report to the developer after checking connection");
-				}
-			}
+		if (player.isLocalPlayer() && player.tickCount > 127 && player.tickCount % 256 == 0 && !parkourability.getServerLimitation().isSynced()) {
+			ParCool.CONNECTION.send(
+					PacketDistributor.SERVER.noArg(),
+					new LimitationPacket(player.getUUID(), false, true,
+							CompiledLimitation.compile(Limitation.readFromConfig(
+									ParCoolConfig.getClientConfigLimitation(),
+									ParCool.getActionRegistry(),
+									ParCool.getStaminaTypeRegistry())
+							)
+					)
+			);
 		}
-
-		 */
 	}
 
 	private void processAction(Parkourability parkourability, LogicalSide logicalSide, Action action, Map<String, LinkedList<ActionStatePacket.Entry>> synchronizedData) {
