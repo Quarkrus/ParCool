@@ -14,7 +14,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -227,7 +226,6 @@ public class LimitationRegistry {
         return folderPath.resolve(playerID + ".json");
     }
 
-    @SubscribeEvent
     public void onServerStarting(ServerAboutToStartEvent event) {
         Path configPath = getServerConfigPath(event.getServer());
         var limitationFolderRootPath = configPath.resolve("parcool").resolve("limitations");
@@ -239,7 +237,6 @@ public class LimitationRegistry {
         this.limitationFolderRootPath = limitationFolderRootPath;
     }
 
-    @SubscribeEvent
     public void onServerStopping(ServerStoppingEvent event) {
         save();
     }

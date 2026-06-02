@@ -32,6 +32,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -45,8 +47,6 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javax.annotation.Nullable;
 
 @Mod(ParCool.MOD_ID)
 public class ParCool {
@@ -67,8 +67,7 @@ public class ParCool {
 	private static final ActionRegistry actionRegistry = new ActionRegistry();
 	private static final StaminaTypeRegistry staminaTypeRegistry = new StaminaTypeRegistry();
 	private static final ActionProcessor actionProcessor = new ActionProcessor();
-    @Nullable
-    private static LimitationRegistry limitationRegistry = null;
+	private static LimitationRegistry limitationRegistry = new LimitationRegistry();
 
 	public static ActionRegistry getActionRegistry() {
 		return actionRegistry;
@@ -82,7 +81,6 @@ public class ParCool {
 		return actionProcessor;
 	}
 
-    @Nullable
     public static LimitationRegistry getLimitationRegistry() {
         return limitationRegistry;
     }
@@ -93,13 +91,14 @@ public class ParCool {
 		eventBus.addListener(this::setupClient);
 		eventBus.addListener(this::loaded);
         eventBus.addListener(this::registerResource);
+		eventBus.addListener(this::onServerStarting);
+		eventBus.addListener(this::onServerStopping);
 		eventBus.register(AddAttributesHandler.class);
 		eventBus.register(ParCoolActions.class);
 		eventBus.register(StaminaTypes.class);
 
 		PROXY.init();
 		MinecraftForge.EVENT_BUS.register(actionProcessor);
-        MinecraftForge.EVENT_BUS.register(limitationRegistry = new LimitationRegistry());
 
 		Effects.register(eventBus);
 		Potions.register(eventBus);
@@ -142,5 +141,14 @@ public class ParCool {
 
     private void registerResource(final RegisterClientReloadListenersEvent event) {
         event.registerReloadListener(AnimationResourceManager.getInstance());
+	}
+
+	public void onServerStarting(ServerAboutToStartEvent event) {
+		limitationRegistry.onServerStarting(event);
+	}
+
+	public void onServerStopping(ServerStoppingEvent event) {
+		limitationRegistry.onServerStopping(event);
+		limitationRegistry = new LimitationRegistry();
 	}
 }
