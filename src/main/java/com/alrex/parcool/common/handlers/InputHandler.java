@@ -1,13 +1,9 @@
 package com.alrex.parcool.common.handlers;
 
-import com.alrex.parcool.client.animation.system.IPlayerAnimatorHolder;
-import com.alrex.parcool.client.animation.system.registration.ParCoolAnimations;
-import com.alrex.parcool.client.input.KeyBindings;
 import com.alrex.parcool.common.Parkourability;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class InputHandler {
@@ -48,14 +44,5 @@ public class InputHandler {
 
         }
          */
-    }
-
-    @SubscribeEvent
-    public static void onTick(TickEvent.ClientTickEvent event) {
-        if (KeyBindings.getKeyCrawl().isDown()) {
-            if (Minecraft.getInstance().player instanceof IPlayerAnimatorHolder animatorHolder) {
-                animatorHolder.getParCoolPlayerAnimator().getManager().startIfNotWorking(ParCoolAnimations.TEST);
-            }
-        }
     }
 }

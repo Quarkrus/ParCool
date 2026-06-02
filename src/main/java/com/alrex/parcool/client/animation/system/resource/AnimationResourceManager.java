@@ -224,6 +224,7 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
                     new AnimationSet(
                             animSetEntry.getKey(),
                             animSetEntry.getValue().getFadeInDuration(),
+                            animSetEntry.getValue().getFadeOutDuration(),
                             intro, main, outro
                     )
             );

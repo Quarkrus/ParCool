@@ -9,6 +9,8 @@ public class JsonAnimationSet {
     private ResourceLocation name;
     @SerializedName("fade_in_duration")
     private int fadeInDuration;
+    @SerializedName("fade_out_duration")
+    private int fadeOutDuration;
     @Nullable
     private ResourceLocation intro;
     private ResourceLocation main;
@@ -21,6 +23,10 @@ public class JsonAnimationSet {
 
     public int getFadeInDuration() {
         return fadeInDuration;
+    }
+
+    public int getFadeOutDuration() {
+        return fadeOutDuration;
     }
 
     @Nullable

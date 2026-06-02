@@ -1,5 +1,7 @@
 package com.alrex.parcool.client.animation.system;
 
+import com.alrex.parcool.client.animation.system.data.AnimationSet;
+import com.alrex.parcool.client.animation.system.registration.ID;
 import net.minecraft.client.player.AbstractClientPlayer;
 
 import javax.annotation.Nullable;
@@ -14,32 +16,33 @@ public class PlayerAnimator {
             return new BlendingModelTransform(transform, true, 1f);
         }
     }
-    private final AnimationProcessor manager = new AnimationProcessor();
+
+    private final AnimationProcessor animationProcessor = new AnimationProcessor();
     @Nullable
     private BlendingModelTransform currentTransformation = null;
 
     @Nullable
     private BlendingModelTransform getTransform(AbstractClientPlayer player, float partialTick) {
-        var currentAnimator = manager.getCurrentAnimator();
+        var currentAnimator = animationProcessor.getCurrentAnimator();
         if (currentAnimator != null) {
             var currentTransform = currentAnimator.getTransform(player, partialTick);
             if (currentTransform == null) return null;
-            var fadingOutAnimator = manager.getFadingOutAnimator();
-            var fadeInBlendFactor = currentAnimator.getFadeInBlendFactor(partialTick);
+            var fadingOutAnimator = animationProcessor.getFadingOutAnimator();
+            var currentAnimationBlendFactor = currentAnimator.getCurrentAnimationBlendFactor(partialTick);
             if (fadingOutAnimator != null) {
                 var fadingOutTransform = fadingOutAnimator.getTransform(player, partialTick);
                 if (fadingOutTransform != null) {
-                    var blendFactor = fadeInBlendFactor * manager.getFadeOutBlendFactor(partialTick);
-                    return BlendingModelTransform.from(fadingOutTransform.morph(currentTransform, blendFactor));
+                    var fadeOutBlendFactor = animationProcessor.getFadeOutAnimationBlendFactor(partialTick);
+                    return BlendingModelTransform.from(currentTransform.multiply(currentAnimationBlendFactor).morph(fadingOutTransform, fadeOutBlendFactor));
                 }
             }
-            return BlendingModelTransform.from(currentTransform, fadeInBlendFactor);
+            return BlendingModelTransform.from(currentTransform, currentAnimationBlendFactor);
         } else {
-            var fadingOutAnimator = manager.getFadingOutAnimator();
+            var fadingOutAnimator = animationProcessor.getFadingOutAnimator();
             if (fadingOutAnimator != null) {
                 var fadingOutTransform = fadingOutAnimator.getTransform(player, partialTick);
                 if (fadingOutTransform != null) {
-                    var blendFactor = fadingOutAnimator.getFadeInBlendFactor(partialTick) * manager.getFadeOutBlendFactor(partialTick);
+                    var blendFactor = fadingOutAnimator.getCurrentAnimationBlendFactor(partialTick) * animationProcessor.getFadeOutAnimationBlendFactor(partialTick);
                     return BlendingModelTransform.from(fadingOutTransform, blendFactor);
                 }
             }
@@ -48,7 +51,7 @@ public class PlayerAnimator {
     }
 
     public void tick(AbstractClientPlayer player) {
-        manager.tick(player);
+        animationProcessor.tick(player);
     }
 
     public void onRenderTick(AbstractClientPlayer player, float partialTick) {
@@ -64,7 +67,19 @@ public class PlayerAnimator {
         return currentTransformation;
     }
 
-    public AnimationProcessor getManager() {
-        return manager;
+    public void start(ID<AnimationSet> id) {
+        animationProcessor.start(id);
+    }
+
+    public void startIfNotWorking(ID<AnimationSet> id) {
+        animationProcessor.startIfNotWorking(id);
+    }
+
+    public void stop(ID<AnimationSet> id) {
+        animationProcessor.stop(id);
+    }
+
+    public void stopImmediately(ID<AnimationSet> id) {
+        animationProcessor.stopImmediately(id);
     }
 }

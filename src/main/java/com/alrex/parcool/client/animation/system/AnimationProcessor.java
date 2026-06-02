@@ -65,7 +65,7 @@ public class AnimationProcessor {
         }
         animators.add(new WorkingAnimationEntry(animEntry, new WorkingAnimationSet(newAnimationSet, animEntry.controllerSupplier().get())));
         if (current != null) {
-            fadeOut(current.animator, newAnimationSet.fadingInDuration());
+            fadeOut(current.animator, newAnimationSet.fadeInDuration());
         }
         return true;
     }
@@ -104,7 +104,21 @@ public class AnimationProcessor {
             if (currentAnimation.animator.getOutroAnimation() != null) {
                 currentAnimation.animator.enter(AnimationPhase.OUTRO);
             }
-            fadeOut(currentAnimation.animator, newAnimation != null ? (int) newAnimation.animator.getFadeInTick() : 5);
+            fadeOut(currentAnimation.animator, newAnimation != null ? (int) newAnimation.animator.getFadeOutTick() : 5);
+        }
+    }
+
+    public void stopImmediately(ID<AnimationSet> id) {
+        int i = animators.size();
+        while ((--i) >= 0) {
+            var animation = animators.get(i);
+            if (animation.registration.id() == id) {
+                animators.remove(i);
+                break;
+            }
+            if (animation.registration.isDescendantOf(id)) {
+                animators.remove(i);
+            }
         }
     }
 
@@ -125,7 +139,7 @@ public class AnimationProcessor {
         return fadingOutAnimator;
     }
 
-    public float getFadeOutBlendFactor(float partialTick) {
+    public float getFadeOutAnimationBlendFactor(float partialTick) {
         return Mth.clamp((fadingOutTick + partialTick) / fadingOutTickDuration, 0, 1);
     }
 

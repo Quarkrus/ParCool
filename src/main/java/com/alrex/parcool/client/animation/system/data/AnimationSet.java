@@ -7,7 +7,8 @@ import javax.annotation.Nullable;
 
 public record AnimationSet(
         ResourceLocation name,
-        int fadingInDuration,
+        int fadeInDuration,
+        int fadeOutDuration,
         @Nullable AnimationComponentGroup introAnimation,
         AnimationComponentGroup mainAnimation,
         @Nullable AnimationComponentGroup outroAnimation
