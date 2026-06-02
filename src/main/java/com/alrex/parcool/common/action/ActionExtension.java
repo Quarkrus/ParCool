@@ -1,0 +1,55 @@
+package com.alrex.parcool.common.action;
+
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+
+import java.util.List;
+
+public interface ActionExtension {
+    interface JumpListener extends ActionExtension {
+        void onJump();
+    }
+
+    interface LandListener extends ActionExtension {
+        void onLand();
+    }
+
+    interface KeyMapTriggeredListener extends ActionExtension {
+        void onInput(InputEvent.InteractionKeyMappingTriggered event);
+    }
+
+    interface AttackedListener extends ActionExtension {
+        void onAttacked(LivingAttackEvent event);
+    }
+
+    interface VisibilityListener extends ActionExtension {
+        void onUpdateVisibility(LivingEvent.LivingVisibilityEvent event);
+    }
+
+    public static final List<Class<? extends ActionExtension>> EXTENSIONS = List.of(
+            VisibilityListener.class,
+            LandListener.class,
+            JumpListener.class,
+            KeyMapTriggeredListener.class,
+            AttackedListener.class
+    );
+
+    final class Handler<T extends ActionExtension> {
+        private final List<T> listeners;
+        private final Class<T> listenerClass;
+
+        public Handler(Class<T> listenerClass, List<T> listeners) {
+            this.listenerClass = listenerClass;
+            this.listeners = listeners.stream().toList();
+        }
+
+        public boolean match(Class<?> clazz) {
+            return clazz == listenerClass;
+        }
+
+        public List<T> getListeners() {
+            return listeners;
+        }
+    }
+}

@@ -1,48 +1,20 @@
 package com.alrex.parcool.common.handlers;
 
 import com.alrex.parcool.common.Parkourability;
+import com.alrex.parcool.common.action.ActionExtension;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class InputHandler {
     @SubscribeEvent
     public static void onInput(InputEvent.InteractionKeyMappingTriggered event) {
-        LocalPlayer player = Minecraft.getInstance().player;
+        var player = Minecraft.getInstance().player;
         if (player == null) return;
-        Parkourability parkourability = Parkourability.get(player);
-        if (parkourability == null) return;
-        /*
-        if (parkourability.get(HideInBlock.class).isDoing()) {
-            event.setSwingHand(false);
-            event.setCanceled(true);
-            return;
+        var parkourability = Parkourability.get(player);
+        parkourability.getAdditionalProperties().onJump();
+        for (var listener : parkourability.getActions().getExtensionListeners(ActionExtension.KeyMapTriggeredListener.class)) {
+            listener.onInput(event);
         }
-        if (event.isUseItem()) {
-            if (parkourability.get(ClingToCliff.class).isDoing()) {
-                if (event.getKeyMapping().getKey().equals(KeyBindings.getKeyGrabWall().getKey())) {
-                    event.setSwingHand(false);
-                    event.setCanceled(true);
-                    return;
-                }
-            }
-            if (parkourability.get(RideZipline.class).isDoing()) {
-                if (event.getKeyMapping().getKey().equals(KeyBindings.getKeyRideZipline().getKey())) {
-                    event.setSwingHand(false);
-                    event.setCanceled(true);
-                    return;
-                }
-            }
-            if (parkourability.get(WallSlide.class).isDoing()) {
-                if (event.getKeyMapping().getKey().equals(KeyBindings.getKeyWallSlide().getKey())) {
-                    event.setSwingHand(false);
-                    event.setCanceled(true);
-                    return;
-                }
-            }
-
-        }
-         */
     }
 }
