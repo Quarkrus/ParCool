@@ -9,6 +9,7 @@ import com.alrex.parcool.client.animation.system.resource.json.*;
 import com.alrex.parcool.client.animation.system.util.IResult;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -47,7 +48,8 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
         var animationSetRegistrationMap = new TreeMap<ResourceLocation, JsonAnimationSet>();
         var requestedComponentGroups = new TreeSet<ResourceLocation>();
         for (var namespace : resourceManager.getNamespaces()) {
-            for (var setResource : resourceManager.getResourceStack(new ResourceLocation(namespace, "mma/animations.json"))) {
+            var resourceLocation = new ResourceLocation(namespace, "mma/animations.json");
+            for (var setResource : resourceManager.getResourceStack(resourceLocation)) {
                 try (var reader = setResource.openAsReader()) {
                     var jsonResult = GSON.<List<JsonAnimationSet>>fromJson(reader, ANIMATION_SETS_TYPE.getType());
                     for (var registration : jsonResult) {
@@ -58,13 +60,16 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
+                } catch (JsonSyntaxException e) {
+                    LOGGER.error("{} on loading AnimationSet[{}]:{}", e.getClass().getSimpleName(), resourceLocation, e.getMessage());
                 }
             }
         }
         var animationComponentGroupMap = new TreeMap<ResourceLocation, JsonAnimationComponentGroup>();
         var requestedComponents = new TreeSet<ResourceLocation>();
         for (var groupLocation : requestedComponentGroups) {
-            var groupResource = resourceManager.getResource(new ResourceLocation(groupLocation.getNamespace(), "mma/groups/" + groupLocation.getPath()));
+            var resourceLocation = new ResourceLocation(groupLocation.getNamespace(), "mma/groups/" + groupLocation.getPath());
+            var groupResource = resourceManager.getResource(resourceLocation);
             if (groupResource.isPresent()) {
                 try (var reader = groupResource.get().openAsReader()) {
                     var jsonResult = GSON.fromJson(reader, JsonAnimationComponentGroup.class);
@@ -75,6 +80,8 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
                             .forEach(requestedComponents::add);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
+                } catch (JsonSyntaxException e) {
+                    LOGGER.error("{} on loading AnimationComponentGroup[{}]:{}", e.getClass().getSimpleName(), resourceLocation, e.getMessage());
                 }
             } else {
                 LOGGER.warn("Requested component group [{}] does not exist in resources", groupLocation);
@@ -87,13 +94,16 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
         }
         var animationComponentMap = new TreeMap<ResourceLocation, JsonAnimationComponent>();
         for (var compLocation : requestedComponents) {
-            var compResource = resourceManager.getResource(new ResourceLocation(compLocation.getNamespace(), "mma/components/" + compLocation.getPath()));
+            var resourceLocation = new ResourceLocation(compLocation.getNamespace(), "mma/components/" + compLocation.getPath());
+            var compResource = resourceManager.getResource(resourceLocation);
             if (compResource.isPresent()) {
                 try (var reader = compResource.get().openAsReader()) {
                     var jsonResult = GSON.fromJson(reader, JsonAnimationComponent.class);
                     animationComponentMap.put(compLocation, jsonResult);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
+                } catch (JsonSyntaxException e) {
+                    LOGGER.error("{} on loading AnimationComponent[{}]:{}", e.getClass().getSimpleName(), resourceLocation, e.getMessage());
                 }
             } else {
                 LOGGER.warn("Requested component [{}] does not exist in resources", compLocation);
