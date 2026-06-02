@@ -185,6 +185,10 @@ public abstract class CompiledLimitation {
         return instance;
     }
 
+    public static CompiledLimitation compile(Limitation limitation) {
+        return compile(Collections.singletonList(limitation));
+    }
+
     public static CompiledLimitation compile(Collection<Limitation> limitations) {
         Remote instance = new Remote();
         for (var entry : LimitationEntries.Bool.ENTRIES) {

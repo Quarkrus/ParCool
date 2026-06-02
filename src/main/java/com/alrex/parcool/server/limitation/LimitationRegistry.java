@@ -103,7 +103,7 @@ public class LimitationRegistry {
         Parkourability parkourability = Parkourability.get(player);
         var limitation = CompiledLimitation.compile(getLimitationsOf(player.getUUID()));
         parkourability.getActionInfo().setServerLimitation(limitation);
-        ParCool.CONNECTION.send(PacketDistributor.ALL.noArg(), new LimitationPacket(player.getUUID(), true, limitation));
+        ParCool.CONNECTION.send(PacketDistributor.ALL.noArg(), new LimitationPacket(player.getUUID(), true, false, limitation));
     }
 
     public SortedMap<Limitation.ID, Limitation> load(UUID playerID) {

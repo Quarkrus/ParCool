@@ -15,7 +15,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 @OnlyIn(Dist.CLIENT)
@@ -43,11 +42,10 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void registerMessages(SimpleChannel instance) {
 		int index = 0;
-		instance.messageBuilder(ClientBoundParCoolLoginPacket.class, index++, NetworkDirection.LOGIN_TO_CLIENT)
-                //.markAsLoginPacket()
-				.encoder(ClientBoundParCoolLoginPacket::encode)
-				.decoder(ClientBoundParCoolLoginPacket::decode)
-				.consumerMainThread(ClientBoundParCoolLoginPacket::handle)
+		instance.messageBuilder(LimitationPacket.class, index++)
+				.encoder(LimitationPacket::encode)
+				.decoder(LimitationPacket::decode)
+				.consumerMainThread(LimitationPacket::handleInPhysicalClient)
 				.add();
 		instance.messageBuilder(StaminaPacket.class, index++)
 				.noResponse()
