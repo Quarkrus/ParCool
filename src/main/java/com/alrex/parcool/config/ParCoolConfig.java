@@ -121,8 +121,8 @@ public class ParCoolConfig {
 
 	public static void submitRegistries(ActionRegistry actionRegistry, StaminaTypeRegistry staminaTypeRegistry) {
 		if (CLIENT_CONFIG_LIMITATION == null && SERVER_CONFIG_LIMITATION == null) {
-			CLIENT_CONFIG_LIMITATION = new ConfigLimitation(actionRegistry, staminaTypeRegistry, true);
-			SERVER_CONFIG_LIMITATION = new ConfigLimitation(actionRegistry, staminaTypeRegistry, false);
+			CLIENT_CONFIG_LIMITATION = new ConfigLimitation(actionRegistry, staminaTypeRegistry, true, true);
+			SERVER_CONFIG_LIMITATION = new ConfigLimitation(actionRegistry, staminaTypeRegistry, false, false);
 		}
 	}
 
@@ -197,7 +197,7 @@ public class ParCoolConfig {
 			else return true;
 		}
 
-		private ConfigLimitation(ActionRegistry actionRegistry, StaminaTypeRegistry staminaTypeRegistry, boolean alwaysEnabled) {
+		private ConfigLimitation(ActionRegistry actionRegistry, StaminaTypeRegistry staminaTypeRegistry, boolean alwaysEnabled, boolean useDefault) {
 			var builder = new ForgeConfigSpec.Builder();
 			if (!alwaysEnabled) {
 				enabled = builder.define("enabled", true);
@@ -211,7 +211,7 @@ public class ParCoolConfig {
                         builder.comment(e.description());
                     }
                     return builder.define(
-                            e.name(), (boolean) e.getLowestPriorityValue()
+							e.name(), useDefault ? (boolean) e.defaultValue() : (boolean) e.getLowestPriorityValue()
                     );
                 }).toList();
 			}
@@ -219,14 +219,14 @@ public class ParCoolConfig {
 			builder.push("int");
 			{
 				integers = LimitationEntries.Int.ENTRIES.stream().map(e -> builder.comment(e.description()).defineInRange(
-						e.name(), e.getLowestPriorityValue(), e.min(), e.max()
+						e.name(), useDefault ? e.defaultValue() : e.getLowestPriorityValue(), e.min(), e.max()
 				)).toList();
 			}
 			builder.pop();
 			builder.push("real");
 			{
 				reals = LimitationEntries.Real.ENTRIES.stream().map(e -> builder.comment(e.description()).defineInRange(
-						e.name(), e.getLowestPriorityValue(), e.min(), e.max()
+						e.name(), useDefault ? e.defaultValue() : e.getLowestPriorityValue(), e.min(), e.max()
 				)).toList();
 			}
 			builder.pop();

@@ -32,8 +32,8 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
 			bodyTransformation = Transform.NO_TRANSFORMATION.morph(bodyTransformation, transform.blendFactor());
 			var translation = bodyTransformation.translation();
-			stack.translate(translation.x(), translation.y(), translation.z());
 			stack.mulPose(Vector3f.YP.rotationDegrees(180.0F - yRot));
+			stack.translate(translation.x(), translation.y(), translation.z());
 			stack.translate(0, 0.9, 0);
 			stack.mulPose(bodyTransformation.rotation());
 			stack.translate(0, -0.9, 0);

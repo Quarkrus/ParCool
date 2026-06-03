@@ -1,10 +1,11 @@
 package com.alrex.parcool.client.animation.system;
 
+import com.alrex.parcool.client.animation.system.resource.Argument;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.util.Mth;
 
-public abstract class IAnimationProgress {
-    protected IAnimationProgress(boolean loop, float rangeMin, float rangeMax) {
+public abstract class AnimationProgress {
+    protected AnimationProgress(boolean loop, float rangeMin, float rangeMax) {
         if (rangeMin < rangeMax) {
             this.rangeMin = rangeMin;
             this.rangeMax = rangeMax;
@@ -16,7 +17,7 @@ public abstract class IAnimationProgress {
         this.loop = loop;
     }
 
-    protected IAnimationProgress() {
+    protected AnimationProgress() {
         this.rangeMin = 0f;
         this.rangeMax = Float.MAX_VALUE;
         this.range = rangeMax;
@@ -30,52 +31,57 @@ public abstract class IAnimationProgress {
 
     protected abstract float getDeltaProgress(AbstractClientPlayer player);
 
-    void update(AbstractClientPlayer player) {
-        oldProgress = progress;
+    void tick(AbstractClientPlayer player) {
         if (loop) {
-            progress = Mth.clamp(getDeltaProgress(player), rangeMin, rangeMax);
+            oldProgress = progress - rangeMin - range * Mth.floor((progress - rangeMin) / range);
+            progress = oldProgress + getDeltaProgress(player);
         } else {
+            oldProgress = progress;
             progress += getDeltaProgress(player);
-            progress = progress - rangeMin - range * Mth.floor((progress - rangeMin) / range);
+            progress = Mth.clamp(progress, rangeMin, rangeMax);
         }
     }
 
-    public float getProgress() {
-        return progress;
-    }
-
     float getProgress(float partialTick) {
-        return Mth.lerp(partialTick, oldProgress, progress);
+        if (loop) {
+            var progressWithPartial = Mth.lerp(partialTick, this.oldProgress, this.progress);
+            return progressWithPartial - rangeMin - range * Mth.floor((progressWithPartial - rangeMin) / range);
+        } else {
+            return Mth.lerp(partialTick, oldProgress, progress);
+        }
     }
 
     void reset() {
         progress = 0;
     }
 
-    public interface Constructor<T extends IAnimationProgress> {
-        T newInstance(boolean loop, float rangeMin, float rangeMax);
+    public interface Constructor<T extends AnimationProgress> {
+        T newInstance(boolean loop, float rangeMin, float rangeMax, Argument args);
     }
 
     public interface IDeltaProgressProvider {
         float get(AbstractClientPlayer player);
     }
 
-    public static class FunctionAnimationProgress extends IAnimationProgress {
+    public static class FunctionAnimationProgress extends AnimationProgress {
         private final IDeltaProgressProvider progressProvider;
+        private final float scale;
 
-        public FunctionAnimationProgress(boolean loop, float rangeMin, float rangeMax, IDeltaProgressProvider deltaProgressProvider) {
+        public FunctionAnimationProgress(boolean loop, float rangeMin, float rangeMax, Argument args, IDeltaProgressProvider deltaProgressProvider) {
             super(loop, rangeMin, rangeMax);
+            scale = args.request("scale", 1f);
             progressProvider = deltaProgressProvider;
         }
 
         public FunctionAnimationProgress(IDeltaProgressProvider deltaProgressProvider) {
             super();
+            scale = 1f;
             progressProvider = deltaProgressProvider;
         }
 
         @Override
         protected float getDeltaProgress(AbstractClientPlayer player) {
-            return progressProvider.get(player);
+            return progressProvider.get(player) * scale;
         }
     }
 }

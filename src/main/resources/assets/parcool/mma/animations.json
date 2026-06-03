@@ -1,7 +1,8 @@
 [
   {
-    "name": "parcool:test",
-    "fade_in_duration": 5,
-    "main": "parcool:test_anim_group.json"
+    "name": "parcool:fast_run",
+    "fade_in_duration": 10,
+    "fade_out_duration": 10,
+    "main": "parcool:fast_run_group.json"
   }
 ]

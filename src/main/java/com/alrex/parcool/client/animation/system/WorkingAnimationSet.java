@@ -19,7 +19,7 @@ public class WorkingAnimationSet {
     private int primaryTick = 0;
     private final int fadeInTick;
     private final int fadeOutTick;
-    private boolean forceFinishing = true;
+    private boolean forceFinishing = false;
     private int forceFinishingTick = 0;
     private AnimationPhase phase;
 
@@ -70,9 +70,13 @@ public class WorkingAnimationSet {
         tickInPhase++;
         primaryTick++;
         if ((phase == AnimationPhase.INTRO || phase == AnimationPhase.MAIN) && !controller.continueAnimation(player)) {
-            enter(AnimationPhase.OUTRO);
-        } else {
-            if (currentAnimation == null) return;
+            if (outroAnimation != null) {
+                enter(AnimationPhase.OUTRO);
+            } else {
+                startForceFinishing();
+            }
+        }
+        if (currentAnimation != null) {
             currentAnimation.tick(player);
             if (currentAnimation.isFinished()) {
                 nextPhase();

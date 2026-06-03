@@ -8,7 +8,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class ParCoolActions {
     private static final ActionGroup GROUP;
 
-    private static final ActionEntry<FastRun> FAST_RUN;
+    public static final ActionEntry<FastRun> FAST_RUN;
     //private static final ActionEntry<Crawl> CRAWL;
     //private static final ActionEntry<Slide> SLIDE;
 

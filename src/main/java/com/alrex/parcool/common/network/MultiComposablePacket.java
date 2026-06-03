@@ -16,6 +16,7 @@ public abstract class MultiComposablePacket<T> {
     }
 
     public void add(T packet) {
+        if (packet == null) return;
         msgList.add(packet);
     }
 

@@ -91,14 +91,14 @@ public class ParCool {
 		eventBus.addListener(this::setupClient);
 		eventBus.addListener(this::loaded);
         eventBus.addListener(this::registerResource);
-		eventBus.addListener(this::onServerStarting);
-		eventBus.addListener(this::onServerStopping);
 		eventBus.register(AddAttributesHandler.class);
 		eventBus.register(ParCoolActions.class);
 		eventBus.register(StaminaTypes.class);
 
 		PROXY.init();
 		MinecraftForge.EVENT_BUS.register(actionProcessor);
+        MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
+        MinecraftForge.EVENT_BUS.addListener(this::onServerStopping);
 
 		Effects.register(eventBus);
 		Potions.register(eventBus);

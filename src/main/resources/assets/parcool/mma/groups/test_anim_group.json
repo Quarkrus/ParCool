@@ -1,9 +1,0 @@
-{
-  "duration": 20,
-  "loop": false,
-  "components": [
-    {
-      "name": "parcool:test_anim.json"
-    }
-  ]
-}

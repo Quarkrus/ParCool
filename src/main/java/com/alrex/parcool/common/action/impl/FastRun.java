@@ -1,5 +1,7 @@
 package com.alrex.parcool.common.action.impl;
 
+import com.alrex.parcool.client.animation.system.IPlayerAnimatorHolder;
+import com.alrex.parcool.client.animation.system.registration.ParCoolAnimations;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.action.ActionEntry;
@@ -29,6 +31,14 @@ public class FastRun extends ContinuableAction {
     public boolean canContinue() {
         return parkourability.player().isSprinting()
                 && Minecraft.getInstance().options.keySprint.isDown();
+    }
+
+    @Override
+    public void onStartInClient() {
+        if (parkourability.player() instanceof IPlayerAnimatorHolder holder) {
+            holder.getParCoolPlayerAnimator().start(ParCoolAnimations.FAST_RUN);
+        }
+
     }
 
     @Override

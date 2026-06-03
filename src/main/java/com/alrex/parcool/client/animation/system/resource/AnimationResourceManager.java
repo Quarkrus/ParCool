@@ -2,9 +2,11 @@ package com.alrex.parcool.client.animation.system.resource;
 
 import com.alrex.parcool.client.animation.system.AnimatableModelPart;
 import com.alrex.parcool.client.animation.system.AnimatableProperty;
+import com.alrex.parcool.client.animation.system.AnimationProgress;
 import com.alrex.parcool.client.animation.system.data.*;
 import com.alrex.parcool.client.animation.system.registration.AnimationProgresses;
 import com.alrex.parcool.client.animation.system.registration.BlendingFactors;
+import com.alrex.parcool.client.animation.system.registration.ID;
 import com.alrex.parcool.client.animation.system.resource.json.*;
 import com.alrex.parcool.client.animation.system.util.IResult;
 import com.google.gson.Gson;
@@ -29,6 +31,7 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(ResourceLocation.class, new ResourceLocationAdapter())
             .registerTypeAdapter(TimedValue.class, new TimedValueAdapter())
+            .registerTypeAdapter(Argument.class, new ArgumentAdapter())
             .create();
     private static AnimationResourceManager INSTANCE = null;
 
@@ -181,14 +184,28 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
                 }
                 var blend = compEntry.getBlend();
                 var progress = compEntry.getProgress();
+                ID<AnimationProgress> animationProgressID = null;
+                if (progress != null) {
+                    animationProgressID = AnimationProgresses.getID(progress.getName());
+                }
+                if (animationProgressID == null) {
+                    animationProgressID = AnimationProgresses.TIME;
+                }
+                var finalAnimationProgressID = animationProgressID;
                 componentList.add(new AnimationComponentGroup.ComponentEntry(
                         comp,
-                        blend == null ? null : BlendingFactors.get(
-                                blend.getName(),
-                                blend.getsArgs() != null ? blend.getsArgs() : Collections.EMPTY_MAP,
-                                blend.getfArgs() != null ? blend.getfArgs() : Collections.EMPTY_MAP
+                        blend == null ? null : () -> BlendingFactors.newInstance(
+                                blend.getName(), blend.getArgs()
                         ),
-                        progress == null ? AnimationProgresses.TIME : AnimationProgresses.getID(progress)
+                        progress == null
+                                ? () -> AnimationProgresses.getNewInstance(finalAnimationProgressID) :
+                                () -> AnimationProgresses.getNewInstance(
+                                        finalAnimationProgressID,
+                                        progress.getArgs().request("loop", false),
+                                        progress.getArgs().request("min", 0f),
+                                        progress.getArgs().request("max", Float.MAX_VALUE),
+                                        progress.getArgs()
+                                )
                 ));
             }
             instances.put(compGroupEntry.getKey(), new AnimationComponentGroup(

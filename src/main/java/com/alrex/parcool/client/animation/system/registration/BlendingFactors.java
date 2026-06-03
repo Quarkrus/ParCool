@@ -2,18 +2,20 @@ package com.alrex.parcool.client.animation.system.registration;
 
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.client.animation.system.IBlendingFactor;
+import com.alrex.parcool.client.animation.system.SimpleBlendFactor;
 import com.alrex.parcool.client.animation.system.math.EasingFunctions;
+import com.alrex.parcool.client.animation.system.resource.Argument;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 import java.util.TreeMap;
 
 public class BlendingFactors {
     public interface BlendingFactorFactory {
-        IBlendingFactor newInstance(Map<String, String> stringArguments, Map<String, Float> numberArguments);
+        IBlendingFactor newInstance(Argument args);
     }
 
     private record RegistrationEntry(ResourceLocation name, BlendingFactorFactory factorFactory) {
@@ -44,68 +46,87 @@ public class BlendingFactors {
     }
 
     @Nullable
-    public static IBlendingFactor get(ID<IBlendingFactor> id, Map<String, String> sArgs, Map<String, Float> fArgs) {
+    public static IBlendingFactor newInstance(ID<IBlendingFactor> id, Argument argument) {
         var entry = REGISTRY.get(id);
         if (entry == null) return null;
-        return entry.factorFactory.newInstance(sArgs, fArgs);
+        return entry.factorFactory.newInstance(argument);
     }
 
     @Nullable
-    public static IBlendingFactor get(ResourceLocation name, Map<String, String> sArgs, Map<String, Float> fArgs) {
+    public static IBlendingFactor newInstance(ResourceLocation name, Argument argument) {
         var id = NAME_TO_ID.get(name);
         if (id == null) return null;
-        return get(id, sArgs, fArgs);
+        return newInstance(id, argument);
     }
 
+    public static final ID<IBlendingFactor> TIME = register(
+            "time",
+            (args) -> {
+                var max = Mth.clamp(args.request("max", 20f), 0, 100f);
+                return new IBlendingFactor() {
+                    private int tick;
+
+                    @Override
+                    public float getFactor(AbstractClientPlayer player, float partial) {
+                        return EasingFunctions.QUAD.easeInOut(Mth.clamp((tick + partial) / max, 0f, 1f));
+                    }
+
+                    @Override
+                    public void tick() {
+                        tick++;
+                    }
+                };
+            }
+    );
     public static final ID<IBlendingFactor> VELOCITY = register(
             "velocity",
-            (stringArgs, floatArgs) -> {
-                var min = Mth.clamp(floatArgs.getOrDefault("min", 0f), 0f, 10f);
-                var max = Mth.clamp(floatArgs.getOrDefault("max", 0.25f), min, 100f);
-                return player -> Mth.clamp(EasingFunctions.CUBE.easeInOut((float) ((player.getDeltaMovement().length() - min) / (max - min))), 0f, 1f);
+            (args) -> {
+                var min = Mth.clamp(args.request("min", 0f), 0f, 10f);
+                var max = Mth.clamp(args.request("max", 0.25f), min, 100f);
+                return new SimpleBlendFactor((player, partial) -> Mth.clamp(EasingFunctions.QUAD.easeInOut((float) ((player.getDeltaMovement().length() - min) / (max - min))), 0f, 1f));
             }
     );
     public static final ID<IBlendingFactor> VELOCITY_VERTICAL = register(
             "velocity_v",
-            (stringArgs, floatArgs) -> {
-                var min = Mth.clamp(floatArgs.getOrDefault("min", 0f), 0f, 10f);
-                var max = Mth.clamp(floatArgs.getOrDefault("max", 0.25f), min, 100f);
-                return player -> Mth.clamp(EasingFunctions.CUBE.easeInOut((float) ((player.getDeltaMovement().y() - min) / (max - min))), 0f, 1f);
+            (args) -> {
+                var min = Mth.clamp(args.request("min", 0f), 0f, 10f);
+                var max = Mth.clamp(args.request("max", 0.25f), min, 100f);
+                return new SimpleBlendFactor((player, partial) -> Mth.clamp(EasingFunctions.QUAD.easeInOut((float) ((player.getDeltaMovement().y() - min) / (max - min))), 0f, 1f));
             }
     );
     public static final ID<IBlendingFactor> VELOCITY_HORIZONTAL = register(
             "velocity_h",
-            (stringArgs, floatArgs) -> {
-                var min = Mth.clamp(floatArgs.getOrDefault("min", 0f), 0f, 10f);
-                var max = Mth.clamp(floatArgs.getOrDefault("max", 0.25f), min, 100f);
-                return player -> {
+            (args) -> {
+                var min = Mth.clamp(args.request("min", 0f), 0f, 10f);
+                var max = Mth.clamp(args.request("max", 0.25f), min, 100f);
+                return new SimpleBlendFactor((player, partial) -> {
                     var vel = player.getDeltaMovement();
-                    return Mth.clamp(EasingFunctions.CUBE.easeInOut((float) (((new Vec3(vel.x, 0., vel.z)).length() - min) / (max - min))), 0f, 1f);
-                };
+                    return Mth.clamp(EasingFunctions.QUAD.easeInOut((float) (((new Vec3(vel.x, 0., vel.z)).length() - min) / (max - min))), 0f, 1f);
+                });
             }
     );
     public static final ID<IBlendingFactor> ANGULAR_VELOCITY_RIGHT = register(
             "rotation_r",
-            (stringArgs, floatArgs) -> {
-                return player -> 0f;
+            (args) -> {
+                return new SimpleBlendFactor((player, partial) -> 0f);
             }
     );
     public static final ID<IBlendingFactor> ANGULAR_VELOCITY_LEFT = register(
             "rotation_l",
-            (stringArgs, floatArgs) -> {
-                return player -> 0f;
+            (args) -> {
+                return new SimpleBlendFactor((player, partial) -> 0f);
             }
     );
     public static final ID<IBlendingFactor> ANGULAR_VELOCITY_UP = register(
             "rotation_u",
-            (stringArgs, floatArgs) -> {
-                return player -> 0f;
+            (args) -> {
+                return new SimpleBlendFactor((player, partial) -> 0f);
             }
     );
     public static final ID<IBlendingFactor> ANGULAR_VELOCITY_DOWN = register(
             "rotation_d",
-            (stringArgs, floatArgs) -> {
-                return player -> 0f;
+            (args) -> {
+                return new SimpleBlendFactor((player, partial) -> 0f);
             }
     );
 }

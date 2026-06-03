@@ -1,15 +1,15 @@
 package com.alrex.parcool.client.animation.system.resource.json;
 
-import com.google.gson.annotations.SerializedName;
+import com.alrex.parcool.client.animation.system.resource.Argument;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Map;
 
 public class JsonAnimationComponentGroup {
     private int duration;
-    private boolean loop;
+    private boolean loop = false;
+    private boolean infinite = false;
     public List<AnimationComponent> components;
 
     public int getDuration() {
@@ -18,6 +18,10 @@ public class JsonAnimationComponentGroup {
 
     public boolean isLoop() {
         return loop;
+    }
+
+    public boolean isInfinite() {
+        return infinite;
     }
 
     public List<AnimationComponent> getComponents() {
@@ -29,7 +33,7 @@ public class JsonAnimationComponentGroup {
         @Nullable
         private BlendingFactor blend;
         @Nullable
-        private ResourceLocation progress;
+        private Progress progress;
 
         public ResourceLocation getName() {
             return name;
@@ -41,31 +45,37 @@ public class JsonAnimationComponentGroup {
         }
 
         @Nullable
-        public ResourceLocation getProgress() {
+        public Progress getProgress() {
             return progress;
+        }
+
+        public static class Progress {
+            private ResourceLocation name;
+            @Nullable
+            private Argument args;
+
+            public Argument getArgs() {
+                if (args == null) return Argument.EMPTY;
+                return args;
+            }
+
+            public ResourceLocation getName() {
+                return name;
+            }
         }
 
         public static class BlendingFactor {
             private ResourceLocation name;
             @Nullable
-            @SerializedName("s_args")
-            private Map<String, String> sArgs;
-            @Nullable
-            @SerializedName("f_args")
-            private Map<String, Float> fArgs;
+            private Argument args;
+
+            public Argument getArgs() {
+                if (args == null) return Argument.EMPTY;
+                return args;
+            }
 
             public ResourceLocation getName() {
                 return name;
-            }
-
-            @Nullable
-            public Map<String, Float> getfArgs() {
-                return fArgs;
-            }
-
-            @Nullable
-            public Map<String, String> getsArgs() {
-                return sArgs;
             }
         }
     }

@@ -3,7 +3,6 @@ package com.alrex.parcool.client.animation.system;
 import com.alrex.parcool.client.animation.system.data.AnimationComponentGroup;
 import com.alrex.parcool.client.animation.system.data.IAnimationComponent;
 import com.alrex.parcool.client.animation.system.data.Transform;
-import com.alrex.parcool.client.animation.system.registration.AnimationProgresses;
 import net.minecraft.client.player.AbstractClientPlayer;
 
 import javax.annotation.Nullable;
@@ -14,7 +13,7 @@ public class WorkingAnimation implements IWorkingAnimation {
     public record Component(
             IAnimationComponent component,
             @Nullable IBlendingFactor blendingFactor,
-            IAnimationProgress progress
+            AnimationProgress progress
     ) {
     }
 
@@ -25,7 +24,7 @@ public class WorkingAnimation implements IWorkingAnimation {
     private boolean finished = false;
 
     public WorkingAnimation(AnimationComponentGroup group) {
-        components = group.components().stream().map(it -> new Component(it.component(), it.blendingFactor(), AnimationProgresses.getNewInstance(it.progressID(), group.loops(), 0f, group.duration()))).toList();
+        components = group.components().stream().map(it -> new Component(it.component(), it.blendingFactor() != null ? it.blendingFactor().get() : null, it.progressSupplier().get())).toList();
         duration = group.duration();
         loop = group.loops();
     }
@@ -67,7 +66,8 @@ public class WorkingAnimation implements IWorkingAnimation {
             return;
         }
         for (var component : components) {
-            component.progress().update(player);
+            component.progress().tick(player);
+            if (component.blendingFactor != null) component.blendingFactor.tick();
         }
     }
 
@@ -81,7 +81,7 @@ public class WorkingAnimation implements IWorkingAnimation {
                 if (componentTransform != null) {
                     transform = transform.append(
                             componentTransform,
-                            component.blendingFactor != null ? component.blendingFactor.getFactor(player) : 1f
+                            component.blendingFactor != null ? component.blendingFactor.getFactor(player, partialTick) : 1f
                     );
                 }
             }

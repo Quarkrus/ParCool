@@ -1,0 +1,26 @@
+{
+  "duration": 1000000,
+  "loop": true,
+  "components": [
+    {
+      "name": "parcool:fast_run_rig.json",
+      "progress": {
+        "name": "parcool:velocity_h",
+        "args": {
+          "loop": true,
+          "max": 12,
+          "scale": 6
+        }
+      }
+    },
+    {
+      "name": "parcool:lean_frontward.json",
+      "blend": {
+        "name": "parcool:time",
+        "args": {
+          "max": 10
+        }
+      }
+    }
+  ]
+}

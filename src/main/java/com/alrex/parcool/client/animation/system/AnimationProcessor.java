@@ -104,10 +104,12 @@ public class AnimationProcessor {
             factors[i] = animators.get((animators.size() - 1) - i).animator().getCurrentBlendFactor(partial);
             if (maxBlendFactor < factors[i]) maxBlendFactor = factors[i];
             if (factors[i] >= 0.99) {
-                factors[i] = 1;
+                maxBlendFactor = factors[i] = 1;
+                i++;
                 break;
             }
         }
+        i--;
         var transform = ModelTransform.NO_TRANSFORMATION;
         do {
             var animator = animators.get((animators.size() - 1) - i);
