@@ -1,7 +1,7 @@
 package com.alrex.parcool.proxy;
 
+import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.handle.TickEventHandler;
-import com.alrex.parcool.client.animation.system.registration.ParCoolAnimations;
 import com.alrex.parcool.client.hud.HUDRegistry;
 import com.alrex.parcool.client.input.KeyBindings;
 import com.alrex.parcool.client.input.KeyRecorder;

@@ -1,7 +1,9 @@
-package com.alrex.parcool.client.animation.system.registration;
+package com.alrex.parcool.client.animation;
 
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.client.animation.system.data.AnimationSet;
+import com.alrex.parcool.client.animation.system.registration.AnimationSets;
+import com.alrex.parcool.client.animation.system.registration.ID;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.ParCoolActions;
 import net.minecraft.resources.ResourceLocation;

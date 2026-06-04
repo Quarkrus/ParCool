@@ -1,7 +1,7 @@
 package com.alrex.parcool.common.action.impl;
 
+import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.IPlayerAnimatorHolder;
-import com.alrex.parcool.client.animation.system.registration.ParCoolAnimations;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.action.ActionEntry;
