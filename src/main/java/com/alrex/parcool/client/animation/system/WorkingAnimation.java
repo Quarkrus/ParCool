@@ -77,7 +77,7 @@ public class WorkingAnimation implements IWorkingAnimation {
         for (var modelPart : AnimatableModelPart.values()) {
             var transform = Transform.NO_TRANSFORMATION;
             for (var component : components) {
-                var componentTransform = component.component.getTransform(player, modelPart, component.progress.getProgress(partialTick));
+                var componentTransform = component.component.getTransform(player, modelPart, component.progress.getProgress(partialTick), partialTick);
                 if (componentTransform != null) {
                     transform = transform.append(
                             componentTransform,

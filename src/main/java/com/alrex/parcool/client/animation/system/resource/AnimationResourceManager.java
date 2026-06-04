@@ -6,6 +6,7 @@ import com.alrex.parcool.client.animation.system.AnimationProgress;
 import com.alrex.parcool.client.animation.system.data.*;
 import com.alrex.parcool.client.animation.system.registration.AnimationProgresses;
 import com.alrex.parcool.client.animation.system.registration.BlendingFactors;
+import com.alrex.parcool.client.animation.system.registration.CodedAnimationComponents;
 import com.alrex.parcool.client.animation.system.registration.ID;
 import com.alrex.parcool.client.animation.system.resource.json.*;
 import com.alrex.parcool.client.animation.system.util.IResult;
@@ -177,29 +178,32 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
         for (var compGroupEntry : jsonComponentGroups.entrySet()) {
             var componentList = new ArrayList<AnimationComponentGroup.ComponentEntry>(compGroupEntry.getValue().getComponents().size());
             for (var compEntry : compGroupEntry.getValue().getComponents()) {
-                var comp = components.get(compEntry.getName());
+                IAnimationComponent comp = components.get(compEntry.getName());
                 if (comp == null) {
-                    LOGGER.warn("Component[{}] requested by Group[{}], is not loaded", compEntry.getName(), compGroupEntry.getKey());
-                    continue;
+                    comp = CodedAnimationComponents.getInstance().get(compEntry.getName());
+                    if (comp == null) {
+                        LOGGER.warn("Component[{}] requested by Group[{}], is not loaded", compEntry.getName(), compGroupEntry.getKey());
+                        continue;
+                    }
                 }
                 var blend = compEntry.getBlend();
                 var progress = compEntry.getProgress();
                 ID<AnimationProgress> animationProgressID = null;
                 if (progress != null) {
-                    animationProgressID = AnimationProgresses.getID(progress.getName());
+                    animationProgressID = AnimationProgresses.getInstance().getID(progress.getName());
                 }
                 if (animationProgressID == null) {
-                    animationProgressID = AnimationProgresses.TIME;
+                    animationProgressID = AnimationProgresses.getInstance().TIME;
                 }
                 var finalAnimationProgressID = animationProgressID;
                 componentList.add(new AnimationComponentGroup.ComponentEntry(
                         comp,
-                        blend == null ? null : () -> BlendingFactors.newInstance(
+                        blend == null ? null : () -> BlendingFactors.getInstance().newInstance(
                                 blend.getName(), blend.getArgs()
                         ),
                         progress == null
-                                ? () -> AnimationProgresses.getNewInstance(finalAnimationProgressID) :
-                                () -> AnimationProgresses.getNewInstance(
+                                ? () -> AnimationProgresses.getInstance().getNewInstance(finalAnimationProgressID) :
+                                () -> AnimationProgresses.getInstance().getNewInstance(
                                         finalAnimationProgressID,
                                         progress.getArgs().request("loop", false),
                                         progress.getArgs().request("min", 0f),

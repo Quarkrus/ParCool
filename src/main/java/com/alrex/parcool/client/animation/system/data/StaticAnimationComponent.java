@@ -13,14 +13,10 @@ public record StaticAnimationComponent(
         EnumMap<AnimatableModelPart, EnumMap<AnimatableProperty, Timeline>> animationCurves,
         int duration
 ) implements IAnimationComponent {
-    @Override
-    public boolean loops() {
-        return false;
-    }
 
     @Override
     @Nullable
-    public Transform getTransform(AbstractClientPlayer __, AnimatableModelPart part, float progress) {
+    public Transform getTransform(AbstractClientPlayer __, AnimatableModelPart part, float progress, float ___) {
         var curves = animationCurves.get(part);
         if (curves == null) return null;
         var translation = new float[3];
