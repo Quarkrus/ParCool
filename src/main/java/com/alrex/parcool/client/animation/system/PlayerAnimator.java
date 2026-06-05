@@ -7,6 +7,9 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import javax.annotation.Nullable;
 
 public class PlayerAnimator {
+    public static PlayerAnimator get(AbstractClientPlayer player) {
+        return ((IPlayerAnimatorHolder) player).getParCoolPlayerAnimator();
+    }
     private final AnimationProcessor animationProcessor = new AnimationProcessor();
     @Nullable
     private BlendingModelTransform currentTransformation = null;

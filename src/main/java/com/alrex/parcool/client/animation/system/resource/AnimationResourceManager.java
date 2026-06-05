@@ -213,7 +213,7 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
                 ));
             }
             instances.put(compGroupEntry.getKey(), new AnimationComponentGroup(
-                    componentList, compGroupEntry.getValue().getDuration(), compGroupEntry.getValue().isLoop()
+                    componentList, compGroupEntry.getValue().getDuration(), compGroupEntry.getValue().isLoop(), compGroupEntry.getValue().isInfinite()
             ));
         }
         return instances;

@@ -32,6 +32,10 @@ public abstract class Action {
 		return LogicalSide.CLIENT;
 	}
 
+	public boolean canBeActiveInFluid() {
+		return false;
+	}
+
 	protected Collection<ActionEntry<? extends ContinuableAction>> exclusiveActions() {
 		return Collections.emptyList();
 	}
@@ -44,6 +48,7 @@ public abstract class Action {
 
 	public void start() {
 		tickFromStarted = 0;
+		onStart();
 		if (parkourability.player().isLocalPlayer()) {
 			onStartInClient();
 			onStartInLocalClient();

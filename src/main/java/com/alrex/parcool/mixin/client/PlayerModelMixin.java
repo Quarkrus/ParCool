@@ -48,6 +48,7 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 
 	@Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("HEAD"), cancellable = true)
 	protected void onSetupAnimHead(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo info) {
+		if (entity.isFallFlying()) return;
 		if (entity instanceof IPlayerAnimatorHolder holder) {
 			var transform = holder.getParCoolPlayerAnimator().getCurrentTransformation();
 			parcool$resetModel();
@@ -65,6 +66,7 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 
 	@Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("TAIL"))
 	protected void onSetupAnimTail(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo info) {
+		if (entity.isFallFlying()) return;
 		if (entity instanceof IPlayerAnimatorHolder holder) {
 			var transform = holder.getParCoolPlayerAnimator().getCurrentTransformation();
 			if (transform == null) return;

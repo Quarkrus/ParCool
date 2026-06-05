@@ -4,5 +4,11 @@
     "fade_in_duration": 10,
     "fade_out_duration": 10,
     "main": "parcool:fast_run_group.json"
+  },
+  {
+    "name": "parcool:crawl",
+    "fade_in_duration": 10,
+    "fade_out_duration": 10,
+    "main": "parcool:crawl_group.json"
   }
 ]

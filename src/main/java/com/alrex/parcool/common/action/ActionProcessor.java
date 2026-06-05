@@ -130,7 +130,8 @@ public class ActionProcessor {
 		if (needSync) {
 			if (action instanceof ContinuableAction continuableAction && continuableAction.isDoing()) {
 				boolean canContinue = //TODO:parkourability.getActionInfo().can(action.getClass()) &&
-						!MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToContinue(parkourability.player(), continuableAction))
+						(action.canBeActiveInFluid() || !player.isInFluidType())
+								&& !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToContinue(parkourability.player(), continuableAction))
 								&& continuableAction.canContinue();
 				if (!canContinue) {
 					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Pre(parkourability.player(), continuableAction));
@@ -140,6 +141,7 @@ public class ActionProcessor {
 				}
 			} else {
 				boolean start = !parkourability.player().isSpectator() //TODO
+						&& (action.canBeActiveInFluid() || !player.isInFluidType())
 						&& parkourability.can(action.getEntry())
 						&& !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(parkourability.player(), action))
 						&& action.canStart();

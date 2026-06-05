@@ -14,6 +14,11 @@ public class ParCoolAnimations {
             () -> (p) -> Parkourability.get(p).get(ParCoolActions.FAST_RUN).isDoing(),
             null
     );
+    public static final ID<AnimationSet> CRAWL = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "crawl"),
+            () -> (p) -> Parkourability.get(p).get(ParCoolActions.CRAWL).isDoing(),
+            null
+    );
 
     public static void register() {
     }

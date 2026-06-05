@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class JsonAnimationComponentGroup {
-    private int duration;
+    private int duration = Integer.MAX_VALUE;
     private boolean loop = false;
     private boolean infinite = false;
     public List<AnimationComponent> components;

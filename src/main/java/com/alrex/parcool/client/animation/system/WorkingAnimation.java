@@ -21,12 +21,14 @@ public class WorkingAnimation implements IWorkingAnimation {
     private int tick = 0;
     private final int duration;
     private final boolean loop;
+    private final boolean infinite;
     private boolean finished = false;
 
     public WorkingAnimation(AnimationComponentGroup group) {
         components = group.components().stream().map(it -> new Component(it.component(), it.blendingFactor() != null ? it.blendingFactor().get() : null, it.progressSupplier().get())).toList();
         duration = group.duration();
         loop = group.loops();
+        infinite = group.infinite();
     }
 
     @Override
@@ -53,7 +55,7 @@ public class WorkingAnimation implements IWorkingAnimation {
     @Override
     public void tick(AbstractClientPlayer player) {
         tick++;
-        if (tick >= getDuration()) {
+        if (!infinite && tick >= getDuration()) {
             if (loops()) {
                 tick = 0;
                 for (var component : components) {

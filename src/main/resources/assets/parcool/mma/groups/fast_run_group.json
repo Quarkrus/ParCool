@@ -1,6 +1,5 @@
 {
-  "duration": 1000000,
-  "loop": true,
+  "infinite": true,
   "components": [
     {
       "name": "parcool:builtin/lock_head_front",

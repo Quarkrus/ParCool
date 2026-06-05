@@ -1,13 +1,14 @@
 package com.alrex.parcool.common.action.impl;
 
 import com.alrex.parcool.client.animation.ParCoolAnimations;
-import com.alrex.parcool.client.animation.system.IPlayerAnimatorHolder;
+import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.action.ActionEntry;
 import com.alrex.parcool.common.action.ContinuableAction;
 import com.alrex.parcool.server.limitation.LimitationEntries;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
@@ -35,10 +36,7 @@ public class FastRun extends ContinuableAction {
 
     @Override
     public void onStartInClient() {
-        if (parkourability.player() instanceof IPlayerAnimatorHolder holder) {
-            holder.getParCoolPlayerAnimator().start(ParCoolAnimations.FAST_RUN);
-        }
-
+        PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.FAST_RUN);
     }
 
     @Override
