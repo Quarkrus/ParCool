@@ -19,6 +19,11 @@ public class ParCoolAnimations {
             () -> (p) -> Parkourability.get(p).get(ParCoolActions.CRAWL).isDoing(),
             null
     );
+    public static final ID<AnimationSet> DODGE_SIDE = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "side_dodge"),
+            () -> (p) -> true,
+            null
+    );
 
     public static void register() {
     }

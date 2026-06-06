@@ -1,0 +1,17 @@
+{
+  "duration": 25,
+  "components": [
+    {
+      "name": "parcool:side_roll.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "max": 25
+        }
+      }
+    },
+    {
+      "name": "parcool:builtin/lock_body"
+    }
+  ]
+}

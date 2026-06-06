@@ -10,5 +10,11 @@
     "fade_in_duration": 10,
     "fade_out_duration": 10,
     "main": "parcool:crawl_group.json"
+  },
+  {
+    "name": "parcool:side_dodge",
+    "fade_in_duration": 5,
+    "fade_out_duration": 5,
+    "main": "parcool:side_dodge_group.json"
   }
 ]

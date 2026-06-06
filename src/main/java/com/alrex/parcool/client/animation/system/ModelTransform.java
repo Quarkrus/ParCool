@@ -41,9 +41,24 @@ public record ModelTransform(EnumMap<AnimatableModelPart, Transform> transforms)
     }
 
     public ModelTransform morph(ModelTransform to, float t) {
+        if (t <= 1e-4) return this;
+        if (t >= 0.9999) return to;
         var newMap = new EnumMap<AnimatableModelPart, Transform>(AnimatableModelPart.class);
         for (var part : AnimatableModelPart.values()) {
-            newMap.put(part, transforms.get(part).morph(to.transforms.get(part), t));
+            var fromTransform = transforms.get(part);
+            var toTransform = to.transforms.get(part);
+            if (toTransform == null) {
+                if (fromTransform != null) {
+                    newMap.put(part, fromTransform);
+                }
+                continue;
+            } else {
+                if (fromTransform == null) {
+                    newMap.put(part, toTransform);
+                    continue;
+                }
+            }
+            newMap.put(part, fromTransform.morph(toTransform, t));
         }
         return new ModelTransform(newMap);
     }

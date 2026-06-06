@@ -8,9 +8,19 @@ import net.minecraft.util.Mth;
 
 public record Transform(Vec3f translation, Quaternion rotation) {
     public static final Transform NO_TRANSFORMATION = new Transform(Vec3f.ZERO, Quaternion.ONE.copy());
+    public static final Transform NO_TRANSFORMATION_INV = NO_TRANSFORMATION.getInverseRotated();
+
+    public Transform getInverseRotated() {
+        return new Transform(translation, new Quaternion(-rotation.i(), -rotation.j(), -rotation.k(), -rotation.r()));
+    }
 
     /// @param t : blending factor, in [0,1]
     public Transform morph(Transform to, float t) {
+        var rotation = this.rotation;
+        var rotInv = new Quaternion(-rotation.i(), -rotation.j(), -rotation.k(), -rotation.r());
+        if (MathUtil.dot(rotation, to.rotation) < MathUtil.dot(rotInv, to.rotation)) {
+            rotation = rotInv;
+        }
         return new Transform(
                 new Vec3f(
                         Mth.lerp(t, translation.x(), to.translation.x()),

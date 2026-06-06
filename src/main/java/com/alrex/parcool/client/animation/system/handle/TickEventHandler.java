@@ -8,7 +8,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class TickEventHandler {
     @SubscribeEvent
     public static void onTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
+        if (event.phase == TickEvent.Phase.END) {
             var level = Minecraft.getInstance().level;
             if (level == null) return;
             for (var p : level.players()) {

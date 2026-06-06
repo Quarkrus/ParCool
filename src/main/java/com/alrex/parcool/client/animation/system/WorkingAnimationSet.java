@@ -20,8 +20,7 @@ public class WorkingAnimationSet {
     private final int fadeInTick;
     private final int fadeOutTick;
     private final boolean mirror;
-    private boolean forceFinishing = false;
-    private int forceFinishingTick = 0;
+    private int forceFinishingTick = -1;
     private AnimationPhase phase;
 
     public WorkingAnimationSet(AnimationSet animationSet, IAnimationController controller, boolean mirror) {
@@ -84,7 +83,7 @@ public class WorkingAnimationSet {
                 nextPhase();
             }
         }
-        if (forceFinishing) {
+        if (forceFinishingTick >= 0) {
             if (forceFinishingTick < fadeOutTick) {
                 forceFinishingTick++;
             }
@@ -101,7 +100,7 @@ public class WorkingAnimationSet {
 
     public float getCurrentBlendFactor(float partialTick) {
         float tick = primaryTick + partialTick;
-        if (forceFinishing) {
+        if (forceFinishingTick >= 0) {
             return EasingFunctions.QUAD.easeInOut(1 - ((forceFinishingTick + partialTick) / fadeOutTick));
         }
         if (tick < fadeInTick) return EasingFunctions.QUAD.easeInOut(tick / fadeInTick);
@@ -111,7 +110,7 @@ public class WorkingAnimationSet {
             var tickInPhase = this.tickInPhase + partialTick;
             var animationDuration = animation.getDuration();
             if (animationDuration - fadeOutTick <= tickInPhase) {
-                return EasingFunctions.QUAD.easeInOut(1 - (tickInPhase - animationDuration) / fadeOutTick);
+                return EasingFunctions.QUAD.easeInOut((animationDuration - tickInPhase) / fadeOutTick);
             }
         }
         return 1f;
@@ -144,7 +143,7 @@ public class WorkingAnimationSet {
     }
 
     public void startForceFinishing() {
-        forceFinishing = true;
+        if (forceFinishingTick < 0) forceFinishingTick = 0;
     }
 
     public boolean isOnFinalPhase() {
