@@ -19,17 +19,19 @@ public class WorkingAnimationSet {
     private int primaryTick = 0;
     private final int fadeInTick;
     private final int fadeOutTick;
+    private final boolean mirror;
     private boolean forceFinishing = false;
     private int forceFinishingTick = 0;
     private AnimationPhase phase;
 
-    public WorkingAnimationSet(AnimationSet animationSet, IAnimationController controller) {
+    public WorkingAnimationSet(AnimationSet animationSet, IAnimationController controller, boolean mirror) {
         this.mainAnimation = new WorkingAnimation(animationSet.mainAnimation());
         this.introAnimation = animationSet.introAnimation() != null ? new WorkingAnimation(animationSet.introAnimation()) : null;
         this.outroAnimation = animationSet.outroAnimation() != null ? new WorkingAnimation(animationSet.outroAnimation()) : null;
         this.controller = controller;
         this.fadeInTick = animationSet.fadeInDuration();
         this.fadeOutTick = animationSet.fadeOutDuration();
+        this.mirror = mirror;
         this.phase = animationSet.introAnimation() != null ? AnimationPhase.INTRO : AnimationPhase.MAIN;
         this.currentAnimation = getAnimation(phase);
     }
@@ -92,7 +94,9 @@ public class WorkingAnimationSet {
     @Nullable
     public ModelTransform getTransform(AbstractClientPlayer player, float partialTick) {
         var animation = getAnimation(phase);
-        return animation != null ? animation.getTransformation(player, partialTick) : null;
+        if (animation == null) return null;
+        var transform = animation.getTransformation(player, partialTick);
+        return mirror ? transform.mirror() : transform;
     }
 
     public float getCurrentBlendFactor(float partialTick) {

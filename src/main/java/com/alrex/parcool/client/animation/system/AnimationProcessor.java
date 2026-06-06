@@ -29,15 +29,15 @@ public class AnimationProcessor {
         }
     }
 
-    public void start(ID<AnimationSet> id) {
-        if (!startIfNotWorking(id)) {
+    public void start(ID<AnimationSet> id, boolean mirror) {
+        if (!startIfNotWorking(id, mirror)) {
             var entry = getWorkingAnimator(id);
             if (entry == null) return;
             entry.animator.enter(AnimationPhase.INTRO);
         }
     }
 
-    public boolean startIfNotWorking(ID<AnimationSet> id) {
+    public boolean startIfNotWorking(ID<AnimationSet> id, boolean mirror) {
         if (isWorking(id)) return false;
 
         var animEntry = AnimationSets.getInstance().get(id);
@@ -45,9 +45,9 @@ public class AnimationProcessor {
         var newAnimationSet = AnimationResourceManager.getInstance().getResource().getAnimationSet(id);
         if (newAnimationSet == null) return true;
         if (animEntry.parent() != null) {
-            startIfNotWorking(animEntry.parent().id());
+            startIfNotWorking(animEntry.parent().id(), mirror);
         }
-        animators.add(new WorkingAnimationEntry(animEntry, new WorkingAnimationSet(newAnimationSet, animEntry.controllerSupplier().get())));
+        animators.add(new WorkingAnimationEntry(animEntry, new WorkingAnimationSet(newAnimationSet, animEntry.controllerSupplier().get(), mirror)));
         return true;
     }
 

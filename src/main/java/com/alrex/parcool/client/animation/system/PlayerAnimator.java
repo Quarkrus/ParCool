@@ -32,11 +32,19 @@ public class PlayerAnimator {
     }
 
     public void start(ID<AnimationSet> id) {
-        animationProcessor.start(id);
+        animationProcessor.start(id, false);
+    }
+
+    public void start(ID<AnimationSet> id, boolean mirror) {
+        animationProcessor.start(id, mirror);
     }
 
     public void startIfNotWorking(ID<AnimationSet> id) {
-        animationProcessor.startIfNotWorking(id);
+        animationProcessor.startIfNotWorking(id, false);
+    }
+
+    public void startIfNotWorking(ID<AnimationSet> id, boolean mirror) {
+        animationProcessor.startIfNotWorking(id, true);
     }
 
     public void stop(ID<AnimationSet> id) {

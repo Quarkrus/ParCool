@@ -15,6 +15,17 @@ public record ModelTransform(EnumMap<AnimatableModelPart, Transform> transforms)
         NO_TRANSFORMATION = new ModelTransform(map);
     }
 
+    public ModelTransform mirror() {
+        var newMap = new EnumMap<AnimatableModelPart, Transform>(AnimatableModelPart.class);
+        for (var part : AnimatableModelPart.values()) {
+            var transform = transforms.get(part);
+            if (transform != null) {
+                newMap.put(part, transform.mirror());
+            }
+        }
+        return new ModelTransform(newMap);
+    }
+
     public ModelTransform multiply(float factor) {
         return NO_TRANSFORMATION.morph(this, factor);
     }

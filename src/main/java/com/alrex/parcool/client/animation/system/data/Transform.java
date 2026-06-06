@@ -26,6 +26,13 @@ public record Transform(Vec3f translation, Quaternion rotation) {
         );
     }
 
+    public Transform mirror() {
+        return new Transform(
+                new Vec3f(-translation.x(), translation().y(), translation().z()),
+                new Quaternion(-rotation.i(), rotation.j(), rotation.k(), rotation.r())
+        );
+    }
+
     public Transform append(Transform after, float t) {
         var rot = after.rotation.copy();
         rot.set(rot.i() * t, rot.j() * t, rot.k() * t, rot.r());
