@@ -1,6 +1,8 @@
 package com.alrex.parcool.proxy;
 
 import com.alrex.parcool.client.animation.ParCoolAnimations;
+import com.alrex.parcool.client.animation.ParCoolBlendingFactors;
+import com.alrex.parcool.client.animation.ParCoolCodedAnimationComponents;
 import com.alrex.parcool.client.animation.system.handle.TickEventHandler;
 import com.alrex.parcool.client.hud.HUDRegistry;
 import com.alrex.parcool.client.input.KeyBindings;
@@ -37,6 +39,8 @@ public class ClientProxy extends CommonProxy {
 		MinecraftForge.EVENT_BUS.register(InputHandler.class);
         MinecraftForge.EVENT_BUS.register(TickEventHandler.class);
         ParCoolAnimations.register();
+        ParCoolCodedAnimationComponents.register();
+        ParCoolBlendingFactors.register();
 	}
 
 	@Override

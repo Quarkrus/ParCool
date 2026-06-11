@@ -11,22 +11,13 @@
       }
     },
     {
-      "name": "parcool:fast_run_rig.json",
+      "name": "parcool:fast_run.json",
       "progress": {
         "name": "parcool:velocity_h",
         "args": {
           "loop": true,
           "max": 12,
           "scale": 7
-        }
-      }
-    },
-    {
-      "name": "parcool:lean_frontward.json",
-      "blend": {
-        "name": "parcool:time",
-        "args": {
-          "max": 10
         }
       }
     }

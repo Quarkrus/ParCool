@@ -1,0 +1,41 @@
+{
+  "infinite": true,
+  "components": [
+    {
+      "name": "parcool:hang.json",
+      "progress": {
+        "name": "parcool:velocity_h",
+        "args": {
+          "loop": true,
+          "max": 30,
+          "scale": 20
+        }
+      }
+    },
+    {
+      "name": "parcool:hang_left_to_wall.json",
+      "blend": {
+        "name": "parcool:builtin/cling_to_cliff_left_to_wall",
+        "method": "set"
+      }
+    },
+    {
+      "name": "parcool:hang_left_to_wall.json",
+      "mirror": true,
+      "blend": {
+        "name": "parcool:builtin/cling_to_cliff_right_to_wall",
+        "method": "set"
+      }
+    },
+    {
+      "name": "parcool:hang_back_to_wall.json",
+      "blend": {
+        "name": "parcool:builtin/cling_to_cliff_back_to_wall",
+        "method": "set"
+      }
+    },
+    {
+      "name": "parcool:builtin/cling_to_cliff_lock_body"
+    }
+  ]
+}

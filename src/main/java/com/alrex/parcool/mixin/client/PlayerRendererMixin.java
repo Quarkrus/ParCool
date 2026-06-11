@@ -35,7 +35,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
 
 			if (!transform.isOverwriting()) {
-				bodyTransformation = Transform.NO_TRANSFORMATION.morph(bodyTransformation, transform.blendFactor());
+				bodyTransformation = Transform.NO_TRANSFORMATION.morph(bodyTransformation, transform.blendFactor(), true);
 			}
 			var translation = bodyTransformation.translation();
 			stack.mulPose(Vector3f.YP.rotationDegrees(180.0F - yRot));
@@ -53,7 +53,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
 				stack.translate(translation.x(), translation.y(), translation.z());
 				stack.translate(0, 0.9 * transform.blendFactor(), 0);
-				stack.mulPose((new Transform(Vec3f.ZERO, Vector3f.XP.rotationDegrees(swimmingActualXRot))).morph(bodyTransformation, transform.blendFactor()).rotation());
+				stack.mulPose((new Transform(Vec3f.ZERO, Vector3f.XP.rotationDegrees(swimmingActualXRot))).morph(bodyTransformation, transform.blendFactor(), true).rotation());
 				stack.translate(0, -0.9 * transform.blendFactor(), 0);
 				if (player.isVisuallySwimming()) {
 					stack.translate(0, -1.0f * (1f - transform.blendFactor()), 0.3f * (1f - transform.blendFactor()));

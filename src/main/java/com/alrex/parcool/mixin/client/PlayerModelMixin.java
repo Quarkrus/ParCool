@@ -54,11 +54,16 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 			parcool$resetModel();
 			if (transform == null) return;
 			if (transform.isOverwriting()) {
-				transform.transformation().transforms().get(AnimatableModelPart.HEAD).apply(head);
-				transform.transformation().transforms().get(AnimatableModelPart.RIGHT_ARM).apply(rightArm);
-				transform.transformation().transforms().get(AnimatableModelPart.RIGHT_LEG).apply(rightLeg);
-				transform.transformation().transforms().get(AnimatableModelPart.LEFT_ARM).apply(leftArm);
-				transform.transformation().transforms().get(AnimatableModelPart.LEFT_LEG).apply(leftLeg);
+				var headTransform = transform.transformation().transforms().get(AnimatableModelPart.HEAD);
+				if (headTransform != null) headTransform.apply(head);
+				var rATransform = transform.transformation().transforms().get(AnimatableModelPart.RIGHT_ARM);
+				if (rATransform != null) rATransform.apply(rightArm);
+				var rLTransform = transform.transformation().transforms().get(AnimatableModelPart.RIGHT_LEG);
+				if (rLTransform != null) rLTransform.apply(rightLeg);
+				var lATransform = transform.transformation().transforms().get(AnimatableModelPart.LEFT_ARM);
+				if (lATransform != null) lATransform.apply(leftArm);
+				var lLTransform = transform.transformation().transforms().get(AnimatableModelPart.LEFT_LEG);
+				if (lLTransform != null) lLTransform.apply(leftLeg);
 				info.cancel();
 			}
 		}
@@ -71,11 +76,16 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 			var transform = holder.getParCoolPlayerAnimator().getCurrentTransformation();
 			if (transform == null) return;
 			var blendingFactor = transform.blendFactor();
-			transform.transformation().transforms().get(AnimatableModelPart.HEAD).apply(head, blendingFactor);
-			transform.transformation().transforms().get(AnimatableModelPart.RIGHT_ARM).apply(rightArm, blendingFactor, true);
-			transform.transformation().transforms().get(AnimatableModelPart.RIGHT_LEG).apply(rightLeg, blendingFactor);
-			transform.transformation().transforms().get(AnimatableModelPart.LEFT_ARM).apply(leftArm, blendingFactor);
-			transform.transformation().transforms().get(AnimatableModelPart.LEFT_LEG).apply(leftLeg, blendingFactor);
+			var headTransform = transform.transformation().transforms().get(AnimatableModelPart.HEAD);
+			if (headTransform != null) headTransform.apply(head, blendingFactor);
+			var rATransform = transform.transformation().transforms().get(AnimatableModelPart.RIGHT_ARM);
+			if (rATransform != null) rATransform.apply(rightArm, blendingFactor);
+			var rLTransform = transform.transformation().transforms().get(AnimatableModelPart.RIGHT_LEG);
+			if (rLTransform != null) rLTransform.apply(rightLeg, blendingFactor);
+			var lATransform = transform.transformation().transforms().get(AnimatableModelPart.LEFT_ARM);
+			if (lATransform != null) lATransform.apply(leftArm, blendingFactor);
+			var lLTransform = transform.transformation().transforms().get(AnimatableModelPart.LEFT_LEG);
+			if (lLTransform != null) lLTransform.apply(leftLeg, blendingFactor);
 		}
 	}
 

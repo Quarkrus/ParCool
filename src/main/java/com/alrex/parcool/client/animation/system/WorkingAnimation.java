@@ -13,7 +13,8 @@ public class WorkingAnimation implements IWorkingAnimation {
     public record Component(
             IAnimationComponent component,
             @Nullable IBlendingFactor blendingFactor,
-            AnimationProgress progress
+            AnimationProgress progress,
+            boolean mirror
     ) {
     }
 
@@ -25,7 +26,7 @@ public class WorkingAnimation implements IWorkingAnimation {
     private boolean finished = false;
 
     public WorkingAnimation(AnimationComponentGroup group) {
-        components = group.components().stream().map(it -> new Component(it.component(), it.blendingFactor() != null ? it.blendingFactor().get() : null, it.progressSupplier().get())).toList();
+        components = group.components().stream().map(it -> new Component(it.component(), it.blendingFactor() != null ? it.blendingFactor().get() : null, it.progressSupplier().get(), it.mirror())).toList();
         duration = group.duration();
         loop = group.loops();
         infinite = group.infinite();
@@ -76,19 +77,39 @@ public class WorkingAnimation implements IWorkingAnimation {
     @Override
     public ModelTransform getTransformation(AbstractClientPlayer player, float partialTick) {
         var map = new EnumMap<AnimatableModelPart, Transform>(AnimatableModelPart.class);
-        for (var modelPart : AnimatableModelPart.values()) {
-            var transform = Transform.NO_TRANSFORMATION;
-            for (var component : components) {
+        for (var component : components) {
+            var blendingValue = component.blendingFactor != null ? component.blendingFactor.getFactor(player, partialTick) : 1f;
+            var method = component.blendingFactor != null ? component.blendingFactor.getBlendMethod() : BlendMethod.ADD;
+
+            for (var modelPart : AnimatableModelPart.values()) {
+                var appliedPart = modelPart;
+                if (component.mirror) {
+                    appliedPart = modelPart.getMirrorPart();
+                }
+
+                if (blendingValue < 1e-5) continue;
+
+                var transform = map.get(appliedPart);
+                if (transform == null) transform = Transform.NO_TRANSFORMATION;
                 var componentTransform = component.component.getTransform(player, modelPart, component.progress.getProgress(partialTick), partialTick);
                 if (componentTransform != null) {
-                    transform = transform.append(
-                            componentTransform,
-                            component.blendingFactor != null ? component.blendingFactor.getFactor(player, partialTick) : 1f
-                    );
+                    if (component.mirror) {
+                        componentTransform = componentTransform.mirror();
+                    }
+                    switch (method) {
+                        case ADD ->
+                                map.put(appliedPart, transform.append(componentTransform, blendingValue, appliedPart == AnimatableModelPart.BODY));
+                        case SET ->
+                                map.put(appliedPart, transform.morph(componentTransform, blendingValue, appliedPart == AnimatableModelPart.BODY));
+                    }
                 }
             }
-            if (transform != Transform.NO_TRANSFORMATION) {
-                map.put(modelPart, transform);
+        }
+        for (var modelPart : AnimatableModelPart.values()) {
+            var transform = map.get(modelPart);
+            if (transform == null) continue;
+            if (transform == Transform.NO_TRANSFORMATION) {
+                map.remove(modelPart);
             }
         }
         return new ModelTransform(map);

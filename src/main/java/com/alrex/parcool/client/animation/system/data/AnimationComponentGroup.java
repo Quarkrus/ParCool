@@ -11,7 +11,8 @@ public record AnimationComponentGroup(List<ComponentEntry> components, int durat
     public record ComponentEntry(
             IAnimationComponent component,
             @Nullable Supplier<IBlendingFactor> blendingFactor,
-            Supplier<AnimationProgress> progressSupplier
+            Supplier<AnimationProgress> progressSupplier,
+            boolean mirror
     ) {
     }
 

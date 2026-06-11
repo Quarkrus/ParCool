@@ -1,5 +1,6 @@
 package com.alrex.parcool.client.animation.system.resource.json;
 
+import com.alrex.parcool.client.animation.system.BlendMethod;
 import com.alrex.parcool.client.animation.system.resource.Argument;
 import net.minecraft.resources.ResourceLocation;
 
@@ -34,6 +35,7 @@ public class JsonAnimationComponentGroup {
         private BlendingFactor blend;
         @Nullable
         private Progress progress;
+        private boolean mirror = false;
 
         public ResourceLocation getName() {
             return name;
@@ -47,6 +49,10 @@ public class JsonAnimationComponentGroup {
         @Nullable
         public Progress getProgress() {
             return progress;
+        }
+
+        public boolean isMirror() {
+            return mirror;
         }
 
         public static class Progress {
@@ -68,6 +74,13 @@ public class JsonAnimationComponentGroup {
             private ResourceLocation name;
             @Nullable
             private Argument args;
+            @Nullable
+            private BlendMethod method;
+
+            public BlendMethod getBlendMethod() {
+                if (method == null) return BlendMethod.ADD;
+                return method;
+            }
 
             public Argument getArgs() {
                 if (args == null) return Argument.EMPTY;

@@ -3,6 +3,7 @@ package com.alrex.parcool.client.animation.system.resource;
 import com.alrex.parcool.client.animation.system.AnimatableModelPart;
 import com.alrex.parcool.client.animation.system.AnimatableProperty;
 import com.alrex.parcool.client.animation.system.AnimationProgress;
+import com.alrex.parcool.client.animation.system.BlendMethod;
 import com.alrex.parcool.client.animation.system.data.*;
 import com.alrex.parcool.client.animation.system.registration.AnimationProgresses;
 import com.alrex.parcool.client.animation.system.registration.BlendingFactors;
@@ -33,6 +34,7 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
             .registerTypeAdapter(ResourceLocation.class, new ResourceLocationAdapter())
             .registerTypeAdapter(TimedValue.class, new TimedValueAdapter())
             .registerTypeAdapter(Argument.class, new ArgumentAdapter())
+            .registerTypeAdapter(BlendMethod.class, new BlendMethodAdapter())
             .create();
     private static AnimationResourceManager INSTANCE = null;
 
@@ -199,17 +201,18 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
                 componentList.add(new AnimationComponentGroup.ComponentEntry(
                         comp,
                         blend == null ? null : () -> BlendingFactors.getInstance().newInstance(
-                                blend.getName(), blend.getArgs()
+                                blend.getName(), blend.getArgs(), blend.getBlendMethod()
                         ),
                         progress == null
-                                ? () -> AnimationProgresses.getInstance().getNewInstance(finalAnimationProgressID) :
-                                () -> AnimationProgresses.getInstance().getNewInstance(
+                                ? () -> AnimationProgresses.getInstance().getNewInstance(finalAnimationProgressID)
+                                : () -> AnimationProgresses.getInstance().getNewInstance(
                                         finalAnimationProgressID,
                                         progress.getArgs().request("loop", false),
                                         progress.getArgs().request("min", 0f),
                                         progress.getArgs().request("max", Float.MAX_VALUE),
                                         progress.getArgs()
-                                )
+                        ),
+                        compEntry.isMirror()
                 ));
             }
             instances.put(compGroupEntry.getKey(), new AnimationComponentGroup(

@@ -27,12 +27,12 @@ public record ModelTransform(EnumMap<AnimatableModelPart, Transform> transforms)
         }
         var rArmTransform = transforms.get(AnimatableModelPart.RIGHT_ARM);
         var lArmTransform = transforms.get(AnimatableModelPart.LEFT_ARM);
-        if (lArmTransform != null) newMap.put(AnimatableModelPart.RIGHT_ARM, lArmTransform);
-        if (rArmTransform != null) newMap.put(AnimatableModelPart.LEFT_ARM, rArmTransform);
+        if (lArmTransform != null) newMap.put(AnimatableModelPart.RIGHT_ARM, lArmTransform.mirror());
+        if (rArmTransform != null) newMap.put(AnimatableModelPart.LEFT_ARM, rArmTransform.mirror());
         var rLegTransform = transforms.get(AnimatableModelPart.RIGHT_LEG);
         var lLegTransform = transforms.get(AnimatableModelPart.LEFT_LEG);
-        if (lLegTransform != null) newMap.put(AnimatableModelPart.RIGHT_LEG, lLegTransform);
-        if (rLegTransform != null) newMap.put(AnimatableModelPart.LEFT_LEG, rLegTransform);
+        if (lLegTransform != null) newMap.put(AnimatableModelPart.RIGHT_LEG, lLegTransform.mirror());
+        if (rLegTransform != null) newMap.put(AnimatableModelPart.LEFT_LEG, rLegTransform.mirror());
         return new ModelTransform(newMap);
     }
 
@@ -58,7 +58,7 @@ public record ModelTransform(EnumMap<AnimatableModelPart, Transform> transforms)
                     continue;
                 }
             }
-            newMap.put(part, fromTransform.morph(toTransform, t));
+            newMap.put(part, fromTransform.morph(toTransform, t, part == AnimatableModelPart.BODY));
         }
         return new ModelTransform(newMap);
     }

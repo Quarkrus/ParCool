@@ -15,39 +15,29 @@ public record Transform(Vec3f translation, Quaternion rotation) {
     }
 
     /// @param t : blending factor, in [0,1]
-    public Transform morph(Transform to, float t) {
-        var rotation = this.rotation;
-        var rotInv = new Quaternion(-rotation.i(), -rotation.j(), -rotation.k(), -rotation.r());
-        if (MathUtil.dot(rotation, to.rotation) < MathUtil.dot(rotInv, to.rotation)) {
-            rotation = rotInv;
-        }
+    public Transform morph(Transform to, float t, boolean useShortestPath) {
         return new Transform(
                 new Vec3f(
                         Mth.lerp(t, translation.x(), to.translation.x()),
                         Mth.lerp(t, translation.y(), to.translation.y()),
                         Mth.lerp(t, translation.z(), to.translation.z())
                 ),
-                new Quaternion(
-                        Mth.lerp(t, rotation.i(), to.rotation.i()),
-                        Mth.lerp(t, rotation.j(), to.rotation.j()),
-                        Mth.lerp(t, rotation.k(), to.rotation.k()),
-                        Mth.lerp(t, rotation.r(), to.rotation.r())
-                )
+                MathUtil.slerp(t, this.rotation, to.rotation, useShortestPath)
         );
     }
 
     public Transform mirror() {
         return new Transform(
                 new Vec3f(-translation.x(), translation().y(), translation().z()),
-                new Quaternion(-rotation.i(), rotation.j(), rotation.k(), rotation.r())
+                new Quaternion(rotation.i(), -rotation.j(), -rotation.k(), rotation.r())
         );
     }
 
-    public Transform append(Transform after, float t) {
-        var rot = after.rotation.copy();
-        rot.set(rot.i() * t, rot.j() * t, rot.k() * t, rot.r());
+    public Transform append(Transform after, float t, boolean useShortestPath) {
+        var rot = MathUtil.slerp(t, Quaternion.ONE, after.rotation, useShortestPath);
+        var translation = MathUtil.rotate(this.translation, rot);
         rot.mul(this.rotation);
-        return new Transform(this.translation.add(after.translation.scale(t)), rot);
+        return new Transform(translation.add(after.translation.scale(t)), rot);
     }
 
     public void apply(ModelPart part, float blendingFactor) {

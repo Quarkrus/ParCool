@@ -6,4 +6,6 @@ public interface IBlendingFactor {
     float getFactor(AbstractClientPlayer player, float partial);
 
     void tick();
+
+    BlendMethod getBlendMethod();
 }

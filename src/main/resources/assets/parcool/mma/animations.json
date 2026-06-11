@@ -16,5 +16,11 @@
     "fade_in_duration": 5,
     "fade_out_duration": 5,
     "main": "parcool:side_dodge_group.json"
+  },
+  {
+    "name": "parcool:cling_to_cliff",
+    "fade_in_duration": 5,
+    "fade_out_duration": 5,
+    "main": "parcool:cling_to_cliff_group.json"
   }
 ]
