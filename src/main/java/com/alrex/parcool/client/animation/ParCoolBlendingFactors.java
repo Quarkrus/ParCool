@@ -11,16 +11,16 @@ import net.minecraft.resources.ResourceLocation;
 
 public class ParCoolBlendingFactors {
     public static final ID<IBlendingFactor> CLING_CLIFF_LEFT_TO_WALL = BlendingFactors.getInstance()
-            .register(new ResourceLocation(ParCool.MOD_ID, "builtin/cling_to_cliff_left_to_wall"), (args, method) ->
-                    new SimpleBlendFactor((player, partial) -> Parkourability.get(player).get(ParCoolActions.CLING_TO_CLIFF).getBlendFactorLeftToWall(partial), method)
+            .register(new ResourceLocation(ParCool.MOD_ID, "builtin/hang_on_left_to_wall"), (args, method) ->
+                    new SimpleBlendFactor((player, partial) -> Parkourability.get(player).get(ParCoolActions.HANG_ON).getBlendFactorLeftToWall(partial), method)
             );
     public static final ID<IBlendingFactor> CLING_CLIFF_RIGHT_TO_WALL = BlendingFactors.getInstance()
-            .register(new ResourceLocation(ParCool.MOD_ID, "builtin/cling_to_cliff_right_to_wall"), (args, method) ->
-                    new SimpleBlendFactor((player, partial) -> Parkourability.get(player).get(ParCoolActions.CLING_TO_CLIFF).getBlendFactorRightToWall(partial), method)
+            .register(new ResourceLocation(ParCool.MOD_ID, "builtin/hang_on_right_to_wall"), (args, method) ->
+                    new SimpleBlendFactor((player, partial) -> Parkourability.get(player).get(ParCoolActions.HANG_ON).getBlendFactorRightToWall(partial), method)
             );
     public static final ID<IBlendingFactor> CLING_CLIFF_BACK_TO_WALL = BlendingFactors.getInstance()
-            .register(new ResourceLocation(ParCool.MOD_ID, "builtin/cling_to_cliff_back_to_wall"), (args, method) ->
-                    new SimpleBlendFactor((player, partial) -> Parkourability.get(player).get(ParCoolActions.CLING_TO_CLIFF).getBlendFactorBackToWall(partial), method)
+            .register(new ResourceLocation(ParCool.MOD_ID, "builtin/hang_on_back_to_wall"), (args, method) ->
+                    new SimpleBlendFactor((player, partial) -> Parkourability.get(player).get(ParCoolActions.HANG_ON).getBlendFactorBackToWall(partial), method)
             );
 
     public static void register() {

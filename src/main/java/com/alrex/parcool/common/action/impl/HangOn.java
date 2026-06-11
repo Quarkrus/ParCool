@@ -5,7 +5,6 @@ import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.client.input.KeyBindings;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.*;
-import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.util.MathUtil;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
@@ -17,62 +16,62 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.Collections;
 
-public class ClingToCliff extends ContinuableAction {
+public class HangOn extends ContinuableAction {
     private static final double REACH_SCALE = 0.25;
     private final SynchronizedDataHolder dataHolder;
-    private final SynchronizedProperty<ClingDirection> property_direction;
+    private final SynchronizedProperty<HangDirection> property_direction;
     private final SynchronizedProperty<Boolean> property_fullWall;
 
     @Nullable
-    private ClingDirection oldDirection = null;
+    private HangDirection oldDirection = null;
     // Only for Local Client
     @Nullable
-    private GrabState currentGrabState;
+    private HangState currentHangState;
     @Nullable
-    private GrabState startingGrabState;
+    private HangState startingHangState;
 
-    public ClingToCliff(Parkourability parkourability, ActionEntry<? extends Action> entry) {
+    public HangOn(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry);
         var builder = new SynchronizedDataHolder.Builder((byte) 2);
-        property_direction = builder.register(() -> SynchronizedProperty.newEnum(ClingDirection.class, (newV, oldV) -> oldDirection = oldV));
+        property_direction = builder.register(() -> SynchronizedProperty.newEnum(HangDirection.class, (newV, oldV) -> oldDirection = oldV));
         property_fullWall = builder.register(SynchronizedProperty::newBoolean);
         dataHolder = builder.build(entry);
     }
 
     @Override
     public boolean canStart() {
-        return KeyBindings.getKeyGrabWall().isDown() && (startingGrabState = getGrabState()) != null;
+        return KeyBindings.getKeyGrabWall().isDown() && (startingHangState = getHangState()) != null;
     }
 
     @Override
     public boolean canContinue() {
-        return KeyBindings.getKeyGrabWall().isDown() && currentGrabState != null;
+        return KeyBindings.getKeyGrabWall().isDown() && currentHangState != null;
     }
 
     @Override
     public void onStartInLocalClient() {
         parkourability.getBehaviorEnforcer().setMarkerEnforceMovePoint(
                 this::isDoing, () -> {
-                    if (currentGrabState == null) return null;
+                    if (currentHangState == null) return null;
                     if (!(parkourability.player() instanceof LocalPlayer player)) return null;
-                    var speed = currentGrabState.fullWall
-                            ? player.getSpeed() * MathUtil.mapLinear((float) currentGrabState.direction.asNormalizedVec().dot(player.getLookAngle().multiply(1, 0, 1).normalize()), -0.7071f, 1f, 0f, 1f)
+                    var speed = currentHangState.fullWall
+                            ? player.getSpeed() * MathUtil.mapLinear((float) currentHangState.direction.asNormalizedVec().dot(player.getLookAngle().multiply(1, 0, 1).normalize()), -0.7071f, 1f, 0f, 1f)
                             : player.getSpeed();
                     var moveVec = player.input.getMoveVector().scale(speed);
                     var actualMoveVec = new Vec3(moveVec.x, 0, moveVec.y).yRot((float) Math.toRadians(-player.getYRot()));
-                    if (currentGrabState.onProtrusion) {
+                    if (currentHangState.onProtrusion) {
                         return parkourability.player().position()
                                 .add(new Vec3(
-                                        currentGrabState.direction.signX > 0 ? Math.max(0, actualMoveVec.x) : Math.min(0, actualMoveVec.x), 0,
-                                        currentGrabState.direction.signZ > 0 ? Math.max(0, actualMoveVec.z) : Math.min(0, actualMoveVec.z)
+                                        currentHangState.direction.signX > 0 ? Math.max(0, actualMoveVec.x) : Math.min(0, actualMoveVec.x), 0,
+                                        currentHangState.direction.signZ > 0 ? Math.max(0, actualMoveVec.z) : Math.min(0, actualMoveVec.z)
                                 ));
-                    } else if (currentGrabState.direction.oblique) {
-                        var directionVec = currentGrabState.direction.asVec().yRot(Mth.HALF_PI);
+                    } else if (currentHangState.direction.oblique) {
+                        var directionVec = currentHangState.direction.asVec().yRot(Mth.HALF_PI);
                         return parkourability.player().position()
                                 .add(directionVec.scale(directionVec.dot(actualMoveVec)));
                     } else {
                         return parkourability.player().position()
-                                .add(currentGrabState.direction.signX * 0.2, currentGrabState.yCollisionDistance, currentGrabState.direction.signZ * 0.2)
+                                .add(currentHangState.direction.signX * 0.2, currentHangState.yCollisionDistance, currentHangState.direction.signZ * 0.2)
                                 .add(actualMoveVec);
                     }
                 }
@@ -81,19 +80,19 @@ public class ClingToCliff extends ContinuableAction {
 
     @Override
     public void onStartInClient() {
-        PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.CLING_TO_CLIFF);
+        PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.HANG_ON);
     }
 
     @Override
     public void onWorkingTickInLocalClient() {
-        if (startingGrabState != null) {
-            currentGrabState = startingGrabState;
-            startingGrabState = null;
+        if (startingHangState != null) {
+            currentHangState = startingHangState;
+            startingHangState = null;
         } else {
-            currentGrabState = getGrabState();
+            currentHangState = getHangState();
         }
-        property_direction.set(currentGrabState != null ? currentGrabState.direction : null);
-        property_fullWall.set(currentGrabState != null ? currentGrabState.fullWall : null);
+        property_direction.set(currentHangState != null ? currentHangState.direction : null);
+        property_fullWall.set(currentHangState != null ? currentHangState.fullWall : null);
     }
 
     @Nullable
@@ -152,7 +151,7 @@ public class ClingToCliff extends ContinuableAction {
         return dataHolder;
     }
 
-    private enum ClingDirection {
+    private enum HangDirection {
         XP(1, 0, false),
         XN(-1, 0, false),
         ZP(0, 1, false),
@@ -165,7 +164,7 @@ public class ClingToCliff extends ContinuableAction {
         private final short signZ;
         private final boolean oblique;
 
-        ClingDirection(int signX, int signZ, boolean oblique) {
+        HangDirection(int signX, int signZ, boolean oblique) {
             this.signX = (short) signX;
             this.signZ = (short) signZ;
             this.oblique = oblique;
@@ -181,8 +180,8 @@ public class ClingToCliff extends ContinuableAction {
         }
 
         @Nullable
-        static ClingDirection get(int signX, int signZ) {
-            for (var direction : ClingDirection.values()) {
+        static HangDirection get(int signX, int signZ) {
+            for (var direction : HangDirection.values()) {
                 if (direction.signX == signX && direction.signZ == signZ) {
                     return direction;
                 }
@@ -191,8 +190,8 @@ public class ClingToCliff extends ContinuableAction {
         }
     }
 
-    private record GrabState(
-            ClingDirection direction,
+    private record HangState(
+            HangDirection direction,
             AABB handBoundingBox,
             double yCollisionDistance,
             boolean onProtrusion,
@@ -201,7 +200,7 @@ public class ClingToCliff extends ContinuableAction {
     }
 
     @Nullable
-    private GrabState getGrabState() {
+    private HangState getHangState() {
         var player = parkourability.player();
         var level = player.level;
         var playerBB = player.getBoundingBox();
@@ -222,7 +221,7 @@ public class ClingToCliff extends ContinuableAction {
             signZ--;
         }
 
-        var direction = ClingDirection.get(signX, signZ);
+        var direction = HangDirection.get(signX, signZ);
         if (direction == null) {
             protrusion = true;
             signX = 0;
@@ -235,7 +234,7 @@ public class ClingToCliff extends ContinuableAction {
                 signX--;
                 signZ--;
             }
-            direction = ClingDirection.get(signX, signZ);
+            direction = HangDirection.get(signX, signZ);
             if (direction == null) {
                 signX = 0;
                 signZ = 0;
@@ -247,7 +246,7 @@ public class ClingToCliff extends ContinuableAction {
                     signX--;
                     signZ++;
                 }
-                direction = ClingDirection.get(signX, signZ);
+                direction = HangDirection.get(signX, signZ);
             }
         }
 
@@ -265,12 +264,12 @@ public class ClingToCliff extends ContinuableAction {
         var collision = Entity.collideBoundingBox(player, new Vec3(0, downReach, 0), grabbingBB, level, Collections.emptyList());
         if (collision.y > downReach) {
             var legBB = new AABB(playerBB.minX, playerBB.minY, playerBB.minZ, playerBB.maxX, playerBB.minY + playerBB.getYsize() / 3, playerBB.maxZ).expandTowards(signX * xRange, 0, signZ * zRange);
-            return new GrabState(direction, grabbingBB, collision.y, protrusion, !level.noCollision(legBB));
+            return new HangState(direction, grabbingBB, collision.y, protrusion, !level.noCollision(legBB));
         }
         return null;
     }
 
-    private AABB getGrabbingHandAABB(ClingDirection direction) {
+    private AABB getGrabbingHandAABB(HangDirection direction) {
         var player = parkourability.player();
         var playerBB = player.getBoundingBox();
         var center = playerBB.getCenter();

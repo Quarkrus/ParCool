@@ -24,9 +24,9 @@ public class ParCoolAnimations {
             () -> (p) -> true,
             null
     );
-    public static final ID<AnimationSet> CLING_TO_CLIFF = AnimationSets.getInstance().register(
-            new ResourceLocation(ParCool.MOD_ID, "cling_to_cliff"),
-            () -> (p) -> Parkourability.get(p).get(ParCoolActions.CLING_TO_CLIFF).isDoing(),
+    public static final ID<AnimationSet> HANG_ON = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "hang_on"),
+            () -> (p) -> Parkourability.get(p).get(ParCoolActions.HANG_ON).isDoing(),
             null
     );
 
