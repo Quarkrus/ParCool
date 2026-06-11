@@ -7,4 +7,8 @@ public class EntityUtil {
 	public static void addVelocity(Entity entity, Vec3 vec) {
 		entity.setDeltaMovement(entity.getDeltaMovement().add(vec));
 	}
+
+	public static Vec3 getHorizontalLookAngle(Entity entity) {
+		return entity.getLookAngle().multiply(1, 0, 1).normalize();
+	}
 }

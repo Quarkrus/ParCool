@@ -5,11 +5,13 @@ import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.client.input.KeyBindings;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.*;
+import com.alrex.parcool.util.EntityUtil;
 import com.alrex.parcool.util.MathUtil;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -24,6 +26,10 @@ public class HangOn extends ContinuableAction {
 
     @Nullable
     private HangDirection oldDirection = null;
+    // For Client
+    private AnimationData currentAnimData = AnimationData.NONE;
+    private AnimationData oldAnimData = AnimationData.NONE;
+
     // Only for Local Client
     @Nullable
     private HangState currentHangState;
@@ -55,7 +61,7 @@ public class HangOn extends ContinuableAction {
                     if (currentHangState == null) return null;
                     if (!(parkourability.player() instanceof LocalPlayer player)) return null;
                     var speed = currentHangState.fullWall
-                            ? player.getSpeed() * MathUtil.mapLinear((float) currentHangState.direction.asNormalizedVec().dot(player.getLookAngle().multiply(1, 0, 1).normalize()), -0.7071f, 1f, 0f, 1f)
+                            ? player.getSpeed() * MathUtil.mapLinear((float) currentHangState.direction.asVec().dot(player.getLookAngle().multiply(1, 0, 1).normalize()), -0.7071f, 1f, 0f, 1f)
                             : player.getSpeed();
                     var moveVec = player.input.getMoveVector().scale(speed);
                     var actualMoveVec = new Vec3(moveVec.x, 0, moveVec.y).yRot((float) Math.toRadians(-player.getYRot()));
@@ -93,6 +99,16 @@ public class HangOn extends ContinuableAction {
         }
         property_direction.set(currentHangState != null ? currentHangState.direction : null);
         property_fullWall.set(currentHangState != null ? currentHangState.fullWall : null);
+
+        onWorkingTickInOtherClient();
+    }
+
+    @Override
+    public void onWorkingTickInOtherClient() {
+        currentAnimData = AnimationData.get(
+                this, this.parkourability.player(),
+                oldAnimData = currentAnimData
+        );
     }
 
     @Nullable
@@ -102,48 +118,89 @@ public class HangOn extends ContinuableAction {
             if (direction == null) {
                 return null;
             }
-            return direction.asNormalizedVec();
+            return direction.asVec();
         }
-        if (direction == null) return oldDirection.asNormalizedVec();
+        if (direction == null) return oldDirection.asVec();
         return MathUtil.lerp(partial, oldDirection.asVec(), direction.asVec()).normalize();
     }
 
-    public float getBlendFactorLeftToWall(float partial) {
-        var direction = property_direction.get();
-        if (direction == null) return 0;
-        var fullWall = property_fullWall.get();
-        if (fullWall == null || !fullWall) return 0;
-        var lookVec = parkourability.player().getLookAngle().multiply(1, 0, 1).normalize();
-        var wallVec = direction.asNormalizedVec();
-        if (wallVec.yRot(Mth.HALF_PI).dot(lookVec) < 0) return 0;
-        return MathUtil.mapLinear(
-                (float) wallVec.reverse().dot(lookVec), 0, 0.7071f /*cos(pi/4)*/, 0, 1
-        );
+    public float getBlendFactorRightToWall(float partial) {
+        return Mth.lerp(partial, oldAnimData.blendFactorRightToWall, currentAnimData.blendFactorRightToWall);
     }
 
-    public float getBlendFactorRightToWall(float partial) {
-        var direction = property_direction.get();
-        if (direction == null) return 0;
-        var fullWall = property_fullWall.get();
-        if (fullWall == null || !fullWall) return 0;
-        var lookVec = parkourability.player().getLookAngle().multiply(1, 0, 1).normalize();
-        var wallVec = direction.asNormalizedVec();
-        if (wallVec.yRot(Mth.HALF_PI).dot(lookVec) > 0) return 0;
-        return MathUtil.mapLinear(
-                (float) wallVec.reverse().dot(lookVec), 0, 0.7071f /*cos(pi/4)*/, 0, 1
-        );
+    public float getBlendFactorLeftToWall(float partial) {
+        return Mth.lerp(partial, oldAnimData.blendFactorLeftToWall, currentAnimData.blendFactorLeftToWall);
     }
 
     public float getBlendFactorBackToWall(float partial) {
-        var direction = property_direction.get();
-        if (direction == null) return 0;
-        var fullWall = property_fullWall.get();
-        if (fullWall == null || !fullWall) return 0;
-        var lookVec = parkourability.player().getLookAngle().multiply(1, 0, 1).normalize();
-        var wallVec = direction.asNormalizedVec();
-        return MathUtil.mapLinear(
-                (float) wallVec.reverse().dot(lookVec), 0.7071f /*cos(pi/4)*/, 1, 0, 1
-        );
+        return Mth.lerp(partial, oldAnimData.blendFactorBackToWall, currentAnimData.blendFactorBackToWall);
+    }
+
+    public float getBlendFactorMovingLeft(float partial) {
+        return Mth.lerp(partial, oldAnimData.blendFactorMovementLeft, currentAnimData.blendFactorMovementLeft);
+    }
+
+    private record AnimationData(
+            float blendFactorRightToWall,
+            float blendFactorLeftToWall,
+            float blendFactorBackToWall,
+            float blendFactorMovementLeft
+    ) {
+        static final AnimationData NONE = new AnimationData(0, 0, 0, 0);
+
+        public static AnimationData get(HangOn hangOn, Player player, AnimationData old) {
+            var direction = hangOn.property_direction.get();
+            if (direction == null) return NONE;
+            var fullWall = hangOn.property_fullWall.get();
+            var wallVec = direction.asVec();
+            var movementLeftBlendFactor =
+                    getBlendFactorMovementLeft(
+                            wallVec,
+                            player.position().subtract(new Vec3(player.xo, player.yo, player.zo)),
+                            old.blendFactorMovementLeft
+                    );
+            if (fullWall == null || !fullWall) {
+                return new AnimationData(0, 0, 0, movementLeftBlendFactor);
+            }
+            var horizontalLookVec = EntityUtil.getHorizontalLookAngle(player);
+            var dotOfWallVecLookVec = (float) horizontalLookVec.dot(wallVec);
+
+            return new AnimationData(
+                    getBlendFactorRightToWall(horizontalLookVec, wallVec, dotOfWallVecLookVec),
+                    getBlendFactorLeftToWall(horizontalLookVec, wallVec, dotOfWallVecLookVec),
+                    getBlendFactorBackToWall(horizontalLookVec, wallVec, dotOfWallVecLookVec),
+                    movementLeftBlendFactor
+            );
+        }
+
+        private static float getBlendFactorLeftToWall(Vec3 horizontalLookVec, Vec3 wallVec, float dotOfWallVecLookVec) {
+            if (wallVec.yRot(Mth.HALF_PI).dot(horizontalLookVec) < 0) return 0;
+            return MathUtil.mapLinear(
+                    -dotOfWallVecLookVec, 0, 0.7071f /*cos(pi/4)*/, 0, 1
+            );
+        }
+
+        private static float getBlendFactorRightToWall(Vec3 horizontalLookVec, Vec3 wallVec, float dotOfWallVecLookVec) {
+            if (wallVec.yRot(Mth.HALF_PI).dot(horizontalLookVec) > 0) return 0;
+            return MathUtil.mapLinear(
+                    -dotOfWallVecLookVec, 0, 0.7071f /*cos(pi/4)*/, 0, 1
+            );
+        }
+
+        private static float getBlendFactorBackToWall(Vec3 horizontalLookVec, Vec3 wallVec, float dotOfWallVecLookVec) {
+            return MathUtil.mapLinear(
+                    -dotOfWallVecLookVec, 0.7071f /*cos(pi/4)*/, 1, 0, 1
+            );
+        }
+
+        private static float getBlendFactorMovementLeft(Vec3 wallVec, Vec3 deltaMovement, float oldBlendFactor) {
+            var dot = wallVec.yRot(Mth.HALF_PI).dot(deltaMovement);
+            if (Math.abs(dot) < 1e-5) return oldBlendFactor;
+            return Mth.clamp(
+                    oldBlendFactor + (dot > 0 ? 0.2f : -0.2f),
+                    0, 1f
+            );
+        }
     }
 
     @Override
@@ -163,20 +220,19 @@ public class HangOn extends ContinuableAction {
         private final short signX;
         private final short signZ;
         private final boolean oblique;
+        private final Vec3 normalizedVec;
 
         HangDirection(int signX, int signZ, boolean oblique) {
             this.signX = (short) signX;
             this.signZ = (short) signZ;
             this.oblique = oblique;
+            this.normalizedVec = oblique
+                    ? new Vec3(signX, 0, signZ).scale(1 / Mth.sqrt(2))
+                    : new Vec3(signX, 0, signZ);
         }
 
         Vec3 asVec() {
-            return new Vec3(signX, 0, signZ);
-        }
-
-        Vec3 asNormalizedVec() {
-            if (oblique) return new Vec3(signX, 0, signZ).scale(1 / Mth.sqrt(2));
-            return new Vec3(signX, 0, signZ);
+            return normalizedVec;
         }
 
         @Nullable

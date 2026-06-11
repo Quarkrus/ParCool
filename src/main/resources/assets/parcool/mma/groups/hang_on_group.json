@@ -2,7 +2,7 @@
   "infinite": true,
   "components": [
     {
-      "name": "parcool:hang.json",
+      "name": "parcool:hang_moving_right.json",
       "progress": {
         "name": "parcool:velocity_h",
         "args": {
@@ -10,6 +10,22 @@
           "max": 30,
           "scale": 20
         }
+      }
+    },
+    {
+      "name": "parcool:hang_moving_right.json",
+      "mirror": true,
+      "progress": {
+        "name": "parcool:velocity_h",
+        "args": {
+          "loop": true,
+          "max": 30,
+          "scale": 20
+        }
+      },
+      "blend": {
+        "name": "parcool:builtin/hang_on_moving_left",
+        "method": "set"
       }
     },
     {
@@ -35,7 +51,7 @@
       }
     },
     {
-      "name": "parcool:builtin/hang_on_cliff_lock_body"
+      "name": "parcool:builtin/hang_on_lock_body"
     }
   ]
 }
