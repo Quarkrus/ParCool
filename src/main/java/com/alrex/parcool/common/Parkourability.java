@@ -13,6 +13,9 @@ import com.alrex.parcool.server.limitation.Limitation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
+import javax.annotation.Nonnull;
+import java.util.TreeMap;
+
 public class Parkourability {
 	public static Parkourability get(Player player) {
 		if (player instanceof IParkourabilityHolder holder) {
@@ -25,6 +28,7 @@ public class Parkourability {
 	private final AdditionalProperties properties = new AdditionalProperties();
 	private final BehaviorEnforcer enforcer = new BehaviorEnforcer();
 	private final ActionSet actions;
+	private final TreeMap<ActionEntry<?>, Object> requestedContexts = new TreeMap<>();
 	private final Player player;
 	private IReadonlyStamina stamina;
 
@@ -89,11 +93,31 @@ public class Parkourability {
 		}
 	}
 
-	public boolean can(ActionEntry<?> actionEntry) {
+	public boolean permit(ActionEntry<?> actionEntry) {
 		return getActionInfo().getServerLimitation().get(actionEntry).possible() && getActionInfo().getClientLimitation().get(actionEntry).possible();
 	}
 
-	public void CopyFrom(Parkourability original) {
+	/// Request the action start.
+	/// All requests are cleared on tick finishing, so this must be called before the action is ticked
+	public <Context, RequestableAction extends Action & IRequestable<Context>> void request(ActionEntry<RequestableAction> actionEntry, @Nonnull Context context) {
+		requestedContexts.put(actionEntry, context);
+	}
+
+	public <Context, RequestableAction extends Action & IRequestable<Context>> Context getRequest(ActionEntry<RequestableAction> actionEntry) {
+		return (Context) requestedContexts.remove(actionEntry);
+	}
+
+	public boolean canStartByRequest(IRequestable<?> requestable) {
+		if (!(requestable instanceof Action action)) return false;
+		var context = requestedContexts.get(action.getEntry());
+		return context != null ? requestable.requestCanStart(context) : action.canStart();
+	}
+
+	public void finishTicking() {
+		requestedContexts.clear();
+	}
+
+	public void copyFrom(Parkourability original) {
 		getActionInfo().setClientLimitation(original.getActionInfo().getClientLimitation());
 		getActionInfo().setServerLimitation(original.getActionInfo().getServerLimitation());
 	}

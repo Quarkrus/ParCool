@@ -2,10 +2,7 @@ package com.alrex.parcool.common.action;
 
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.api.event.RegisterParCoolActionEvent;
-import com.alrex.parcool.common.action.impl.Crawl;
-import com.alrex.parcool.common.action.impl.Dodge;
-import com.alrex.parcool.common.action.impl.FastRun;
-import com.alrex.parcool.common.action.impl.HangOn;
+import com.alrex.parcool.common.action.impl.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ParCoolActions {
@@ -14,14 +11,16 @@ public class ParCoolActions {
     public static final ActionEntry<FastRun> FAST_RUN;
     public static final ActionEntry<Crawl> CRAWL;
     public static final ActionEntry<HangOn> HANG_ON;
-    private static final ActionEntry<Dodge> DODGE;
+    public static final ActionEntry<Dodge> DODGE;
+    public static final ActionEntry<ClimbUp> CLIMB_UP;
 
     static {
         var builder = new ActionGroup.Builder(ParCool.MOD_ID);
-        FAST_RUN = builder.add("fast_run", FastRun.class, FastRun::new, StaminaConsumption.get(0, 1, 0));
-        CRAWL = builder.add("crawl", Crawl.class, Crawl::new, StaminaConsumption.get(0, 0, 0));
-        HANG_ON = builder.add("hang_on", HangOn.class, HangOn::new, StaminaConsumption.get(0, 0, 0));
-        DODGE = builder.add("dodge", Dodge.class, Dodge::new, StaminaConsumption.get(0, 0, 0));
+        FAST_RUN = builder.add("fast_run", FastRun.class, FastRun::new, new ActionOption().cost(StaminaConsumption.get(0, 1, 0)));
+        CRAWL = builder.add("crawl", Crawl.class, Crawl::new, new ActionOption().needPose(null));
+        HANG_ON = builder.add("hang_on", HangOn.class, HangOn::new, new ActionOption().cost(StaminaConsumption.get(0, 1, 0)));
+        CLIMB_UP = builder.add("climb_up", ClimbUp.class, ClimbUp::new, new ActionOption().parent(HANG_ON).needParentWorking(false));
+        DODGE = builder.add("dodge", Dodge.class, Dodge::new);
         GROUP = builder.build();
     }
 

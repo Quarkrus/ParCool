@@ -3,41 +3,35 @@ package com.alrex.parcool.common.action;
 import com.alrex.parcool.common.Parkourability;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.LogicalSide;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.Collections;
 
 public abstract class Action {
 	public Action(Parkourability parkourability, ActionEntry<? extends Action> entry) {
 		this.entry = entry;
 		this.parkourability = parkourability;
+		exclusiveActions = null;
+	}
+
+	public Action(Parkourability parkourability, ActionEntry<? extends Action> entry, Collection<ActionEntry<? extends ContinuableAction>> exclusiveActions) {
+		this.entry = entry;
+		this.parkourability = parkourability;
+		this.exclusiveActions = exclusiveActions;
 	}
 
 	protected final Parkourability parkourability;
 	protected final ActionEntry<? extends Action> entry;
+	@Nullable
+	protected final Collection<ActionEntry<? extends ContinuableAction>> exclusiveActions;
 	private int tickFromStarted = -1;
 
 	public ActionEntry<? extends Action> getEntry() {
 		return entry;
 	}
 
-	private final Collection<ActionEntry<? extends ContinuableAction>> exclusiveActions = exclusiveActions();
-
 	public SynchronizedDataHolder getSynchronizedData() {
 		return SynchronizedDataHolder.empty();
-	}
-
-	public LogicalSide getTriggeredSide() {
-		return LogicalSide.CLIENT;
-	}
-
-	public boolean canBeActiveInFluid() {
-		return false;
-	}
-
-	protected Collection<ActionEntry<? extends ContinuableAction>> exclusiveActions() {
-		return Collections.emptyList();
 	}
 
 	public void tick() {
@@ -62,18 +56,27 @@ public abstract class Action {
 		}
 	}
 
-	public boolean canStart() {
-		var parent = entry.parent();
-		if (parent != null && !parkourability.get(parent).isDoing()) {
-			return false;
-		}
-		for (var exclusiveAction : exclusiveActions) {
-			if (parkourability.get(exclusiveAction).isDoing()) {
+	public final boolean isAbleToStart() {
+		if (entry.option().needParentWorking()) {
+			var parent = entry.parent();
+			if (parent != null && !parkourability.get(parent).isDoing()) {
 				return false;
 			}
 		}
-		return true;
+		if (exclusiveActions != null) {
+			for (var exclusiveAction : exclusiveActions) {
+				if (parkourability.get(exclusiveAction).isDoing()) {
+					return false;
+				}
+			}
+		}
+		return (this instanceof IRequestable<?> requestable)
+				? parkourability.canStartByRequest(requestable)
+				: canStart();
 	}
+
+
+	public abstract boolean canStart();
 
 	public void onStart() {
 	}

@@ -21,7 +21,7 @@ public class Easing {
 		if (calculated) return this;
 		if (!isInRange(start, until)) return this;
 		float offset = phase - start;
-		result = MathUtil.lerp(from, to, EasingFunctions.SinInOutBySquare(offset / (until - start)));
+		result = MathUtil.lerp(from, to, EasingFunctions.sinInOutBySquare(offset / (until - start)));
 		calculated = true;
 		return this;
 	}
@@ -30,7 +30,7 @@ public class Easing {
 		if (calculated) return this;
 		if (!isInRange(start, until)) return this;
 		float offset = phase - start;
-		result = MathUtil.lerp(from, to, EasingFunctions.CubicInOut(offset / (until - start)));
+		result = MathUtil.lerp(from, to, EasingFunctions.cubicInOut(offset / (until - start)));
 		calculated = true;
 		return this;
 	}

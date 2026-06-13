@@ -12,8 +12,7 @@ public class ActionEntry<T extends Action> implements Comparable<ActionEntry<?>>
     private final ResourceLocation id;
     private final Class<T> clazz;
     private final ActionConstructor<T> factory;
-    private final StaminaConsumption defaultStaminaConsumption;
-    private final @Nullable ActionEntry<? extends ContinuableAction> parent;
+    private final ActionOption.Value option;
     private final ArrayList<ActionEntry<? extends Action>> children = new ArrayList<>();
 
     public ActionEntry(
@@ -21,17 +20,15 @@ public class ActionEntry<T extends Action> implements Comparable<ActionEntry<?>>
             ResourceLocation id,
             Class<T> clazz,
             ActionConstructor<T> factory,
-            StaminaConsumption defaultStaminaConsumption,
-            @Nullable ActionEntry<? extends ContinuableAction> parent
+            ActionOption option
     ) {
         this.index = index;
         this.id = id;
         this.clazz = clazz;
         this.factory = factory;
-        this.defaultStaminaConsumption = defaultStaminaConsumption;
-        this.parent = parent;
-        if (parent != null) {
-            parent.children.add(this);
+        this.option = option.build();
+        if (this.option.parent() != null) {
+            this.option.parent().children.add(this);
         }
     }
 
@@ -43,17 +40,17 @@ public class ActionEntry<T extends Action> implements Comparable<ActionEntry<?>>
         return id;
     }
 
-    public StaminaConsumption defaultStaminaConsumption() {
-        return defaultStaminaConsumption;
-    }
-
     @Nullable
     public ActionEntry<? extends ContinuableAction> parent() {
-        return parent;
+        return option.parent();
     }
 
     public Iterable<ActionEntry<? extends Action>> children() {
         return children;
+    }
+
+    public ActionOption.Value option() {
+        return option;
     }
 
     public T createInstance(Parkourability parkourability) {

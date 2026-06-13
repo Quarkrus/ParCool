@@ -3,6 +3,7 @@ package com.alrex.parcool.common.action.impl;
 import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.client.input.KeyBindings;
+import com.alrex.parcool.client.input.KeyRecorder;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.*;
 import com.alrex.parcool.util.EntityUtil;
@@ -37,7 +38,7 @@ public class HangOn extends ContinuableAction {
     private HangState startingHangState;
 
     public HangOn(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry);
+        super(parkourability, entry, Collections.singleton(ParCoolActions.CLIMB_UP));
         var builder = new SynchronizedDataHolder.Builder((byte) 2);
         property_direction = builder.register(() -> SynchronizedProperty.newEnum(HangDirection.class, (newV, oldV) -> oldDirection = oldV));
         property_fullWall = builder.register(SynchronizedProperty::newBoolean);
@@ -51,7 +52,7 @@ public class HangOn extends ContinuableAction {
 
     @Override
     public boolean canContinue() {
-        return KeyBindings.getKeyGrabWall().isDown() && currentHangState != null;
+        return KeyBindings.getKeyGrabWall().isDown() && currentHangState != null && !((LocalPlayer) parkourability.player()).input.jumping;
     }
 
     @Override
@@ -109,6 +110,13 @@ public class HangOn extends ContinuableAction {
                 this, this.parkourability.player(),
                 oldAnimData = currentAnimData
         );
+    }
+
+    @Override
+    public void onStopInLocalClient() {
+        if (currentHangState != null && KeyRecorder.keyJumpState.isPressed()) {
+            parkourability.request(ParCoolActions.CLIMB_UP, new ClimbUp.RequestContext(this.currentHangState));
+        }
     }
 
     @Nullable
@@ -208,7 +216,7 @@ public class HangOn extends ContinuableAction {
         return dataHolder;
     }
 
-    private enum HangDirection {
+    public enum HangDirection {
         XP(1, 0, false),
         XN(-1, 0, false),
         ZP(0, 1, false),
@@ -246,7 +254,7 @@ public class HangOn extends ContinuableAction {
         }
     }
 
-    private record HangState(
+    public record HangState(
             HangDirection direction,
             AABB handBoundingBox,
             double yCollisionDistance,

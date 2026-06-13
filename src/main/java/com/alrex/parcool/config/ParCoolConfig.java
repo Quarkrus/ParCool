@@ -241,9 +241,9 @@ public class ParCoolConfig {
 							actions.put(actionEntry,
 									new ActionValue(
 											builder.define(path + "_permit", true),
-											builder.defineInRange(path + "_cost_start", actionEntry.defaultStaminaConsumption().onStart(), 0, Short.MAX_VALUE),
-											builder.defineInRange(path + "_cost_working", actionEntry.defaultStaminaConsumption().onWorking(), 0, Short.MAX_VALUE),
-											builder.defineInRange(path + "_cost_finish", actionEntry.defaultStaminaConsumption().onFinish(), 0, Short.MAX_VALUE)
+											builder.defineInRange(path + "_cost_start", actionEntry.option().defaultCost().onStart(), 0, Short.MAX_VALUE),
+											builder.defineInRange(path + "_cost_working", actionEntry.option().defaultCost().onWorking(), 0, Short.MAX_VALUE),
+											builder.defineInRange(path + "_cost_finish", actionEntry.option().defaultCost().onFinish(), 0, Short.MAX_VALUE)
 									)
 							);
 						}

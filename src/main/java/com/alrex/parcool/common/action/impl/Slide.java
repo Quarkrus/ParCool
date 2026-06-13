@@ -11,6 +11,11 @@ public class Slide extends ContinuableAction {
     }
 
     @Override
+    public boolean canStart() {
+        return false;
+    }
+
+    @Override
     public boolean canContinue() {
         return false;
     }

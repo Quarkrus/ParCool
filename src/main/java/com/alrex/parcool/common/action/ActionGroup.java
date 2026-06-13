@@ -18,12 +18,14 @@ public record ActionGroup(String namespace, List<ActionEntry<? extends Action>> 
             this.namespace = namespace;
         }
 
-        public <T extends Action> ActionEntry<T> add(String name, Class<T> clazz, ActionEntry.ActionConstructor<T> factory, StaminaConsumption consumption) {
-            return add(name, clazz, factory, consumption, null);
+        public <T extends Action> ActionEntry<T> add(String name, Class<T> clazz, ActionEntry.ActionConstructor<T> factory) {
+            var entry = new ActionEntry<>((short) registered.size(), new ResourceLocation(namespace, name), clazz, factory, new ActionOption());
+            registered.addLast(entry);
+            return entry;
         }
 
-        public <T extends Action> ActionEntry<T> add(String name, Class<T> clazz, ActionEntry.ActionConstructor<T> factory, StaminaConsumption consumption, ActionEntry<? extends ContinuableAction> parent) {
-            var entry = new ActionEntry<>((short) registered.size(), new ResourceLocation(namespace, name), clazz, factory, consumption, parent);
+        public <T extends Action> ActionEntry<T> add(String name, Class<T> clazz, ActionEntry.ActionConstructor<T> factory, ActionOption option) {
+            var entry = new ActionEntry<>((short) registered.size(), new ResourceLocation(namespace, name), clazz, factory, option);
             registered.addLast(entry);
             return entry;
         }

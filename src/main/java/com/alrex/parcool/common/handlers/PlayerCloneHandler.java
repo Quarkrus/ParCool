@@ -15,7 +15,7 @@ public class PlayerCloneHandler {
 			Parkourability pFrom = Parkourability.get(from);
 			Parkourability pTo = Parkourability.get(player);
 			if (pFrom != null && pTo != null) {
-				pTo.CopyFrom(pFrom);
+                pTo.copyFrom(pFrom);
 			}
 		}
 	}

@@ -24,7 +24,7 @@ public record ActionLimitationValue(boolean possible, StaminaConsumption stamina
 
     public boolean isDefault(ActionEntry<?> actionEntry) {
         if (!possible) return false;
-        return actionEntry.defaultStaminaConsumption().equals(staminaConsumption);
+        return actionEntry.option().defaultCost().equals(staminaConsumption);
     }
 
     public void writeTo(FriendlyByteBuf packet) {
@@ -54,7 +54,7 @@ public record ActionLimitationValue(boolean possible, StaminaConsumption stamina
         if (actionValueObj.has("permit") && actionValueObj.get("permit") instanceof JsonPrimitive permitValue && permitValue.isBoolean()) {
             possible = permitValue.getAsBoolean();
         }
-        var staminaConsumption = action.defaultStaminaConsumption();
+        var staminaConsumption = action.option().defaultCost();
         var costOnStart = staminaConsumption.onStart();
         var costOnWorking = staminaConsumption.onWorking();
         var costOnFinish = staminaConsumption.onFinish();

@@ -4,9 +4,15 @@ import com.alrex.parcool.common.Parkourability;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.Collection;
+
 public abstract class ContinuableAction extends Action {
     public ContinuableAction(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry);
+    }
+
+    public ContinuableAction(Parkourability parkourability, ActionEntry<? extends Action> entry, Collection<ActionEntry<? extends ContinuableAction>> exclusiveActions) {
+        super(parkourability, entry, exclusiveActions);
     }
 
     private boolean doing = false;
@@ -66,7 +72,23 @@ public abstract class ContinuableAction extends Action {
         onStop();
     }
 
-    @OnlyIn(Dist.CLIENT)
+    public final boolean isAbleToContinue() {
+        if (entry.option().needParentWorking()) {
+            var parent = entry.parent();
+            if (parent != null && !parkourability.get(parent).isDoing()) {
+                return false;
+            }
+        }
+        if (exclusiveActions != null) {
+            for (var exclusiveAction : exclusiveActions) {
+                if (parkourability.get(exclusiveAction).isDoing()) {
+                    return false;
+                }
+            }
+        }
+        return canContinue();
+    }
+
     public abstract boolean canContinue();
 
     public void onStop() {

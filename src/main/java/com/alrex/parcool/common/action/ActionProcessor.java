@@ -37,7 +37,7 @@ public class ActionProcessor {
 	}
 
 	@SubscribeEvent
-	public void onTickPlayer(TickEvent.LevelTickEvent event) {
+	public void onTickLevel(TickEvent.LevelTickEvent event) {
 		if (event.phase == TickEvent.Phase.START) return;
 		staminaDepot.tick();
 		actionDepot.tick();
@@ -68,6 +68,8 @@ public class ActionProcessor {
 		if (!synchronizedData.isEmpty()) {
 			onTick$sendSyncPacket(parkourability, event.side, synchronizedData);
 		}
+
+		parkourability.finishTicking();
 	}
 
 	private void onTick$doPreprocessInServer(Parkourability parkourability) {
@@ -98,6 +100,7 @@ public class ActionProcessor {
 			actionDepot.requestSync(packet);
 		}
 	}
+
     @OnlyIn(Dist.CLIENT)
 	private void onTick$checkLimitationSynchronization(Player player, Parkourability parkourability) {
 		if (player.isLocalPlayer() && player.tickCount > 127 && player.tickCount % 256 == 0 && !parkourability.getServerLimitation().isSynced()) {
@@ -116,7 +119,7 @@ public class ActionProcessor {
 
 	private void processAction(Parkourability parkourability, LogicalSide logicalSide, Action action, Map<String, LinkedList<ActionStatePacket.Entry>> synchronizedData) {
 		var player = parkourability.player();
-		var triggeredSide = action.getTriggeredSide();
+		var triggeredSide = action.getEntry().option().triggeredSide();
 		boolean needSync = (triggeredSide.isClient() && player.isLocalPlayer())
 				|| (triggeredSide.isServer() && logicalSide.isServer());
 		action.tick();
@@ -130,9 +133,9 @@ public class ActionProcessor {
 		if (needSync) {
 			if (action instanceof ContinuableAction continuableAction && continuableAction.isDoing()) {
 				boolean canContinue = //TODO:parkourability.getActionInfo().can(action.getClass()) &&
-						(action.canBeActiveInFluid() || !player.isInFluidType())
+						(action.getEntry().option().availableInFluid() || !player.isInFluidType())
 								&& !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToContinue(parkourability.player(), continuableAction))
-								&& continuableAction.canContinue();
+								&& continuableAction.isAbleToContinue();
 				if (!canContinue) {
 					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Pre(parkourability.player(), continuableAction));
 					continuableAction.finish();
@@ -140,11 +143,14 @@ public class ActionProcessor {
 					type = ActionStatePacket.Type.FINISH;
 				}
 			} else {
+				var entry = action.getEntry();
+				var parent = entry.parent();
 				boolean start = !parkourability.player().isSpectator() //TODO
-						&& (action.canBeActiveInFluid() || !player.isInFluidType())
-						&& parkourability.can(action.getEntry())
+						&& (entry.option().availableInFluid() || !player.isInFluidType())
+						&& parkourability.permit(entry)
+						&& (entry.option().neededPose() == null || entry.option().neededPose() == player.getPose())
 						&& !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(parkourability.player(), action))
-						&& action.canStart();
+						&& action.isAbleToStart();
 				if (start) {
 					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Pre(parkourability.player(), action));
 					action.start();
