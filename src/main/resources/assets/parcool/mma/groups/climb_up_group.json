@@ -1,0 +1,18 @@
+{
+  "duration": 13,
+  "components": [
+    {
+      "name": "parcool:climb_up.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "max": 30,
+          "scale": 2.31
+        }
+      }
+    },
+    {
+      "name": "parcool:builtin/climb_up_lock_body"
+    }
+  ]
+}

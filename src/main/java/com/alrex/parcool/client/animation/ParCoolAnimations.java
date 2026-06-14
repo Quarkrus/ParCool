@@ -29,6 +29,11 @@ public class ParCoolAnimations {
             () -> (p) -> Parkourability.get(p).get(ParCoolActions.HANG_ON).isDoing(),
             null
     );
+    public static final ID<AnimationSet> CLIMB_UP = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "climb_up"),
+            () -> (p) -> Parkourability.get(p).get(ParCoolActions.CLIMB_UP).isDoing(),
+            null
+    );
 
     public static void register() {
     }

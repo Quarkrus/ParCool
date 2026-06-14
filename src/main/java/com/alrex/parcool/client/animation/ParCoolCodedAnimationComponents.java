@@ -23,6 +23,16 @@ public class ParCoolCodedAnimationComponents {
                 return new Transform(Vec3f.ZERO, Vector3f.YP.rotation((float) yaw));
             }
     );
+    public static final ID<CodedAnimationComponent> CLIMB_UP_LOCK_BODY = CodedAnimationComponents.getInstance().register(
+            "builtin/climb_up_lock_body",
+            (player, part, progress, partial) -> {
+                if (part != AnimatableModelPart.BODY) return null;
+                var wallVec = Parkourability.get(player).get(ParCoolActions.CLIMB_UP).getWallVec(partial);
+                if (wallVec == null) return null;
+                var yaw = Mth.wrapDegrees(MathUtil.toYawRadian(wallVec) + Math.toRadians(Mth.lerp(partial, player.yBodyRotO, player.yBodyRot)));
+                return new Transform(Vec3f.ZERO, Vector3f.YP.rotation((float) yaw));
+            }
+    );
 
     public static void register() {
     }

@@ -22,5 +22,11 @@
     "fade_in_duration": 5,
     "fade_out_duration": 5,
     "main": "parcool:hang_on_group.json"
+  },
+  {
+    "name": "parcool:climb_up",
+    "fade_in_duration": 3,
+    "fade_out_duration": 3,
+    "main": "parcool:climb_up_group.json"
   }
 ]
