@@ -62,20 +62,20 @@ public class ClimbUp extends ContinuableAction implements IRequestable<ClimbUp.R
     public void onStartInLocalClient() {
         final var fStartPos = this.startPos;
         final var fDestination = this.destination;
-        final int borderTick = 9;
         if (fStartPos != null && fDestination != null) {
             parkourability.getBehaviorEnforcer().setMarkerEnforceMovePoint(this::isDoing, () -> {
-                var tick = this.getDoingTick();
-                if (tick < borderTick) {
-                    return fStartPos.add(0, (fDestination.y - fStartPos.y) * EasingFunctions.cubicInOut(tick / (double) borderTick), 0);
+                final int borderTick = 9;
+                final double borderPhase = borderTick / (double) MAX_TICK;
+
+                var phase = EasingFunctions.cubicInOut(getDoingTick() / (double) MAX_TICK);
+                if (phase < borderPhase) {
+                    return fStartPos.add(0, (fDestination.y - fStartPos.y) * phase, 0);
                 } else {
-                    tick -= borderTick;
-                    var phase = tick / (double) (MAX_TICK - borderTick + 1);
-                    var t = EasingFunctions.cubicInOut(phase);
+                    var inPhase = (phase - borderPhase) / (1 - borderPhase);
                     return new Vec3(
-                            Mth.lerp(t, fStartPos.x, fDestination.x),
-                            fDestination.y + 0.25 * phase * (1. - phase),
-                            Mth.lerp(t, fStartPos.z, fDestination.z)
+                            Mth.lerp(inPhase, fStartPos.x, fDestination.x),
+                            fDestination.y + inPhase * 0.0625,
+                            Mth.lerp(inPhase, fStartPos.z, fDestination.z)
                     );
                 }
             });

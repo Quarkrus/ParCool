@@ -2,8 +2,7 @@ package com.alrex.parcool.common.action.impl;
 
 import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
-import com.alrex.parcool.client.input.KeyBindings;
-import com.alrex.parcool.client.input.KeyRecorder;
+import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.*;
 import com.alrex.parcool.util.EntityUtil;
@@ -47,12 +46,12 @@ public class HangOn extends ContinuableAction {
 
     @Override
     public boolean canStart() {
-        return KeyBindings.getKeyGrabWall().isDown() && (startingHangState = getHangState()) != null;
+        return ParCoolKeyBinds.HANG_ON.key().isDown() && (startingHangState = getHangState()) != null;
     }
 
     @Override
     public boolean canContinue() {
-        return KeyBindings.getKeyGrabWall().isDown() && currentHangState != null && !((LocalPlayer) parkourability.player()).input.jumping;
+        return ParCoolKeyBinds.HANG_ON.key().isDown() && currentHangState != null && !((LocalPlayer) parkourability.player()).input.jumping;
     }
 
     @Override
@@ -114,7 +113,7 @@ public class HangOn extends ContinuableAction {
 
     @Override
     public void onStopInLocalClient() {
-        if (currentHangState != null && KeyRecorder.keyJumpState.isPressed()) {
+        if (currentHangState != null && ParCoolKeyBinds.JUMP.state().isJustPressed()) {
             parkourability.request(ParCoolActions.CLIMB_UP, new ClimbUp.RequestContext(this.currentHangState));
         }
     }

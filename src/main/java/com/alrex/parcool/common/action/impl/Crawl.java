@@ -2,7 +2,7 @@ package com.alrex.parcool.common.action.impl;
 
 import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
-import com.alrex.parcool.client.input.KeyBindings;
+import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.action.ActionEntry;
@@ -18,13 +18,13 @@ public class Crawl extends ContinuableAction {
     @Override
     public boolean canStart() {
         if (parkourability.player().getForcedPose() != null) return false;
-        if (KeyBindings.getKeyCrawl().isDown()) return true;
+        if (ParCoolKeyBinds.CRAWL.key().isDown()) return true;
         return parkourability.player().hasPose(Pose.SWIMMING);
     }
 
     @Override
     public boolean canContinue() {
-        if (KeyBindings.getKeyCrawl().isDown()) return true;
+        if (ParCoolKeyBinds.CRAWL.key().isDown()) return true;
         return !parkourability.player().canEnterPose(Pose.CROUCHING) && parkourability.player().hasPose(Pose.SWIMMING);
     }
 

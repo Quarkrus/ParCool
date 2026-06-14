@@ -2,7 +2,6 @@ package com.alrex.parcool.common.action.impl;
 
 import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
-import com.alrex.parcool.client.input.KeyBindings;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.action.ActionEntry;
@@ -16,7 +15,7 @@ public class Dodge extends ContinuableAction {
 
     @Override
     public boolean canStart() {
-        return KeyBindings.getKeyDodge().isDown();
+        return false;
     }
 
     @Override

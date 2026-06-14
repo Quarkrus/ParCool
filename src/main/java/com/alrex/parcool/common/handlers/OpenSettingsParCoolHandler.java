@@ -1,9 +1,5 @@
 package com.alrex.parcool.common.handlers;
 
-import com.alrex.parcool.client.input.KeyRecorder;
-import com.alrex.parcool.common.Parkourability;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
@@ -15,6 +11,7 @@ public class OpenSettingsParCoolHandler {
 	public static void onTick(TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END) return;
 
+		/*
 		if (KeyRecorder.keyOpenSettingsState.isPressed()) {
 			LocalPlayer player = Minecraft.getInstance().player;
 			if (player == null) return;
@@ -22,5 +19,7 @@ public class OpenSettingsParCoolHandler {
 			if (parkourability == null) return;
 			//Minecraft.getInstance().setScreen(new SettingActionLimitationScreen(Component.literal("ParCool Setting"), parkourability.getActionInfo(), ParCoolConfig.Client.GUI_COLOR_THEME.get()));
 		}
+
+		 */
 	}
 }

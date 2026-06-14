@@ -5,8 +5,7 @@ import com.alrex.parcool.client.animation.ParCoolBlendingFactors;
 import com.alrex.parcool.client.animation.ParCoolCodedAnimationComponents;
 import com.alrex.parcool.client.animation.system.handle.TickEventHandler;
 import com.alrex.parcool.client.hud.HUDRegistry;
-import com.alrex.parcool.client.input.KeyBindings;
-import com.alrex.parcool.client.input.KeyRecorder;
+import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.handlers.InputHandler;
 import com.alrex.parcool.common.handlers.OpenSettingsParCoolHandler;
 import com.alrex.parcool.common.handlers.PlayerJoinHandler;
@@ -30,10 +29,10 @@ public class ClientProxy extends CommonProxy {
 	public void init() {
 		super.init();
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-		bus.addListener(KeyBindings::register);
+		bus.addListener(ParCoolKeyBinds::registerAll);
 		bus.addListener(HUDRegistry.getInstance()::onSetup);
+		MinecraftForge.EVENT_BUS.addListener(ParCoolKeyBinds::tick);
 		MinecraftForge.EVENT_BUS.register(HUDRegistry.getInstance());
-		MinecraftForge.EVENT_BUS.register(KeyRecorder.class);
 		MinecraftForge.EVENT_BUS.register(OpenSettingsParCoolHandler.class);
 		MinecraftForge.EVENT_BUS.register(PlayerJoinHandler.class);
 		MinecraftForge.EVENT_BUS.register(InputHandler.class);
