@@ -170,5 +170,6 @@
   "parcool.config.c.enable_particles_jt_breakfall": "Enable particle of just time breakfall",
   "parcool.config.c.enable_just_time_effect_breakfall": "Enable effects of just time breakfall",
   "parcool.config.c.lowest_fall_distance_for_breakfall": "Enable effects of just time breakfall",
-  "key.parcool.hang_on": "Hang On"
+  "key.parcool.hang_on": "Hang On",
+  "key.parcool.slide_down": "Slide Down"
 }

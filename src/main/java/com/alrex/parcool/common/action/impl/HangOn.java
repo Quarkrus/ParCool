@@ -17,6 +17,7 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.List;
 
 public class HangOn extends ContinuableAction {
     private static final double REACH_SCALE = 0.25;
@@ -37,7 +38,7 @@ public class HangOn extends ContinuableAction {
     private HangState startingHangState;
 
     public HangOn(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry, Collections.singleton(ParCoolActions.CLIMB_UP));
+        super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP, ParCoolActions.SLIDE_DOWN));
         var builder = new SynchronizedDataHolder.Builder((byte) 2);
         property_direction = builder.register(() -> SynchronizedProperty.newEnum(InteractingWallDirection.class, (newV, oldV) -> oldDirection = oldV));
         property_fullWall = builder.register(SynchronizedProperty::newBoolean);
@@ -65,18 +66,20 @@ public class HangOn extends ContinuableAction {
                             : player.getSpeed();
                     var moveVec = player.input.getMoveVector().scale(speed);
                     var actualMoveVec = new Vec3(moveVec.x, 0, moveVec.y).yRot((float) Math.toRadians(-player.getYRot()));
-                    if (currentHangState.onProtrusion) {
-                        return parkourability.player().position()
+                    if (currentHangState.direction.isProtrusion()) {
+                        return player.position()
                                 .add(new Vec3(
-                                        currentHangState.direction.getSignX() > 0 ? Math.max(0, actualMoveVec.x) : Math.min(0, actualMoveVec.x), 0,
+                                        currentHangState.direction.getSignX() > 0 ? Math.max(0, actualMoveVec.x) : Math.min(0, actualMoveVec.x),
+                                        currentHangState.yCollisionDistance,
                                         currentHangState.direction.getSignZ() > 0 ? Math.max(0, actualMoveVec.z) : Math.min(0, actualMoveVec.z)
                                 ));
                     } else if (currentHangState.direction.isOblique()) {
                         var directionVec = currentHangState.direction.asVec().yRot(Mth.HALF_PI);
-                        return parkourability.player().position()
+                        return player.position()
+                                .add(0, currentHangState.yCollisionDistance, 0)
                                 .add(directionVec.scale(directionVec.dot(actualMoveVec)));
                     } else {
-                        return parkourability.player().position()
+                        return player.position()
                                 .add(currentHangState.direction.getSignX() * 0.2, currentHangState.yCollisionDistance, currentHangState.direction.getSignZ() * 0.2)
                                 .add(actualMoveVec);
                     }
@@ -219,7 +222,6 @@ public class HangOn extends ContinuableAction {
             InteractingWallDirection direction,
             AABB handBoundingBox,
             double yCollisionDistance,
-            boolean onProtrusion,
             boolean fullWall
     ) {
     }
@@ -231,50 +233,7 @@ public class HangOn extends ContinuableAction {
         var playerBB = player.getBoundingBox();
         short signX = 0, signZ = 0;
         double xRange = playerBB.getXsize() * 0.25, zRange = playerBB.getZsize() * 0.25;
-
-        boolean protrusion = false;
-        if (!level.noCollision(playerBB.expandTowards(xRange, 0, 0))) {
-            signX++;
-        }
-        if (!level.noCollision(playerBB.expandTowards(-xRange, 0, 0))) {
-            signX--;
-        }
-        if (!level.noCollision(playerBB.expandTowards(0, 0, zRange))) {
-            signZ++;
-        }
-        if (!level.noCollision(playerBB.expandTowards(0, 0, -zRange))) {
-            signZ--;
-        }
-
-        var direction = InteractingWallDirection.get(signX, signZ);
-        if (direction == null) {
-            protrusion = true;
-            signX = 0;
-            signZ = 0;
-            if (!level.noCollision(playerBB.expandTowards(xRange, 0, zRange))) {
-                signX++;
-                signZ++;
-            }
-            if (!level.noCollision(playerBB.expandTowards(-xRange, 0, -zRange))) {
-                signX--;
-                signZ--;
-            }
-            direction = InteractingWallDirection.get(signX, signZ);
-            if (direction == null) {
-                signX = 0;
-                signZ = 0;
-                if (!level.noCollision(playerBB.expandTowards(xRange, 0, -zRange))) {
-                    signX++;
-                    signZ--;
-                }
-                if (!level.noCollision(playerBB.expandTowards(-xRange, 0, zRange))) {
-                    signX--;
-                    signZ++;
-                }
-                direction = InteractingWallDirection.get(signX, signZ);
-            }
-        }
-
+        var direction = InteractingWallDirection.getAdjacentWall(player, xRange, zRange);
 
         if (direction == null) return null;
 
@@ -289,7 +248,7 @@ public class HangOn extends ContinuableAction {
         var collision = Entity.collideBoundingBox(player, new Vec3(0, downReach, 0), grabbingBB, level, Collections.emptyList());
         if (collision.y > downReach) {
             var legBB = new AABB(playerBB.minX, playerBB.minY, playerBB.minZ, playerBB.maxX, playerBB.minY + playerBB.getYsize() / 3, playerBB.maxZ).expandTowards(signX * xRange, 0, signZ * zRange);
-            return new HangState(direction, grabbingBB, collision.y, protrusion, !level.noCollision(legBB));
+            return new HangState(direction, grabbingBB, collision.y, !level.noCollision(legBB));
         }
         return null;
     }

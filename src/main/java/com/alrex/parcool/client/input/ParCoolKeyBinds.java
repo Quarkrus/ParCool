@@ -73,6 +73,7 @@ public class ParCoolKeyBinds {
 
 	public static final Input CRAWL = register(new KeyMapping("key.parcool.crawl", GLFW.GLFW_KEY_C, KEY_CATEGORY));
 	public static final Input HANG_ON = register(new KeyMapping("key.parcool.hang_on", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, KEY_CATEGORY));
+	public static final Input SLIDE_DOWN = register(new KeyMapping("key.parcool.slide_down", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, KEY_CATEGORY));
 
 	public static final Input JUMP = listen(Minecraft.getInstance().options.keyJump);
 	public static final Input MOVEMENT_FORWARD = listen(Minecraft.getInstance().options.keyUp);

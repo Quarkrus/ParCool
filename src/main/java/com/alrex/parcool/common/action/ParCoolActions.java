@@ -14,6 +14,7 @@ public class ParCoolActions {
     public static final ActionEntry<Dodge> DODGE;
     public static final ActionEntry<ClimbUp> CLIMB_UP;
     public static final ActionEntry<TrickJump> TRICK_JUMP;
+    public static final ActionEntry<SlideDown> SLIDE_DOWN;
 
     static {
         var builder = new ActionGroup.Builder(ParCool.MOD_ID);
@@ -21,6 +22,7 @@ public class ParCoolActions {
         CRAWL = builder.add("crawl", Crawl.class, Crawl::new, new ActionOption().needPose(null));
         HANG_ON = builder.add("hang_on", HangOn.class, HangOn::new, new ActionOption().cost(StaminaConsumption.get(0, 1, 0)));
         CLIMB_UP = builder.add("climb_up", ClimbUp.class, ClimbUp::new, new ActionOption().parent(HANG_ON).needParentWorking(false));
+        SLIDE_DOWN = builder.add("slide_down", SlideDown.class, SlideDown::new, new ActionOption().parent(HANG_ON).needParentWorking(false));
         DODGE = builder.add("dodge", Dodge.class, Dodge::new);
         TRICK_JUMP = builder.add("trick_jump", TrickJump.class, TrickJump::new);
         GROUP = builder.build();
