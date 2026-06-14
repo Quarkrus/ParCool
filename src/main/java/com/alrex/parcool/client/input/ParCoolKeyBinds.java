@@ -30,9 +30,9 @@ public class ParCoolKeyBinds {
 		private void update(KeyMapping key) {
 			if (key.isDown()) {
 				pressedDurationTick++;
-				notPressedDurationTick = 0;
+				notPressedDurationTick = -1;
 			} else {
-				pressedDurationTick = 0;
+				pressedDurationTick = -1;
 				notPressedDurationTick++;
 			}
 		}
@@ -46,11 +46,11 @@ public class ParCoolKeyBinds {
 		}
 
 		public boolean isJustPressed() {
-			return pressedDurationTick == 1;
+			return pressedDurationTick == 0;
 		}
 
 		public boolean isJustReleased() {
-			return notPressedDurationTick == 1;
+			return notPressedDurationTick == 0;
 		}
 	}
 

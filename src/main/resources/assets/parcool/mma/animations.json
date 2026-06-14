@@ -28,5 +28,11 @@
     "fade_in_duration": 3,
     "fade_out_duration": 5,
     "main": "parcool:climb_up_group.json"
+  },
+  {
+    "name": "parcool:back_flip",
+    "fade_in_duration": 2,
+    "fade_out_duration": 5,
+    "main": "parcool:back_flip_group.json"
   }
 ]

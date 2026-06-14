@@ -19,12 +19,12 @@ public class ClimbUp extends ContinuableAction implements IRequestable<ClimbUp.R
     @Nullable
     private Vec3 destination = null;
     private final SynchronizedDataHolder dataHolder;
-    private final SynchronizedProperty<HangOn.HangDirection> property_direction;
+    private final SynchronizedProperty<InteractingWallDirection> property_direction;
 
     public ClimbUp(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry);
         var builder = new SynchronizedDataHolder.Builder((byte) 1);
-        property_direction = builder.register(() -> SynchronizedProperty.newEnum(HangOn.HangDirection.class));
+        property_direction = builder.register(() -> SynchronizedProperty.newEnum(InteractingWallDirection.class));
         dataHolder = builder.build(entry);
     }
 

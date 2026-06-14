@@ -2,6 +2,7 @@ package com.alrex.parcool.proxy;
 
 import com.alrex.parcool.common.handlers.LoginLogoutHandler;
 import com.alrex.parcool.common.handlers.PlayerCloneHandler;
+import com.alrex.parcool.common.handlers.PlayerEventHandler;
 import com.alrex.parcool.server.command.CommandRegistry;
 import com.alrex.parcool.server.limitation.LimitationRegistry;
 import net.minecraftforge.common.MinecraftForge;
@@ -18,5 +19,6 @@ public abstract class CommonProxy {
         MinecraftForge.EVENT_BUS.register(PlayerCloneHandler.class);
         MinecraftForge.EVENT_BUS.register(CommandRegistry.class);
         MinecraftForge.EVENT_BUS.register(LimitationRegistry.class);
+        MinecraftForge.EVENT_BUS.register(PlayerEventHandler.class);
 	}
 }

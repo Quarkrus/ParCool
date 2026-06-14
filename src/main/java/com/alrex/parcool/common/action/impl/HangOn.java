@@ -21,11 +21,11 @@ import java.util.Collections;
 public class HangOn extends ContinuableAction {
     private static final double REACH_SCALE = 0.25;
     private final SynchronizedDataHolder dataHolder;
-    private final SynchronizedProperty<HangDirection> property_direction;
+    private final SynchronizedProperty<InteractingWallDirection> property_direction;
     private final SynchronizedProperty<Boolean> property_fullWall;
 
     @Nullable
-    private HangDirection oldDirection = null;
+    private InteractingWallDirection oldDirection = null;
     // For Client
     private AnimationData currentAnimData = AnimationData.NONE;
     private AnimationData oldAnimData = AnimationData.NONE;
@@ -39,7 +39,7 @@ public class HangOn extends ContinuableAction {
     public HangOn(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry, Collections.singleton(ParCoolActions.CLIMB_UP));
         var builder = new SynchronizedDataHolder.Builder((byte) 2);
-        property_direction = builder.register(() -> SynchronizedProperty.newEnum(HangDirection.class, (newV, oldV) -> oldDirection = oldV));
+        property_direction = builder.register(() -> SynchronizedProperty.newEnum(InteractingWallDirection.class, (newV, oldV) -> oldDirection = oldV));
         property_fullWall = builder.register(SynchronizedProperty::newBoolean);
         dataHolder = builder.build(entry);
     }
@@ -68,16 +68,16 @@ public class HangOn extends ContinuableAction {
                     if (currentHangState.onProtrusion) {
                         return parkourability.player().position()
                                 .add(new Vec3(
-                                        currentHangState.direction.signX > 0 ? Math.max(0, actualMoveVec.x) : Math.min(0, actualMoveVec.x), 0,
-                                        currentHangState.direction.signZ > 0 ? Math.max(0, actualMoveVec.z) : Math.min(0, actualMoveVec.z)
+                                        currentHangState.direction.getSignX() > 0 ? Math.max(0, actualMoveVec.x) : Math.min(0, actualMoveVec.x), 0,
+                                        currentHangState.direction.getSignZ() > 0 ? Math.max(0, actualMoveVec.z) : Math.min(0, actualMoveVec.z)
                                 ));
-                    } else if (currentHangState.direction.oblique) {
+                    } else if (currentHangState.direction.isOblique()) {
                         var directionVec = currentHangState.direction.asVec().yRot(Mth.HALF_PI);
                         return parkourability.player().position()
                                 .add(directionVec.scale(directionVec.dot(actualMoveVec)));
                     } else {
                         return parkourability.player().position()
-                                .add(currentHangState.direction.signX * 0.2, currentHangState.yCollisionDistance, currentHangState.direction.signZ * 0.2)
+                                .add(currentHangState.direction.getSignX() * 0.2, currentHangState.yCollisionDistance, currentHangState.direction.getSignZ() * 0.2)
                                 .add(actualMoveVec);
                     }
                 }
@@ -215,46 +215,8 @@ public class HangOn extends ContinuableAction {
         return dataHolder;
     }
 
-    public enum HangDirection {
-        XP(1, 0, false),
-        XN(-1, 0, false),
-        ZP(0, 1, false),
-        ZN(0, -1, false),
-        XP_ZP(1, 1, true),
-        XP_ZN(1, -1, true),
-        XN_ZP(-1, 1, true),
-        XN_ZN(-1, -1, true);
-        private final short signX;
-        private final short signZ;
-        private final boolean oblique;
-        private final Vec3 normalizedVec;
-
-        HangDirection(int signX, int signZ, boolean oblique) {
-            this.signX = (short) signX;
-            this.signZ = (short) signZ;
-            this.oblique = oblique;
-            this.normalizedVec = oblique
-                    ? new Vec3(signX, 0, signZ).scale(1 / Mth.sqrt(2))
-                    : new Vec3(signX, 0, signZ);
-        }
-
-        Vec3 asVec() {
-            return normalizedVec;
-        }
-
-        @Nullable
-        static HangDirection get(int signX, int signZ) {
-            for (var direction : HangDirection.values()) {
-                if (direction.signX == signX && direction.signZ == signZ) {
-                    return direction;
-                }
-            }
-            return null;
-        }
-    }
-
     public record HangState(
-            HangDirection direction,
+            InteractingWallDirection direction,
             AABB handBoundingBox,
             double yCollisionDistance,
             boolean onProtrusion,
@@ -284,7 +246,7 @@ public class HangOn extends ContinuableAction {
             signZ--;
         }
 
-        var direction = HangDirection.get(signX, signZ);
+        var direction = InteractingWallDirection.get(signX, signZ);
         if (direction == null) {
             protrusion = true;
             signX = 0;
@@ -297,7 +259,7 @@ public class HangOn extends ContinuableAction {
                 signX--;
                 signZ--;
             }
-            direction = HangDirection.get(signX, signZ);
+            direction = InteractingWallDirection.get(signX, signZ);
             if (direction == null) {
                 signX = 0;
                 signZ = 0;
@@ -309,7 +271,7 @@ public class HangOn extends ContinuableAction {
                     signX--;
                     signZ++;
                 }
-                direction = HangDirection.get(signX, signZ);
+                direction = InteractingWallDirection.get(signX, signZ);
             }
         }
 
@@ -317,8 +279,8 @@ public class HangOn extends ContinuableAction {
         if (direction == null) return null;
 
         var bb = playerBB.expandTowards(
-                direction.signX * REACH_SCALE * playerBB.getXsize(), 0,
-                direction.signZ * REACH_SCALE * playerBB.getZsize()
+                direction.getSignX() * REACH_SCALE * playerBB.getXsize(), 0,
+                direction.getSignZ() * REACH_SCALE * playerBB.getZsize()
         );
         if (level.noCollision(player, bb)) return null;
         var grabbingBB = getGrabbingHandAABB(direction);
@@ -332,22 +294,22 @@ public class HangOn extends ContinuableAction {
         return null;
     }
 
-    private AABB getGrabbingHandAABB(HangDirection direction) {
+    private AABB getGrabbingHandAABB(InteractingWallDirection direction) {
         var player = parkourability.player();
         var playerBB = player.getBoundingBox();
         var center = playerBB.getCenter();
         double x1, x2;
-        if (direction.signX != 0) {
+        if (direction.getSignX() != 0) {
             x1 = center.x;
-            x2 = x1 + direction.signX * playerBB.getXsize() * (0.5 + REACH_SCALE);
+            x2 = x1 + direction.getSignX() * playerBB.getXsize() * (0.5 + REACH_SCALE);
         } else {
             x1 = playerBB.minX;
             x2 = playerBB.maxX;
         }
         double z1, z2;
-        if (direction.signZ != 0) {
+        if (direction.getSignZ() != 0) {
             z1 = center.z;
-            z2 = z1 + direction.signZ * playerBB.getZsize() * (0.5 + REACH_SCALE);
+            z2 = z1 + direction.getSignZ() * playerBB.getZsize() * (0.5 + REACH_SCALE);
         } else {
             z1 = playerBB.minZ;
             z2 = playerBB.maxZ;

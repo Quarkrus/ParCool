@@ -34,6 +34,11 @@ public class ParCoolAnimations {
             () -> (p) -> Parkourability.get(p).get(ParCoolActions.CLIMB_UP).isDoing(),
             null
     );
+    public static final ID<AnimationSet> BACK_FLIP = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "back_flip"),
+            () -> (p) -> !p.isOnGround(),
+            null
+    );
 
     public static void register() {
     }
