@@ -27,6 +27,19 @@ public class ParCoolBlendingFactors {
                     new SimpleBlendFactor((player, partial) -> Parkourability.get(player).get(ParCoolActions.HANG_ON).getBlendFactorMovingLeft(partial), method)
             );
 
+    public static final ID<IBlendingFactor> SLIDE_DOWN_LEFT_TO_WALL = BlendingFactors.getInstance()
+            .register(new ResourceLocation(ParCool.MOD_ID, "builtin/slide_down_left_to_wall"), (args, method) ->
+                    new SimpleBlendFactor((player, partial) -> Parkourability.get(player).get(ParCoolActions.SLIDE_DOWN).getBlendFactorLeftToWall(partial), method)
+            );
+    public static final ID<IBlendingFactor> SLIDE_DOWN_RIGHT_TO_WALL = BlendingFactors.getInstance()
+            .register(new ResourceLocation(ParCool.MOD_ID, "builtin/slide_down_right_to_wall"), (args, method) ->
+                    new SimpleBlendFactor((player, partial) -> Parkourability.get(player).get(ParCoolActions.SLIDE_DOWN).getBlendFactorRightToWall(partial), method)
+            );
+    public static final ID<IBlendingFactor> SLIDE_DOWN_BACK_TO_WALL = BlendingFactors.getInstance()
+            .register(new ResourceLocation(ParCool.MOD_ID, "builtin/slide_down_back_to_wall"), (args, method) ->
+                    new SimpleBlendFactor((player, partial) -> Parkourability.get(player).get(ParCoolActions.SLIDE_DOWN).getBlendFactorBackToWall(partial), method)
+            );
+
     public static void register() {
     }
 }
