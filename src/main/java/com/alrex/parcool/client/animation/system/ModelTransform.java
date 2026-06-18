@@ -21,9 +21,9 @@ public record ModelTransform(EnumMap<AnimatableModelPart, Transform> transforms)
         if (headTransform != null) {
             newMap.put(AnimatableModelPart.HEAD, headTransform.mirror());
         }
-        var bodyTransform = transforms.get(AnimatableModelPart.HEAD);
+        var bodyTransform = transforms.get(AnimatableModelPart.BODY);
         if (bodyTransform != null) {
-            newMap.put(AnimatableModelPart.HEAD, bodyTransform.mirror());
+            newMap.put(AnimatableModelPart.BODY, bodyTransform.mirror());
         }
         var rArmTransform = transforms.get(AnimatableModelPart.RIGHT_ARM);
         var lArmTransform = transforms.get(AnimatableModelPart.LEFT_ARM);

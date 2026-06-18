@@ -19,8 +19,23 @@ public class ParCoolAnimations {
             () -> (p) -> Parkourability.get(p).get(ParCoolActions.CRAWL).isDoing(),
             null
     );
-    public static final ID<AnimationSet> DODGE_SIDE = AnimationSets.getInstance().register(
-            new ResourceLocation(ParCool.MOD_ID, "side_dodge"),
+    public static final ID<AnimationSet> DODGE_RIGHT = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "dodge_right"),
+            () -> (p) -> true,
+            null
+    );
+    public static final ID<AnimationSet> DODGE_LEFT = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "dodge_left"),
+            () -> (p) -> true,
+            null
+    );
+    public static final ID<AnimationSet> DODGE_FRONT = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "dodge_front"),
+            () -> (p) -> true,
+            null
+    );
+    public static final ID<AnimationSet> DODGE_BACK = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "dodge_back"),
             () -> (p) -> true,
             null
     );

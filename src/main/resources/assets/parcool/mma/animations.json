@@ -12,10 +12,28 @@
     "main": "parcool:crawl_group.json"
   },
   {
-    "name": "parcool:side_dodge",
+    "name": "parcool:dodge_right",
     "fade_in_duration": 5,
-    "fade_out_duration": 5,
-    "main": "parcool:side_dodge_group.json"
+    "fade_out_duration": 4,
+    "main": "parcool:dodge_right_group.json"
+  },
+  {
+    "name": "parcool:dodge_left",
+    "fade_in_duration": 5,
+    "fade_out_duration": 4,
+    "main": "parcool:dodge_left_group.json"
+  },
+  {
+    "name": "parcool:dodge_front",
+    "fade_in_duration": 5,
+    "fade_out_duration": 3,
+    "main": "parcool:dodge_front_group.json"
+  },
+  {
+    "name": "parcool:dodge_back",
+    "fade_in_duration": 2,
+    "fade_out_duration": 4,
+    "main": "parcool:dodge_back_group.json"
   },
   {
     "name": "parcool:hang_on",

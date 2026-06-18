@@ -2,6 +2,7 @@ package com.alrex.parcool.common.action.impl;
 
 import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
+import com.alrex.parcool.client.input.LogicalMovement;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.Action;
@@ -20,7 +21,7 @@ public class TrickJump extends Action implements ActionExtension.JumpListener {
     public boolean canStart() {
         if (!jumped) return false;
         jumped = false;
-        var duration = ParCoolKeyBinds.MOVEMENT_BACK.state().getPressedDuration();
+        var duration = ParCoolKeyBinds.getMovementInput(LogicalMovement.BACKWARD).getPressedDuration();
         return 0 <= duration && duration < 5;
     }
 

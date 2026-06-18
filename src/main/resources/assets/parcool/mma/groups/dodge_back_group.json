@@ -1,0 +1,17 @@
+{
+  "duration": 22,
+  "components": [
+    {
+      "name": "parcool:dodge_back.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "max": 20
+        }
+      }
+    },
+    {
+      "name": "parcool:builtin/lock_body"
+    }
+  ]
+}

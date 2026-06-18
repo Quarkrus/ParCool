@@ -52,7 +52,7 @@ public class HangOn extends ContinuableAction {
 
     @Override
     public boolean canContinue() {
-        return ParCoolKeyBinds.HANG_ON.key().isDown() && currentHangState != null && !((LocalPlayer) parkourability.player()).input.jumping;
+        return ParCoolKeyBinds.HANG_ON.key().isDown() && currentHangState != null && !ParCoolKeyBinds.JUMP.state().isJustPressed();
     }
 
     @Override
@@ -231,7 +231,6 @@ public class HangOn extends ContinuableAction {
         var player = parkourability.player();
         var level = player.level;
         var playerBB = player.getBoundingBox();
-        short signX = 0, signZ = 0;
         double xRange = playerBB.getXsize() * 0.25, zRange = playerBB.getZsize() * 0.25;
         var direction = InteractingWallDirection.getAdjacentWall(player, xRange, zRange);
 
@@ -247,7 +246,7 @@ public class HangOn extends ContinuableAction {
         var downReach = -playerBB.getYsize() * 0.2;
         var collision = Entity.collideBoundingBox(player, new Vec3(0, downReach, 0), grabbingBB, level, Collections.emptyList());
         if (collision.y > downReach) {
-            var legBB = new AABB(playerBB.minX, playerBB.minY, playerBB.minZ, playerBB.maxX, playerBB.minY + playerBB.getYsize() / 3, playerBB.maxZ).expandTowards(signX * xRange, 0, signZ * zRange);
+            var legBB = new AABB(playerBB.minX, playerBB.minY, playerBB.minZ, playerBB.maxX, playerBB.minY + playerBB.getYsize() / 3, playerBB.maxZ).expandTowards(direction.getSignX() * xRange, 0, direction.getSignZ() * zRange);
             return new HangState(direction, grabbingBB, collision.y, !level.noCollision(legBB));
         }
         return null;

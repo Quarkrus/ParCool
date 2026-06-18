@@ -50,7 +50,7 @@ public class WorkingAnimation implements IWorkingAnimation {
     @Override
     public void reset() {
         tick = 0;
-        finished = true;
+        finished = false;
     }
 
     @Override

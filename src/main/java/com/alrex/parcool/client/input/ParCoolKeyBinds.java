@@ -10,10 +10,15 @@ import net.minecraftforge.event.TickEvent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.function.BooleanSupplier;
 
 @OnlyIn(Dist.CLIENT)
 public class ParCoolKeyBinds {
-	public record Input(KeyMapping key, InputState state) {
+    public interface IStateProvider {
+        InputState state();
+    }
+
+    public record Input(KeyMapping key, InputState state) implements IStateProvider {
 		private static Input from(KeyMapping key) {
 			return new Input(key, new InputState());
 		}
@@ -23,12 +28,28 @@ public class ParCoolKeyBinds {
 		}
 	}
 
+    public record LogicalInput(BooleanSupplier keyDownSupplier, InputState state) implements IStateProvider {
+        private static LogicalInput from(BooleanSupplier keyDownSupplier) {
+            return new LogicalInput(keyDownSupplier, new InputState());
+        }
+
+        private void update() {
+            state.update(keyDownSupplier.getAsBoolean());
+        }
+    }
+
 	public static class InputState {
+        private boolean down;
 		private int pressedDurationTick = 0;
 		private int notPressedDurationTick = 0;
 
 		private void update(KeyMapping key) {
-			if (key.isDown()) {
+            update(key.isDown());
+        }
+
+        private void update(boolean keyDown) {
+            down = keyDown;
+            if (keyDown) {
 				pressedDurationTick++;
 				notPressedDurationTick = -1;
 			} else {
@@ -36,6 +57,10 @@ public class ParCoolKeyBinds {
 				notPressedDurationTick++;
 			}
 		}
+
+        public boolean isDown() {
+            return down;
+        }
 
 		public int getPressedDuration() {
 			return pressedDurationTick;
@@ -55,7 +80,7 @@ public class ParCoolKeyBinds {
 	}
 
 	private static final ArrayList<Input> REGISTERED_KEYS = new ArrayList<>();
-	private static final ArrayList<Input> LISTENING_KEYS = new ArrayList<>();
+    private static final ArrayList<LogicalInput> LISTENING_KEYS = new ArrayList<>();
 
 	private static Input register(KeyMapping key) {
 		var input = Input.from(key);
@@ -63,8 +88,8 @@ public class ParCoolKeyBinds {
 		return input;
 	}
 
-	private static Input listen(KeyMapping key) {
-		var input = Input.from(key);
+    private static LogicalInput listen(BooleanSupplier keyDownSupplier) {
+        var input = LogicalInput.from(keyDownSupplier);
 		LISTENING_KEYS.add(input);
 		return input;
 	}
@@ -74,12 +99,23 @@ public class ParCoolKeyBinds {
 	public static final Input CRAWL = register(new KeyMapping("key.parcool.crawl", GLFW.GLFW_KEY_C, KEY_CATEGORY));
 	public static final Input HANG_ON = register(new KeyMapping("key.parcool.hang_on", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, KEY_CATEGORY));
 	public static final Input SLIDE_DOWN = register(new KeyMapping("key.parcool.slide_down", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, KEY_CATEGORY));
+    public static final Input DODGE = register(new KeyMapping("key.parcool.dodge", GLFW.GLFW_KEY_R, KEY_CATEGORY));
 
-	public static final Input JUMP = listen(Minecraft.getInstance().options.keyJump);
-	public static final Input MOVEMENT_FORWARD = listen(Minecraft.getInstance().options.keyUp);
-	public static final Input MOVEMENT_BACK = listen(Minecraft.getInstance().options.keyDown);
-	public static final Input MOVEMENT_RIGHT = listen(Minecraft.getInstance().options.keyRight);
-	public static final Input MOVEMENT_LEFT = listen(Minecraft.getInstance().options.keyLeft);
+    public static final LogicalInput JUMP = listen(Minecraft.getInstance().options.keyJump::isDown);
+    public static final LogicalInput MOVEMENT_FORWARD = listen(Minecraft.getInstance().options.keyUp::isDown);
+    public static final LogicalInput MOVEMENT_BACK = listen(Minecraft.getInstance().options.keyDown::isDown);
+    public static final LogicalInput MOVEMENT_RIGHT = listen(Minecraft.getInstance().options.keyRight::isDown);
+    public static final LogicalInput MOVEMENT_LEFT = listen(Minecraft.getInstance().options.keyLeft::isDown);
+
+    public static InputState getMovementInput(LogicalMovement movement) {
+        // TODO: switch key state logically when camera decoupled
+        return switch (movement) {
+            case LEFT -> MOVEMENT_LEFT.state;
+            case RIGHT -> MOVEMENT_RIGHT.state;
+            case FORWARD -> MOVEMENT_FORWARD.state;
+            case BACKWARD -> MOVEMENT_BACK.state;
+        };
+    }
 
 	public static void tick(TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END) return;

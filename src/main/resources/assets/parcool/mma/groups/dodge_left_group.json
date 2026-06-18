@@ -1,0 +1,19 @@
+{
+  "duration": 22,
+  "components": [
+    {
+      "name": "parcool:dodge_side.json",
+      "mirror": true,
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "max": 25,
+          "scale": 1.25
+        }
+      }
+    },
+    {
+      "name": "parcool:builtin/lock_body"
+    }
+  ]
+}
