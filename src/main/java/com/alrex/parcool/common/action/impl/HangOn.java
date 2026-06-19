@@ -38,7 +38,7 @@ public class HangOn extends ContinuableAction {
     private HangState startingHangState;
 
     public HangOn(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP, ParCoolActions.SLIDE_DOWN));
+        super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP));
         var builder = new SynchronizedDataHolder.Builder((byte) 2);
         property_direction = builder.register(() -> SynchronizedProperty.newEnum(InteractingWallDirection.class, (newV, oldV) -> oldDirection = oldV));
         property_fullWall = builder.register(SynchronizedProperty::newBoolean);
