@@ -147,14 +147,14 @@ public class SlideDown extends ContinuableAction {
         private static float getBlendFactorLeftToWall(Vec3 horizontalLookVec, Vec3 wallVec, float dotOfWallVecLookVec) {
             if (wallVec.yRot(Mth.HALF_PI).dot(horizontalLookVec) < 0) return 0;
             return MathUtil.mapLinear(
-                    -dotOfWallVecLookVec, -0.7071f /*-cos(pi/4)*/, 0, 0, 1
+                    -dotOfWallVecLookVec, -1, -0.7071f /*-cos(pi/4)*/, 0, 1
             );
         }
 
         private static float getBlendFactorRightToWall(Vec3 horizontalLookVec, Vec3 wallVec, float dotOfWallVecLookVec) {
             if (wallVec.yRot(Mth.HALF_PI).dot(horizontalLookVec) > 0) return 0;
             return MathUtil.mapLinear(
-                    -dotOfWallVecLookVec, -0.7071f /*-cos(pi/4)*/, 0, 0, 1
+                    -dotOfWallVecLookVec, -1, -0.7071f /*-cos(pi/4)*/, 0, 1
             );
         }
 
