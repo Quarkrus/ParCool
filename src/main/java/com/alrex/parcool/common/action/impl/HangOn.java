@@ -22,8 +22,8 @@ import java.util.List;
 public class HangOn extends ContinuableAction {
     private static final double REACH_SCALE = 0.25;
     private final SynchronizedDataHolder dataHolder;
-    private final SynchronizedProperty<InteractingWallDirection> property_direction;
-    private final SynchronizedProperty<Boolean> property_fullWall;
+    private final SynchronizedProperty<InteractingWallDirection> propertyDirection;
+    private final SynchronizedProperty<Boolean> propertyFullWall;
 
     @Nullable
     private InteractingWallDirection oldDirection = null;
@@ -39,10 +39,10 @@ public class HangOn extends ContinuableAction {
 
     public HangOn(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP));
-        var builder = new SynchronizedDataHolder.Builder((byte) 2);
-        property_direction = builder.register(() -> SynchronizedProperty.newEnum(InteractingWallDirection.class, (newV, oldV) -> oldDirection = oldV));
-        property_fullWall = builder.register(SynchronizedProperty::newBoolean);
-        dataHolder = builder.build(entry);
+        dataHolder = SynchronizedDataHolder.create(entry,
+                propertyDirection = SynchronizedProperty.newEnum(InteractingWallDirection.class, (newV, oldV) -> oldDirection = oldV),
+                propertyFullWall = SynchronizedProperty.newBoolean()
+        );
     }
 
     @Override
@@ -100,8 +100,8 @@ public class HangOn extends ContinuableAction {
         } else {
             currentHangState = getHangState();
         }
-        property_direction.set(currentHangState != null ? currentHangState.direction : null);
-        property_fullWall.set(currentHangState != null ? currentHangState.fullWall : null);
+        propertyDirection.set(currentHangState != null ? currentHangState.direction : null);
+        propertyFullWall.set(currentHangState != null ? currentHangState.fullWall : null);
 
         onWorkingTickInOtherClient();
     }
@@ -123,7 +123,7 @@ public class HangOn extends ContinuableAction {
 
     @Nullable
     public Vec3 getWallVec(float partial) {
-        var direction = property_direction.get();
+        var direction = propertyDirection.get();
         if (oldDirection == null) {
             if (direction == null) {
                 return null;
@@ -159,9 +159,9 @@ public class HangOn extends ContinuableAction {
         static final AnimationData NONE = new AnimationData(0, 0, 0, 0);
 
         public static AnimationData get(HangOn hangOn, Player player, AnimationData old) {
-            var direction = hangOn.property_direction.get();
+            var direction = hangOn.propertyDirection.get();
             if (direction == null) return NONE;
-            var fullWall = hangOn.property_fullWall.get();
+            var fullWall = hangOn.propertyFullWall.get();
             var wallVec = direction.asVec();
             var movementLeftBlendFactor =
                     getBlendFactorMovementLeft(

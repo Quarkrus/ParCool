@@ -1,0 +1,17 @@
+{
+  "duration": 13,
+  "components": [
+    {
+      "name": "parcool:builtin/lock_head_front"
+    },
+    {
+      "name": "parcool:tap.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "max": 10
+        }
+      }
+    }
+  ]
+}

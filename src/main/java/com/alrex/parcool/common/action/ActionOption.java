@@ -10,6 +10,7 @@ public class ActionOption {
             StaminaConsumption defaultCost,
             @Nullable ActionEntry<? extends ContinuableAction> parent,
             @Nullable Pose neededPose,
+            boolean needOnGround,
             boolean needParentWorking,
             boolean availableInFluid,
             LogicalSide triggeredSide
@@ -23,11 +24,12 @@ public class ActionOption {
     private Pose neededPose = Pose.STANDING;
     private boolean needParentWorking = false;
     private boolean availableInFluid = false;
+    private boolean needOnGround = false;
     private LogicalSide triggeredSide = LogicalSide.CLIENT;
 
     public Value build() {
         return new Value(
-                staminaConsumption, parent, neededPose, needParentWorking, availableInFluid, triggeredSide
+                staminaConsumption, parent, neededPose, needOnGround, needParentWorking, availableInFluid, triggeredSide
         );
     }
 
@@ -51,6 +53,11 @@ public class ActionOption {
 
     public ActionOption needPose(@Nullable Pose pose) {
         this.neededPose = pose;
+        return this;
+    }
+
+    public ActionOption needOnGround(boolean value) {
+        this.needOnGround = value;
         return this;
     }
 

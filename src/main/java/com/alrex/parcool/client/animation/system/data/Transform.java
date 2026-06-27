@@ -41,10 +41,6 @@ public record Transform(Vec3f translation, Quaternion rotation) {
     }
 
     public void apply(ModelPart part, float blendingFactor) {
-        apply(part, blendingFactor, false);
-    }
-
-    public void apply(ModelPart part, float blendingFactor, boolean test) {
         var q = rotation;
         float xRot, zRot, yRot = (float) Math.asin(2 * (-q.i() * q.k() + q.j() * q.r()));
         double cosY = Math.cos(yRot);

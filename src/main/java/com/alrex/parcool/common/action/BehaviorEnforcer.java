@@ -62,7 +62,7 @@ public class BehaviorEnforcer {
     @Nullable
     private Enforcer<Vec3> movementEnforcer = null;
     @Nullable
-    private Enforcer<Vec3> positionEnforcer = null;
+    private Enforcer<Vec3> deltaMovementEnforcer = null;
 
     public void addMarkerCancellingJump(ID id, Marker marker) {
         jumpCancelMarks.put(id, marker);
@@ -92,8 +92,8 @@ public class BehaviorEnforcer {
         movementEnforcer = new Enforcer<>(marker, movementSupplier);
     }
 
-    public void setMarkerEnforcePosition(Marker marker, Supplier<Vec3> movementSupplier) {
-        positionEnforcer = new Enforcer<>(marker, movementSupplier);
+    public void setMarkerEnforceDeltaMovement(Marker marker, Supplier<Vec3> movementSupplier) {
+        deltaMovementEnforcer = new Enforcer<>(marker, movementSupplier);
     }
 
     public boolean cancelJump() {
@@ -136,11 +136,11 @@ public class BehaviorEnforcer {
     }
 
     @Nullable
-    public Vec3 getEnforcedPosition() {
-        if (positionEnforcer != null && positionEnforcer.remain()) {
-            return positionEnforcer.getBehavior();
+    public Vec3 getEnforcedDeltaMovement() {
+        if (deltaMovementEnforcer != null && deltaMovementEnforcer.remain()) {
+            return deltaMovementEnforcer.getBehavior();
         }
-        positionEnforcer = null;
+        deltaMovementEnforcer = null;
         return null;
     }
 }

@@ -15,9 +15,9 @@ public class Dodge extends ContinuableAction implements ActionExtension.Attacked
 
     public Dodge(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry);
-        var builder = new SynchronizedDataHolder.Builder((byte) 1);
-        propertyAnimationType = builder.register(() -> SynchronizedProperty.newEnum(AnimationType.class));
-        dataHolder = builder.build(entry);
+        dataHolder = SynchronizedDataHolder.create(entry,
+                propertyAnimationType = SynchronizedProperty.newEnum(AnimationType.class)
+        );
     }
 
     @Override

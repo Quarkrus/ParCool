@@ -19,13 +19,13 @@ public class ClimbUp extends ContinuableAction implements IRequestable<ClimbUp.R
     @Nullable
     private Vec3 destination = null;
     private final SynchronizedDataHolder dataHolder;
-    private final SynchronizedProperty<InteractingWallDirection> property_direction;
+    private final SynchronizedProperty<InteractingWallDirection> propertyDirection;
 
     public ClimbUp(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry);
-        var builder = new SynchronizedDataHolder.Builder((byte) 1);
-        property_direction = builder.register(() -> SynchronizedProperty.newEnum(InteractingWallDirection.class));
-        dataHolder = builder.build(entry);
+        dataHolder = SynchronizedDataHolder.create(entry,
+                propertyDirection = SynchronizedProperty.newEnum(InteractingWallDirection.class)
+        );
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ClimbUp extends ContinuableAction implements IRequestable<ClimbUp.R
         var playerBB = parkourability.player().getBoundingBox();
         destination = new Vec3(center.x, bb.minY, center.z);
         startPos = parkourability.player().position();
-        property_direction.set(requestContext.hangState.direction());
+        propertyDirection.set(requestContext.hangState.direction());
         var destinationBB = new AABB(
                 center.x - playerBB.getXsize() * 0.6,
                 bb.minY,
@@ -97,7 +97,7 @@ public class ClimbUp extends ContinuableAction implements IRequestable<ClimbUp.R
 
     @Nullable
     public Vec3 getWallVec(float partial) {
-        var direction = property_direction.get();
+        var direction = propertyDirection.get();
         if (direction == null) return null;
         return direction.asVec();
     }

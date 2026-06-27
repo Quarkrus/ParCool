@@ -102,4 +102,8 @@ public class SynchronizedDataHolder {
             return new SynchronizedDataHolder(data, holder);
         }
     }
+
+    public static SynchronizedDataHolder create(ActionEntry<?> entry, SynchronizedProperty<?>... properties) {
+        return new SynchronizedDataHolder(properties, entry);
+    }
 }

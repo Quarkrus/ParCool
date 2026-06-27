@@ -18,16 +18,16 @@ import java.util.List;
 
 public class SlideDown extends ContinuableAction {
     private final SynchronizedDataHolder dataHolder;
-    private final SynchronizedProperty<InteractingWallDirection> property_direction;
+    private final SynchronizedProperty<InteractingWallDirection> propertyDirection;
 
     private AnimationData currentAnimData = AnimationData.NONE;
     private AnimationData oldAnimData = AnimationData.NONE;
 
     public SlideDown(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP, ParCoolActions.HANG_ON));
-        var builder = new SynchronizedDataHolder.Builder((byte) 1);
-        property_direction = builder.register(() -> SynchronizedProperty.newEnum(InteractingWallDirection.class));
-        dataHolder = builder.build(entry);
+        dataHolder = SynchronizedDataHolder.create(entry,
+                propertyDirection = SynchronizedProperty.newEnum(InteractingWallDirection.class)
+        );
     }
 
     @Override
@@ -45,7 +45,7 @@ public class SlideDown extends ContinuableAction {
         if (ParCoolKeyBinds.SLIDE_DOWN.key().isDown() && !parkourability.player().isOnGround()) {
             var direction = InteractingWallDirection.getAdjacentWall(parkourability.player());
             if (direction == null) return false;
-            property_direction.set(direction);
+            propertyDirection.set(direction);
             return true;
         }
         return false;
@@ -62,7 +62,7 @@ public class SlideDown extends ContinuableAction {
         parkourability.getBehaviorEnforcer().setMarkerEnforceMovePoint(
                 this::isDoing, () -> {
                     if (!(parkourability.player() instanceof LocalPlayer player)) return null;
-                    var direction = property_direction.get();
+                    var direction = propertyDirection.get();
                     if (direction == null) return null;
 
                     var speed = player.getSpeed() * 0.2f;
@@ -96,7 +96,7 @@ public class SlideDown extends ContinuableAction {
 
     @Nullable
     public Vec3 getWallVec(float partial) {
-        var wallVec = property_direction.get();
+        var wallVec = propertyDirection.get();
         if (wallVec == null) return null;
         return wallVec.asVec();
     }
@@ -131,7 +131,7 @@ public class SlideDown extends ContinuableAction {
         static final AnimationData NONE = new AnimationData(0, 0, 0);
 
         public static AnimationData get(SlideDown slideDown, Player player) {
-            var direction = slideDown.property_direction.get();
+            var direction = slideDown.propertyDirection.get();
             if (direction == null) return NONE;
             var wallVec = direction.asVec();
             var horizontalLookVec = EntityUtil.getHorizontalLookAngle(player);

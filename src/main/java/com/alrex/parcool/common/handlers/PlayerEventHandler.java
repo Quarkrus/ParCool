@@ -25,7 +25,7 @@ public class PlayerEventHandler {
         var parkourability = Parkourability.get(player);
         parkourability.getAdditionalProperties().onJump();
         for (var listener : parkourability.getActions().getExtensionListeners(ActionExtension.LandListener.class)) {
-            listener.onLand();
+            listener.onLand(event);
         }
     }
 

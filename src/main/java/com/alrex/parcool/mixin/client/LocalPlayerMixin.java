@@ -65,21 +65,22 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements I
         var player = (LocalPlayer) (Object) this;
         Parkourability parkourability = Parkourability.get(player);
         if (parkourability == null) return;
-        var enforcedPos = parkourability.getBehaviorEnforcer().getEnforcedPosition();
-        if (enforcedPos != null) {
-            ci.cancel();
-            var dMove = enforcedPos.subtract(player.position());
-            setBoundingBox(getBoundingBox().move(dMove));
-            setPos(player.getX() + dMove.x, player.getY() + dMove.y, player.getZ() + dMove.z);
-            return;
-        }
         if (moverType != MoverType.SELF) return;
+
         var enforcedMovePos = parkourability.getBehaviorEnforcer().getEnforcedMovePoint();
         if (enforcedMovePos != null) {
             ci.cancel();
             var dMove = enforcedMovePos.subtract(player.position());
             player.setDeltaMovement(dMove);
             super.move(moverType, dMove);
+            return;
+        }
+
+        var enforcedMovement = parkourability.getBehaviorEnforcer().getEnforcedDeltaMovement();
+        if (enforcedMovement != null) {
+            ci.cancel();
+            player.setDeltaMovement(enforcedMovement);
+            super.move(moverType, enforcedMovement);
         }
     }
 

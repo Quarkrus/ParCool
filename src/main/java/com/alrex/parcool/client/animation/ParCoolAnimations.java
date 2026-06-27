@@ -59,6 +59,16 @@ public class ParCoolAnimations {
             () -> (p) -> Parkourability.get(p).get(ParCoolActions.SLIDE_DOWN).isDoing(),
             null
     );
+    public static final ID<AnimationSet> TAP = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "tap"),
+            () -> (p) -> true,
+            null
+    );
+    public static final ID<AnimationSet> ROLL = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "roll"),
+            () -> (p) -> true,
+            null
+    );
 
     public static void register() {
     }

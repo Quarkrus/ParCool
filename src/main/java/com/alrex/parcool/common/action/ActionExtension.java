@@ -3,6 +3,7 @@ package com.alrex.parcool.common.action;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface ActionExtension {
     }
 
     interface LandListener extends ActionExtension {
-        void onLand();
+        void onLand(LivingFallEvent event);
     }
 
     interface KeyMapTriggeredListener extends ActionExtension {

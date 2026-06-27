@@ -126,6 +126,11 @@ public class ActionProcessor {
 		action.onTick();
 		if (logicalSide.isClient()) {
 			action.onClientTick();
+			if (player.isLocalPlayer()) {
+				action.onLocalClientTick();
+			} else {
+				action.onOtherClientTick();
+			}
 		} else {
 			action.onServerTick();
 		}
@@ -143,15 +148,7 @@ public class ActionProcessor {
 					type = ActionStatePacket.Type.FINISH;
 				}
 			} else {
-				var entry = action.getEntry();
-				var parent = entry.parent();
-				boolean start = !parkourability.player().isSpectator() //TODO
-						&& (entry.option().availableInFluid() || !player.isInFluidType())
-						&& parkourability.permit(entry)
-						&& (entry.option().neededPose() == null || entry.option().neededPose() == player.getPose())
-						&& !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(parkourability.player(), action))
-						&& action.isAbleToStart();
-				if (start) {
+				if (action.isReadyToStart()) {
 					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Pre(parkourability.player(), action));
 					action.start();
 					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Post(parkourability.player(), action));

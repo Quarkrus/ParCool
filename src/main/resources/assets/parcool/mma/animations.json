@@ -58,5 +58,17 @@
     "fade_in_duration": 5,
     "fade_out_duration": 5,
     "main": "parcool:slide_down_group.json"
+  },
+  {
+    "name": "parcool:tap",
+    "fade_in_duration": 0,
+    "fade_out_duration": 4,
+    "main": "parcool:breakfall_tap_group.json"
+  },
+  {
+    "name": "parcool:roll",
+    "fade_in_duration": 2,
+    "fade_out_duration": 4,
+    "main": "parcool:breakfall_roll_group.json"
   }
 ]
