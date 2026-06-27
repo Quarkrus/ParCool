@@ -101,6 +101,7 @@ public class ParCoolKeyBinds {
 	public static final Input SLIDE_DOWN = register(new KeyMapping("key.parcool.slide_down", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, KEY_CATEGORY));
     public static final Input DODGE = register(new KeyMapping("key.parcool.dodge", GLFW.GLFW_KEY_R, KEY_CATEGORY));
     public static final Input BREAKFALL = register(new KeyMapping("key.parcool.breakfall", GLFW.GLFW_KEY_R, KEY_CATEGORY));
+	public static final Input HORIZONTAL_WALL_RUN = register(new KeyMapping("key.parcool.horizontal_wall_run", GLFW.GLFW_KEY_R, KEY_CATEGORY));
 
     public static final LogicalInput JUMP = listen(Minecraft.getInstance().options.keyJump::isDown);
     public static final LogicalInput MOVEMENT_FORWARD = listen(Minecraft.getInstance().options.keyUp::isDown);

@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -31,8 +32,6 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements I
         return parcool$animator;
     }
 
-    private boolean oldSprinting = false;
-
 	public LocalPlayerMixin(ClientLevel p_234112_, GameProfile p_234113_, @Nullable ProfilePublicKey p_234114_) {
 		super(p_234112_, p_234113_, p_234114_);
 	}
@@ -47,24 +46,20 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements I
 		}
 	}
 
-    @Inject(method = "aiStep", at = @At("HEAD"))
-	public void onAiStep(CallbackInfo ci) {
-        var player = (LocalPlayer) (Object) this;
-        if (player.isLocalPlayer()) {
-            boolean flag = !player.input.hasForwardImpulse() || !((float) player.getFoodData().getFoodLevel() > 6.0F || this.getAbilities().mayfly);
-            boolean flag1 = flag || this.isInWater() && !this.isUnderWater();
-            if (oldSprinting && !flag1) {
-                player.setSprinting(true);
-            }
-            oldSprinting = player.isSprinting();
+    @Redirect(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;setSprinting(Z)V"))
+    public void onAiStep_SetSprinting(LocalPlayer instance, boolean value) {
+        var parkourability = Parkourability.get(instance);
+        if (parkourability.getBehaviorEnforcer().enforceSprint()) {
+            instance.setSprinting(true);
+        } else {
+            instance.setSprinting(value);
         }
     }
 
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
     public void onMove(MoverType moverType, Vec3 movement, CallbackInfo ci) {
         var player = (LocalPlayer) (Object) this;
-        Parkourability parkourability = Parkourability.get(player);
-        if (parkourability == null) return;
+        var parkourability = Parkourability.get(player);
         if (moverType != MoverType.SELF) return;
 
         var enforcedMovePos = parkourability.getBehaviorEnforcer().getEnforcedMovePoint();
@@ -73,9 +68,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements I
             var dMove = enforcedMovePos.subtract(player.position());
             player.setDeltaMovement(dMove);
             super.move(moverType, dMove);
-            return;
         }
-
         var enforcedMovement = parkourability.getBehaviorEnforcer().getEnforcedDeltaMovement();
         if (enforcedMovement != null) {
             ci.cancel();

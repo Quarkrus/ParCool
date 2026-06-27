@@ -59,6 +59,7 @@ public class BehaviorEnforcer {
     private final TreeMap<ID, Marker> sprintCancelMarks = new TreeMap<>();
     private final TreeMap<ID, Marker> fallFlyingCancelMarks = new TreeMap<>();
     private final TreeMap<ID, Marker> showNameCancelMarks = new TreeMap<>();
+    private final TreeMap<ID, Marker> enforceSprintMarks = new TreeMap<>();
     @Nullable
     private Enforcer<Vec3> movementEnforcer = null;
     @Nullable
@@ -86,6 +87,10 @@ public class BehaviorEnforcer {
 
     public void addMarkerCancellingShowName(ID id, Marker marker) {
         showNameCancelMarks.put(id, marker);
+    }
+
+    public void addMarkerEnforceSprint(ID id, Marker marker) {
+        enforceSprintMarks.put(id, marker);
     }
 
     public void setMarkerEnforceMovePoint(Marker marker, Supplier<Vec3> movementSupplier) {
@@ -124,6 +129,11 @@ public class BehaviorEnforcer {
     public boolean cancelShowingName() {
         showNameCancelMarks.values().removeIf(it -> !it.remain());
         return !showNameCancelMarks.isEmpty();
+    }
+
+    public boolean enforceSprint() {
+        enforceSprintMarks.values().removeIf(it -> !it.remain());
+        return !enforceSprintMarks.isEmpty();
     }
 
     @Nullable

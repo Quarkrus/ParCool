@@ -51,5 +51,5 @@ public class AnimationProgresses extends AnimationRegistry<AnimationProgress, An
 
     public final ID<AnimationProgress> TIME = register("time", (player) -> 1);
     public final ID<AnimationProgress> VELOCITY = register("velocity", (player) -> (float) player.getDeltaMovement().length());
-    public final ID<AnimationProgress> VELOCITY_H = register("velocity_h", (player) -> (float) player.getDeltaMovement().multiply(1, 0, 1).length());
+    public final ID<AnimationProgress> VELOCITY_H = register("velocity_h", (player) -> (float) Math.min(player.getDeltaMovement().multiply(1, 0, 1).length(), player.getSpeed()));
 }

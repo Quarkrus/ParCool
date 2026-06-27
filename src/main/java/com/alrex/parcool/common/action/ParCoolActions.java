@@ -17,6 +17,7 @@ public class ParCoolActions {
     public static final ActionEntry<TrickJump> TRICK_JUMP;
     public static final ActionEntry<SlideDown> SLIDE_DOWN;
     public static final ActionEntry<Breakfall> BREAKFALL;
+    public static final ActionEntry<HorizontalWallRun> HORIZONTAL_WALL_RUN;
 
     static {
         var builder = new ActionGroup.Builder(ParCool.MOD_ID);
@@ -39,6 +40,9 @@ public class ParCoolActions {
         TRICK_JUMP = builder.add("trick_jump", TrickJump.class, TrickJump::new);
         BREAKFALL = builder.add("breakfall", Breakfall.class, Breakfall::new, new ActionOption()
                 .triggeredSide(LogicalSide.SERVER)
+        );
+        HORIZONTAL_WALL_RUN = builder.add("horizontal_wall_run", HorizontalWallRun.class, HorizontalWallRun::new, new ActionOption()
+                .parent(FAST_RUN).needParentWorking(true)
         );
         GROUP = builder.build();
     }
