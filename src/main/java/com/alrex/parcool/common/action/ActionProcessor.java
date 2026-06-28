@@ -137,18 +137,14 @@ public class ActionProcessor {
 		ActionStatePacket.Type type = ActionStatePacket.Type.DATA;
 		if (needSync) {
 			if (action instanceof ContinuableAction continuableAction && continuableAction.isDoing()) {
-				boolean canContinue = //TODO:parkourability.getActionInfo().can(action.getClass()) &&
-						(action.getEntry().option().availableInFluid() || !player.isInFluidType())
-								&& !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToContinue(parkourability.player(), continuableAction))
-								&& continuableAction.isAbleToContinue();
-				if (!canContinue) {
+				if (!(parkourability.permit(action.entry) && continuableAction.isPossibleToContinue())) {
 					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Pre(parkourability.player(), continuableAction));
 					continuableAction.finish();
 					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Post(parkourability.player(), continuableAction));
 					type = ActionStatePacket.Type.FINISH;
 				}
 			} else {
-				if (action.isReadyToStart()) {
+				if (parkourability.permit(action.entry) && action.isReadyToStart()) {
 					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Pre(parkourability.player(), action));
 					action.start();
 					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Post(parkourability.player(), action));

@@ -1,9 +1,11 @@
 package com.alrex.parcool.common.action;
 
+import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.stamina.AbstractLocalStamina;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Collection;
 
@@ -76,7 +78,9 @@ public abstract class ContinuableAction extends Action {
         onStop();
     }
 
-    public final boolean isAbleToContinue() {
+    public final boolean isPossibleToContinue() {
+        var player = parkourability.player();
+        if (!entry.option().availableInFluid() && player.isInFluidType()) return false;
         if (entry.option().needParentWorking()) {
             var parent = entry.parent();
             if (parent != null && !parkourability.get(parent).isDoing()) {
@@ -90,6 +94,8 @@ public abstract class ContinuableAction extends Action {
                 }
             }
         }
+        if (MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToContinue(parkourability.player(), this)))
+            return false;
         return canContinue();
     }
 
