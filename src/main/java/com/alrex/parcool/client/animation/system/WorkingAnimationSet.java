@@ -94,8 +94,7 @@ public class WorkingAnimationSet {
     public ModelTransform getTransform(AbstractClientPlayer player, float partialTick) {
         var animation = getAnimation(phase);
         if (animation == null) return null;
-        var transform = animation.getTransformation(player, partialTick);
-        return mirror ? transform.mirror() : transform;
+        return animation.getTransformation(player, partialTick, mirror);
     }
 
     public float getCurrentBlendFactor(float partialTick) {

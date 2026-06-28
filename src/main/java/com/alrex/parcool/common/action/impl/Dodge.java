@@ -63,7 +63,7 @@ public class Dodge extends ContinuableAction implements ActionExtension.Attacked
                 PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.DODGE_RIGHT);
                 break;
             case LEFT:
-                PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.DODGE_LEFT);
+                PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.DODGE_RIGHT, true);
                 break;
         }
     }

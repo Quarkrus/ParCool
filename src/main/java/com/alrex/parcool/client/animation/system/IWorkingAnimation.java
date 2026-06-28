@@ -13,5 +13,5 @@ public interface IWorkingAnimation {
 
     void reset();
 
-    ModelTransform getTransformation(AbstractClientPlayer player, float partialTick);
+    ModelTransform getTransformation(AbstractClientPlayer player, float partialTick, boolean allMirroring);
 }

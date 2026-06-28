@@ -11,36 +11,49 @@ import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.ParCoolActions;
 import com.mojang.math.Vector3f;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 
 public class ParCoolCodedAnimationComponents {
+    private static Transform lockBody(Player player, Vec3 direction, float partial) {
+        var yaw = Mth.wrapDegrees(MathUtil.toYawRadian(direction) + Math.toRadians(Mth.lerp(partial, player.yBodyRotO, player.yBodyRot)));
+        return new Transform(Vec3f.ZERO, Vector3f.YP.rotation((float) yaw));
+    }
+
     public static final ID<CodedAnimationComponent> HANG_ON_LOCK_BODY = CodedAnimationComponents.getInstance().register(
             "builtin/hang_on_lock_body",
-            (player, part, progress, partial) -> {
+            (player, part, progress, partial, mirror) -> {
                 if (part != AnimatableModelPart.BODY) return null;
                 var wallVec = Parkourability.get(player).get(ParCoolActions.HANG_ON).getWallVec(partial);
                 if (wallVec == null) return null;
-                var yaw = Mth.wrapDegrees(MathUtil.toYawRadian(wallVec) + Math.toRadians(Mth.lerp(partial, player.yBodyRotO, player.yBodyRot)));
-                return new Transform(Vec3f.ZERO, Vector3f.YP.rotation((float) yaw));
+                return lockBody(player, wallVec, partial);
             }
     );
     public static final ID<CodedAnimationComponent> CLIMB_UP_LOCK_BODY = CodedAnimationComponents.getInstance().register(
             "builtin/climb_up_lock_body",
-            (player, part, progress, partial) -> {
+            (player, part, progress, partial, mirror) -> {
                 if (part != AnimatableModelPart.BODY) return null;
                 var wallVec = Parkourability.get(player).get(ParCoolActions.CLIMB_UP).getWallVec(partial);
                 if (wallVec == null) return null;
-                var yaw = Mth.wrapDegrees(MathUtil.toYawRadian(wallVec) + Math.toRadians(Mth.lerp(partial, player.yBodyRotO, player.yBodyRot)));
-                return new Transform(Vec3f.ZERO, Vector3f.YP.rotation((float) yaw));
+                return lockBody(player, wallVec, partial);
             }
     );
     public static final ID<CodedAnimationComponent> SLIDE_DOWN_LOCK_BODY = CodedAnimationComponents.getInstance().register(
             "builtin/slide_down_lock_body",
-            (player, part, progress, partial) -> {
+            (player, part, progress, partial, mirror) -> {
                 if (part != AnimatableModelPart.BODY) return null;
                 var wallVec = Parkourability.get(player).get(ParCoolActions.SLIDE_DOWN).getWallVec(partial);
                 if (wallVec == null) return null;
-                var yaw = Mth.wrapDegrees(MathUtil.toYawRadian(wallVec) + Math.toRadians(Mth.lerp(partial, player.yBodyRotO, player.yBodyRot)));
-                return new Transform(Vec3f.ZERO, Vector3f.YP.rotation((float) yaw));
+                return lockBody(player, wallVec, partial);
+            }
+    );
+    public static final ID<CodedAnimationComponent> HORIZONTAL_WALL_RUN_LOCK_BODY = CodedAnimationComponents.getInstance().register(
+            "builtin/horizontal_wall_run_lock_body",
+            (player, part, progress, partial, mirror) -> {
+                if (part != AnimatableModelPart.BODY) return null;
+                var runningDirection = Parkourability.get(player).get(ParCoolActions.HORIZONTAL_WALL_RUN).getRunningDirection(partial);
+                if (runningDirection == null) return null;
+                return lockBody(player, runningDirection, partial);
             }
     );
     public static void register() {

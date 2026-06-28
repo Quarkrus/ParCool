@@ -3,6 +3,7 @@ package com.alrex.parcool.client.animation.system.registration;
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.client.animation.system.AnimationProgress;
 import com.alrex.parcool.client.animation.system.resource.Argument;
+import com.alrex.parcool.util.EntityUtil;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -51,5 +52,5 @@ public class AnimationProgresses extends AnimationRegistry<AnimationProgress, An
 
     public final ID<AnimationProgress> TIME = register("time", (player) -> 1);
     public final ID<AnimationProgress> VELOCITY = register("velocity", (player) -> (float) player.getDeltaMovement().length());
-    public final ID<AnimationProgress> VELOCITY_H = register("velocity_h", (player) -> (float) Math.min(player.getDeltaMovement().multiply(1, 0, 1).length(), player.getSpeed()));
+    public final ID<AnimationProgress> VELOCITY_H = register("velocity_h", (player) -> (float) Math.min(player.getDeltaMovement().multiply(1, 0, 1).length(), EntityUtil.getHorizontalMaximumDeltaMovementValue(player)));
 }

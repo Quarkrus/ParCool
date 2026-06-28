@@ -75,32 +75,26 @@ public class WorkingAnimation implements IWorkingAnimation {
     }
 
     @Override
-    public ModelTransform getTransformation(AbstractClientPlayer player, float partialTick) {
+    public ModelTransform getTransformation(AbstractClientPlayer player, float partialTick, boolean allMirroring) {
         var map = new EnumMap<AnimatableModelPart, Transform>(AnimatableModelPart.class);
         for (var component : components) {
             var blendingValue = component.blendingFactor != null ? component.blendingFactor.getFactor(player, partialTick) : 1f;
             var method = component.blendingFactor != null ? component.blendingFactor.getBlendMethod() : BlendMethod.ADD;
+            var mirror = component.mirror ^ allMirroring;
 
             for (var modelPart : AnimatableModelPart.values()) {
-                var appliedPart = modelPart;
-                if (component.mirror) {
-                    appliedPart = modelPart.getMirrorPart();
-                }
 
                 if (blendingValue < 1e-5) continue;
 
-                var transform = map.get(appliedPart);
+                var transform = map.get(modelPart);
                 if (transform == null) transform = Transform.NO_TRANSFORMATION;
-                var componentTransform = component.component.getTransform(player, modelPart, component.progress.getProgress(partialTick), partialTick);
+                var componentTransform = component.component.getTransform(player, modelPart, component.progress.getProgress(partialTick), partialTick, mirror);
                 if (componentTransform != null) {
-                    if (component.mirror) {
-                        componentTransform = componentTransform.mirror();
-                    }
                     switch (method) {
                         case ADD ->
-                                map.put(appliedPart, transform.append(componentTransform, blendingValue, appliedPart == AnimatableModelPart.BODY));
+                                map.put(modelPart, transform.append(componentTransform, blendingValue, modelPart == AnimatableModelPart.BODY));
                         case SET ->
-                                map.put(appliedPart, transform.morph(componentTransform, blendingValue, appliedPart == AnimatableModelPart.BODY));
+                                map.put(modelPart, transform.morph(componentTransform, blendingValue, modelPart == AnimatableModelPart.BODY));
                     }
                 }
             }

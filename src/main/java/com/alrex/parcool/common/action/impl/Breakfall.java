@@ -6,6 +6,8 @@ import com.alrex.parcool.client.input.LogicalMovement;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.*;
+import com.alrex.parcool.util.EntityUtil;
+import com.alrex.parcool.util.VectorUtil;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -76,7 +78,7 @@ public class Breakfall extends Action implements ActionExtension.LandListener {
                 );
                 return;
             case ROLL:
-                var deltaMove = parkourability.player().getDeltaMovement().scale(1.5);
+                var deltaMove = VectorUtil.fromYawDegree(parkourability.player().getYRot()).scale(1.25 * EntityUtil.getHorizontalMaximumSpeed(parkourability.player()));
                 parkourability.getBehaviorEnforcer().setMarkerEnforceDeltaMovement(
                         () -> this.getTickSinceStarted() < 10,
                         () -> new Vec3(deltaMove.x, parkourability.player().getDeltaMovement().y, deltaMove.z)

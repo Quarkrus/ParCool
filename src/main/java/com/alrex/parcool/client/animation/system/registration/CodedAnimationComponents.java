@@ -39,7 +39,7 @@ public class CodedAnimationComponents extends AnimationRegistry<CodedAnimationCo
         return register(name, new RegistrationEntry(name, component));
     }
 
-    public final ID<CodedAnimationComponent> LOCK_HEAD_ROTATION = register("builtin/lock_head_front", (player, part, progress, partial) -> {
+    public final ID<CodedAnimationComponent> LOCK_HEAD_ROTATION = register("builtin/lock_head_front", (player, part, progress, partial, mirror) -> {
         if (part != AnimatableModelPart.HEAD) return null;
         var q = Vector3f.YP.rotationDegrees(
                 Mth.wrapDegrees(Mth.lerp(partial, player.yBodyRotO, player.yBodyRot) - Mth.lerp(partial, player.yHeadRotO, player.yHeadRot))
@@ -47,7 +47,7 @@ public class CodedAnimationComponents extends AnimationRegistry<CodedAnimationCo
         q.mul(Vector3f.XP.rotation((float) Math.toRadians(Mth.wrapDegrees(-Mth.lerp(partial, player.xRotO, player.getXRot())))));
         return new Transform(Vec3f.ZERO, q);
     });
-    public final ID<CodedAnimationComponent> LOCK_BODY_ROTATION = register("builtin/lock_body", (player, part, progress, partial) -> {
+    public final ID<CodedAnimationComponent> LOCK_BODY_ROTATION = register("builtin/lock_body", (player, part, progress, partial, mirror) -> {
         if (part != AnimatableModelPart.BODY) return null;
         var q = Vector3f.YP.rotationDegrees(
                 Mth.wrapDegrees(Mth.lerp(partial, player.yBodyRotO, player.yBodyRot) - Mth.lerp(partial, player.yHeadRotO, player.yHeadRot))

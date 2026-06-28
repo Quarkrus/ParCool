@@ -1,0 +1,19 @@
+{
+  "infinite": true,
+  "components": [
+    {
+      "name": "parcool:builtin/horizontal_wall_run_lock_body"
+    },
+    {
+      "name": "parcool:h_wall_run_left_to_wall.json",
+      "progress": {
+        "name": "parcool:velocity_h",
+        "args": {
+          "loop": true,
+          "max": 14,
+          "scale": 7.5
+        }
+      }
+    }
+  ]
+}

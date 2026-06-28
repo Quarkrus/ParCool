@@ -7,5 +7,5 @@ import javax.annotation.Nullable;
 
 public interface IAnimationComponent {
     @Nullable
-    Transform getTransform(AbstractClientPlayer player, AnimatableModelPart part, float progress, float partial);
+    Transform getTransform(AbstractClientPlayer player, AnimatableModelPart part, float progress, float partial, boolean mirror);
 }

@@ -16,8 +16,8 @@ public record StaticAnimationComponent(
 
     @Override
     @Nullable
-    public Transform getTransform(AbstractClientPlayer __, AnimatableModelPart part, float progress, float ___) {
-        var curves = animationCurves.get(part);
+    public Transform getTransform(AbstractClientPlayer __, AnimatableModelPart part, float progress, float ___, boolean mirror) {
+        var curves = animationCurves.get(mirror ? part.getMirrorPart() : part);
         if (curves == null) return null;
         var translation = new float[3];
         for (int i = 0; i < 3; i++) {
@@ -37,9 +37,10 @@ public record StaticAnimationComponent(
                     : property.getDefaultValue();
         }
 
-        return new Transform(
+        var transform = new Transform(
                 new Vec3f(translation[0], translation[1], translation[2]),
                 new Quaternion(rotation[1], rotation[2], rotation[3], rotation[0])
         );
+        return mirror ? transform.mirror() : transform;
     }
 }
