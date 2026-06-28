@@ -133,4 +133,11 @@ public class Parkourability {
 	public double getLimitedValue(ILimitationEntry.Real entry) {
 		return entry.select(getActionInfo().getClientLimitation().get(entry), getActionInfo().getServerLimitation().get(entry));
 	}
+
+	public int getCost(ActionEntry<?> entry, StaminaConsumeType type) {
+		return Math.max(
+				getActionInfo().getClientLimitation().get(entry).cost().get(type),
+				getActionInfo().getServerLimitation().get(entry).cost().get(type)
+		);
+	}
 }

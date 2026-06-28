@@ -7,7 +7,7 @@ import com.google.gson.JsonPrimitive;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 
-public record ActionLimitationValue(boolean possible, StaminaConsumption staminaConsumption) {
+public record ActionLimitationValue(boolean possible, StaminaConsumption cost) {
     public static final ActionLimitationValue NO_LIMIT = new ActionLimitationValue(true, new StaminaConsumption((short) 0, (short) 0, (short) 0));
 
     public static ActionLimitationValue compile(ActionLimitationValue v1, ActionLimitationValue v2) {
@@ -15,23 +15,23 @@ public record ActionLimitationValue(boolean possible, StaminaConsumption stamina
         return new ActionLimitationValue(
                 v1.possible && v2.possible,
                 new StaminaConsumption(
-                        (short) Math.max(v1.staminaConsumption.onStart(), v2.staminaConsumption.onStart()),
-                        (short) Math.max(v1.staminaConsumption.onWorking(), v2.staminaConsumption.onWorking()),
-                        (short) Math.max(v1.staminaConsumption.onFinish(), v2.staminaConsumption.onFinish())
+                        (short) Math.max(v1.cost.onStart(), v2.cost.onStart()),
+                        (short) Math.max(v1.cost.onWorking(), v2.cost.onWorking()),
+                        (short) Math.max(v1.cost.onFinish(), v2.cost.onFinish())
                 )
         );
     }
 
     public boolean isDefault(ActionEntry<?> actionEntry) {
         if (!possible) return false;
-        return actionEntry.option().defaultCost().equals(staminaConsumption);
+        return actionEntry.option().defaultCost().equals(cost);
     }
 
     public void writeTo(FriendlyByteBuf packet) {
         packet.writeBoolean(possible);
-        packet.writeShort(staminaConsumption.onStart());
-        packet.writeShort(staminaConsumption.onWorking());
-        packet.writeShort(staminaConsumption.onFinish());
+        packet.writeShort(cost.onStart());
+        packet.writeShort(cost.onWorking());
+        packet.writeShort(cost.onFinish());
     }
 
     public static ActionLimitationValue readFrom(FriendlyByteBuf packet) {
@@ -42,9 +42,9 @@ public record ActionLimitationValue(boolean possible, StaminaConsumption stamina
         var obj = new JsonObject();
         obj.add("permit", new JsonPrimitive(possible));
         var staminaConsumptionObj = new JsonObject();
-        staminaConsumptionObj.add("start", new JsonPrimitive(staminaConsumption.onStart()));
-        staminaConsumptionObj.add("working", new JsonPrimitive(staminaConsumption.onWorking()));
-        staminaConsumptionObj.add("finish", new JsonPrimitive(staminaConsumption.onFinish()));
+        staminaConsumptionObj.add("start", new JsonPrimitive(cost.onStart()));
+        staminaConsumptionObj.add("working", new JsonPrimitive(cost.onWorking()));
+        staminaConsumptionObj.add("finish", new JsonPrimitive(cost.onFinish()));
         obj.add("cost", staminaConsumptionObj);
         return obj;
     }

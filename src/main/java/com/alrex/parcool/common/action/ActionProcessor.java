@@ -168,6 +168,10 @@ public class ActionProcessor {
 			} else {
 				continuableAction.onWorkingTickInServer();
 			}
+
+			if (parkourability.getStamina() instanceof AbstractLocalStamina stamina) {
+				stamina.consume(parkourability.getCost(action.entry, StaminaConsumeType.WORKING));
+			}
 		}
 		var data = action.getSynchronizedData().packToEntry(type, action.getEntry());
 		if (data != null) {
