@@ -1,5 +1,6 @@
 package com.alrex.parcool.common.stamina;
 
+import com.alrex.parcool.api.ParCoolMobEffects;
 import net.minecraft.world.entity.player.Player;
 
 public abstract class AbstractLocalStamina implements IReadonlyStamina {
@@ -14,6 +15,10 @@ public abstract class AbstractLocalStamina implements IReadonlyStamina {
     public abstract void consume(int value);
 
     public abstract void recover(int value);
+
+    public boolean isInfinite() {
+        return owner.isCreative() || owner.isSpectator() || owner.hasEffect(ParCoolMobEffects.INEXHAUSTIBLE.get());
+    }
 
     public void tick() {
     }

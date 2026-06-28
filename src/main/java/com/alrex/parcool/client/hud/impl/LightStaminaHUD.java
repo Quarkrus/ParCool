@@ -1,6 +1,6 @@
 package com.alrex.parcool.client.hud.impl;
 
-import com.alrex.parcool.api.Effects;
+import com.alrex.parcool.api.ParCoolMobEffects;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.stamina.IReadonlyStamina;
 import com.alrex.parcool.config.ParCoolConfig;
@@ -76,7 +76,7 @@ public class LightStaminaHUD extends GuiComponent {
 	public void render(ForgeGui gui, PoseStack stack, Parkourability parkourability, IReadonlyStamina stamina, float partialTick, int width, int height) {
 		var player = Minecraft.getInstance().player;
 		if (player == null) return;
-		final boolean inexhaustible = player.hasEffect(Effects.INEXHAUSTIBLE.get());
+		final boolean inexhaustible = player.hasEffect(ParCoolMobEffects.INEXHAUSTIBLE.get());
 		final boolean exhausted = stamina.isExhausted();
 
 		if (!showStatus) {

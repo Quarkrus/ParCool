@@ -41,4 +41,9 @@ public class NoneStamina extends AbstractLocalStamina {
     public boolean imposePenalty() {
         return false;
     }
+
+    @Override
+    public boolean isInfinite() {
+        return false;
+    }
 }

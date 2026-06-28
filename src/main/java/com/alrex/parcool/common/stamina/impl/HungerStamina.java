@@ -17,6 +17,7 @@ public class HungerStamina extends AbstractLocalStamina {
     @Override
     public void consume(int value) {
         //TODO
+        if (isInfinite()) return;
     }
 
     @Override

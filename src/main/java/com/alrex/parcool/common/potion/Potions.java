@@ -1,6 +1,7 @@
 package com.alrex.parcool.common.potion;
 
 import com.alrex.parcool.ParCool;
+import com.alrex.parcool.api.ParCoolMobEffects;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.alchemy.Potion;
@@ -15,7 +16,7 @@ public class Potions {
 			POTIONS.register(
 					"poor_energy_drink",
 					() -> new Potion(
-							new MobEffectInstance(com.alrex.parcool.api.Effects.INEXHAUSTIBLE.get(), 3600/*3 min*/),
+							new MobEffectInstance(ParCoolMobEffects.INEXHAUSTIBLE.get(), 3600/*3 min*/),
 							new MobEffectInstance(MobEffects.HUNGER, 100),
 							new MobEffectInstance(MobEffects.POISON, 100)
 					)
@@ -24,7 +25,7 @@ public class Potions {
 			POTIONS.register(
 					"energy_drink",
 					() -> new Potion(
-							new MobEffectInstance(com.alrex.parcool.api.Effects.INEXHAUSTIBLE.get(), 8400/*7 min*/)
+							new MobEffectInstance(ParCoolMobEffects.INEXHAUSTIBLE.get(), 8400/*7 min*/)
 					)
 			);
 

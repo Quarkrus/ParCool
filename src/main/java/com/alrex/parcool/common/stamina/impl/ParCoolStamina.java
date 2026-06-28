@@ -45,6 +45,8 @@ public class ParCoolStamina extends AbstractLocalStamina {
     @Override
     public void consume(int value) {
         if (exhausted) return;
+        if (isInfinite()) return;
+
         this.value -= value;
         if (this.value <= 0) {
             this.value = 0;
@@ -65,8 +67,11 @@ public class ParCoolStamina extends AbstractLocalStamina {
     @Override
     public void tick() {
         recoverCooldown--;
-        if (recoverCooldown <= 0) {
-            //TODO
+        if (isInfinite()) {
+            exhausted = false;
+            recover(50);
+        } else if (recoverCooldown <= 0) {
+            //TODO: variable recovering value
             recover(owner.isOnGround() ? 5 : 2);
         }
     }

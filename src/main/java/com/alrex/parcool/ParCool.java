@@ -1,7 +1,7 @@
 package com.alrex.parcool;
 
 import com.alrex.parcool.api.Attributes;
-import com.alrex.parcool.api.Effects;
+import com.alrex.parcool.api.ParCoolMobEffects;
 import com.alrex.parcool.api.SoundEvents;
 import com.alrex.parcool.api.event.RegisterParCoolActionEvent;
 import com.alrex.parcool.api.event.RegisterParCoolStaminaTypeEvent;
@@ -100,7 +100,7 @@ public class ParCool {
         MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
         MinecraftForge.EVENT_BUS.addListener(this::onServerStopping);
 
-		Effects.register(eventBus);
+		ParCoolMobEffects.register(eventBus);
 		Potions.register(eventBus);
 		Attributes.register(eventBus);
 		SoundEvents.register(eventBus);
