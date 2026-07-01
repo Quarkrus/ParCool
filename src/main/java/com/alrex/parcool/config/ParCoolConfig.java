@@ -2,7 +2,7 @@ package com.alrex.parcool.config;
 
 import com.alrex.parcool.client.gui.ColorTheme;
 import com.alrex.parcool.client.hud.Position;
-import com.alrex.parcool.client.hud.impl.HUDType;
+import com.alrex.parcool.client.hud.stamina.HUDType;
 import com.alrex.parcool.common.action.ActionEntry;
 import com.alrex.parcool.common.action.ActionRegistry;
 import com.alrex.parcool.common.action.StaminaConsumption;

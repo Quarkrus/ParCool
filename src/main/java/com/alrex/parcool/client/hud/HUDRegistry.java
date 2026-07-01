@@ -1,6 +1,6 @@
 package com.alrex.parcool.client.hud;
 
-import com.alrex.parcool.client.hud.impl.StaminaHUDController;
+import com.alrex.parcool.client.hud.stamina.StaminaHUDController;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.event.TickEvent;
