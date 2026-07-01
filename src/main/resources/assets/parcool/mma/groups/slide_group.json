@@ -2,7 +2,15 @@
   "infinite": true,
   "components": [
     {
-      "name": "parcool:slide.json"
+      "name": "parcool:slide.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "loop": true,
+          "max": 8,
+          "scale": 1.75
+        }
+      }
     },
     {
       "name": "parcool:builtin/slide_lock_body"
