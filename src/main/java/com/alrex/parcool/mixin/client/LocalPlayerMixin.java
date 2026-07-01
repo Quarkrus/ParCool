@@ -12,10 +12,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.ProfilePublicKey;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -23,6 +23,12 @@ import javax.annotation.Nullable;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin extends AbstractClientPlayer implements IPlayerAnimatorHolder {
+
+    @Shadow
+    public int sprintTime;
+
+    @Shadow
+    public abstract void setSprinting(boolean p_108751_);
 
     @Unique
     private final PlayerAnimator parcool$animator = new PlayerAnimator();
@@ -45,16 +51,6 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements I
 			cir.setReturnValue(false);
 		}
 	}
-
-    @Redirect(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;setSprinting(Z)V"))
-    public void onAiStep_SetSprinting(LocalPlayer instance, boolean value) {
-        var parkourability = Parkourability.get(instance);
-        if (parkourability.getBehaviorEnforcer().enforceSprint()) {
-            instance.setSprinting(true);
-        } else {
-            instance.setSprinting(value);
-        }
-    }
 
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
     public void onMove(MoverType moverType, Vec3 movement, CallbackInfo ci) {
@@ -80,8 +76,19 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements I
     @Inject(method = "setSprinting", at = @At("HEAD"), cancellable = true)
     public void onSetSprinting(boolean sprint, CallbackInfo ci) {
         Parkourability parkourability = Parkourability.get((LocalPlayer) (Object) this);
-        if (parkourability != null && parkourability.getBehaviorEnforcer().cancelSprint()) {
+        if (parkourability.getBehaviorEnforcer().cancelSprint()) {
+            super.setSprinting(false);
+            sprintTime = 0;
             ci.cancel();
-		}
+        } else if (parkourability.getBehaviorEnforcer().enforceSprint()) {
+            super.setSprinting(true);
+            sprintTime = 0;
+            ci.cancel();
+        }
 	}
+
+    @Inject(method = "aiStep", at = @At("HEAD"))
+    public void onAiStep(CallbackInfo ci) {
+        setSprinting(isSprinting());
+    }
 }

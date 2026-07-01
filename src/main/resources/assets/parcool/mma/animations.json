@@ -70,5 +70,11 @@
     "fade_in_duration": 6,
     "fade_out_duration": 7,
     "main": "parcool:horizontal_wall_run_group.json"
+  },
+  {
+    "name": "parcool:slide",
+    "fade_in_duration": 6,
+    "fade_out_duration": 8,
+    "main": "parcool:slide_group.json"
   }
 ]

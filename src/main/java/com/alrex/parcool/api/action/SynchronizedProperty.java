@@ -1,5 +1,7 @@
 package com.alrex.parcool.api.action;
 
+import net.minecraft.world.phys.Vec3;
+
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 import java.util.function.BiConsumer;
@@ -78,6 +80,34 @@ public abstract class SynchronizedProperty<T> {
             },
             (b, v) -> b.put(v == null ? (byte) 255 : (v ? (byte) 1 : (byte) 0)));
 
+    private static final Handler<java.lang.Byte> BYTE_HANDLER = new Handler<>(
+            (byte) 2,
+            (b) -> {
+                var notNull = b.get();
+                var v = b.get();
+                return notNull != 0 ? v : null;
+            },
+            (b, v) -> {
+                b.put(v != null ? (byte) 1 : (byte) 0);
+                b.put(v != null ? v : 0);
+            }
+    );
+    private static final Handler<Vec3> VEC_3_HORIZONTAL_HANDLER = new Handler<>(
+            (byte) 8,
+            (b) -> {
+                var x = b.getFloat();
+                var z = b.getFloat();
+                if (Float.isNaN(x) && Float.isNaN(z)) {
+                    return null;
+                }
+                return new Vec3(x, 0, z);
+            },
+            (b, v) -> {
+                b.putFloat((float) v.x);
+                b.putFloat((float) v.z);
+            }
+    );
+
     public static SynchronizedProperty<Boolean> newBoolean() {
         return newBoolean(null);
     }
@@ -91,19 +121,6 @@ public abstract class SynchronizedProperty<T> {
         };
     }
 
-    private static final Handler<java.lang.Byte> BYTE_HANDLER = new Handler<>(
-            (byte) 2,
-            (b) -> {
-                var notNull = b.get();
-                var v = b.get();
-                return notNull != 0 ? v : null;
-            },
-            (b, v) -> {
-                b.put(v != null ? (byte) 1 : (byte) 0);
-                b.put(v != null ? v : 0);
-            }
-    );
-
     public static SynchronizedProperty<java.lang.Byte> newByte() {
         return newByte(null);
     }
@@ -113,6 +130,19 @@ public abstract class SynchronizedProperty<T> {
             @Override
             IHandler<java.lang.Byte> getHandler() {
                 return BYTE_HANDLER;
+            }
+        };
+    }
+
+    public static SynchronizedProperty<Vec3> newVec3Horizontal() {
+        return newVec3Horizontal(null);
+    }
+
+    public static SynchronizedProperty<Vec3> newVec3Horizontal(@Nullable IUpdateListener<Vec3> updateListener) {
+        return new SynchronizedProperty<>(updateListener) {
+            @Override
+            IHandler<Vec3> getHandler() {
+                return VEC_3_HORIZONTAL_HANDLER;
             }
         };
     }

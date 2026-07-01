@@ -69,6 +69,11 @@ public class ParCoolAnimations {
             () -> (p) -> Parkourability.get(p).get(ParCoolActions.HORIZONTAL_WALL_RUN).isDoing(),
             null
     );
+    public static final ID<AnimationSet> SLIDE = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "slide"),
+            () -> (p) -> Parkourability.get(p).get(ParCoolActions.SLIDE).isDoing(),
+            null
+    );
 
     public static void register() {
     }

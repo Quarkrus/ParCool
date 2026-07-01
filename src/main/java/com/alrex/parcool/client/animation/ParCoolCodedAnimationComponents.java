@@ -56,6 +56,15 @@ public class ParCoolCodedAnimationComponents {
                 return lockBody(player, runningDirection, partial);
             }
     );
+    public static final ID<CodedAnimationComponent> SLIDE_LOCK_BODY = CodedAnimationComponents.getInstance().register(
+            "builtin/slide_lock_body",
+            (player, part, progress, partial, mirror) -> {
+                if (part != AnimatableModelPart.BODY) return null;
+                var slidingDirection = Parkourability.get(player).get(ParCoolActions.SLIDE).getSlidingDirection();
+                if (slidingDirection == null) return null;
+                return lockBody(player, slidingDirection, partial);
+            }
+    );
     public static void register() {
     }
 }

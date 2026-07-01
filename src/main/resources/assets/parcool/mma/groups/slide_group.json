@@ -1,0 +1,11 @@
+{
+  "infinite": true,
+  "components": [
+    {
+      "name": "parcool:slide.json"
+    },
+    {
+      "name": "parcool:builtin/slide_lock_body"
+    }
+  ]
+}

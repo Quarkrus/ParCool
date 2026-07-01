@@ -1,11 +1,7 @@
 package com.alrex.parcool.common.action;
 
 import com.alrex.parcool.ParCool;
-import com.alrex.parcool.api.action.ActionEntry;
-import com.alrex.parcool.api.action.ActionGroup;
-import com.alrex.parcool.api.action.ActionOption;
-import com.alrex.parcool.api.action.StaminaConsumption;
-import com.alrex.parcool.api.action.RegisterParCoolActionEvent;
+import com.alrex.parcool.api.action.*;
 import com.alrex.parcool.common.action.impl.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
@@ -15,6 +11,7 @@ public class ParCoolActions {
 
     public static final ActionEntry<FastRun> FAST_RUN;
     public static final ActionEntry<Crawl> CRAWL;
+    public static final ActionEntry<Slide> SLIDE;
     public static final ActionEntry<HangOn> HANG_ON;
     public static final ActionEntry<Dodge> DODGE;
     public static final ActionEntry<ClimbUp> CLIMB_UP;
@@ -29,6 +26,9 @@ public class ParCoolActions {
                 .cost(StaminaConsumption.get(0, 2, 0))
         );
         CRAWL = builder.add("crawl", Crawl.class, Crawl::new, new ActionOption().needPose(null));
+        SLIDE = builder.add("slide", Slide.class, Slide::new, new ActionOption()
+                .parent(CRAWL).needParentWorking(true)
+        );
         HANG_ON = builder.add("hang_on", HangOn.class, HangOn::new, new ActionOption()
                 .cost(StaminaConsumption.get(0, 3, 0))
         );

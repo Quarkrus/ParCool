@@ -1,12 +1,13 @@
 package com.alrex.parcool.common.action.impl;
 
+import com.alrex.parcool.api.action.Action;
+import com.alrex.parcool.api.action.ActionEntry;
+import com.alrex.parcool.api.action.ContinuableAction;
 import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.api.action.Action;
-import com.alrex.parcool.api.action.ActionEntry;
 import com.alrex.parcool.common.action.BehaviorEnforcer;
-import com.alrex.parcool.api.action.ContinuableAction;
+import com.alrex.parcool.common.action.ParCoolActions;
 import com.alrex.parcool.server.limitation.LimitationEntries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -14,6 +15,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
+import java.util.List;
 import java.util.UUID;
 
 public class FastRun extends ContinuableAction {
@@ -22,20 +24,20 @@ public class FastRun extends ContinuableAction {
     private static final BehaviorEnforcer.ID ENFORCE_SPRINT_ID = BehaviorEnforcer.newID();
 
     public FastRun(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry);
+        super(parkourability, entry, List.of(ParCoolActions.CRAWL));
     }
 
     @Override
     public boolean canStart() {
         return parkourability.player().isSprinting()
+                && !((LocalPlayer) parkourability.player()).isMovingSlowly()
                 && Minecraft.getInstance().options.keySprint.isDown();
     }
 
     @Override
     public boolean canContinue() {
-        return parkourability.player().isSprinting()
-                && ((LocalPlayer) parkourability.player()).input.hasForwardImpulse()
-                && Minecraft.getInstance().options.keySprint.isDown();
+        return canStart()
+                && ((LocalPlayer) parkourability.player()).input.hasForwardImpulse();
     }
 
     @Override
