@@ -1,6 +1,6 @@
 package com.alrex.parcool.common.item.zipline;
 
-import com.alrex.parcool.api.SoundEvents;
+import com.alrex.parcool.api.ParCoolSoundEvents;
 import com.alrex.parcool.common.block.zipline.ZiplineHookBlock;
 import com.alrex.parcool.common.block.zipline.ZiplineHookTileEntity;
 import com.alrex.parcool.common.block.zipline.ZiplineInfo;
@@ -134,7 +134,7 @@ public class ZiplineRopeItem extends Item {
                     }
                     Player player = context.getPlayer();
                     if (player != null) {
-                        player.playSound(SoundEvents.ZIPLINE_SET.get(), 1, 1);
+                        player.playSound(ParCoolSoundEvents.ZIPLINE_SET.get(), 1, 1);
                     }
                     removeBlockPosition(stack);
                     return InteractionResult.sidedSuccess(context.getLevel().isClientSide());

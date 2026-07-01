@@ -1,6 +1,6 @@
 package com.alrex.parcool.common.info;
 
-import com.alrex.parcool.common.action.ActionEntry;
+import com.alrex.parcool.api.action.ActionEntry;
 import com.alrex.parcool.server.limitation.ActionLimitationValue;
 import com.alrex.parcool.server.limitation.ILimitationEntry;
 import com.alrex.parcool.server.limitation.Limitation;

@@ -1,6 +1,6 @@
 package com.alrex.parcool.server.limitation;
 
-import com.alrex.parcool.common.action.ActionEntry;
+import com.alrex.parcool.api.action.ActionEntry;
 import com.alrex.parcool.common.action.ActionRegistry;
 import com.alrex.parcool.common.stamina.StaminaTypeRegistry;
 import com.alrex.parcool.config.ParCoolConfig;

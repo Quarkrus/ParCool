@@ -1,7 +1,6 @@
-package com.alrex.parcool.common.potion;
+package com.alrex.parcool.api;
 
 import com.alrex.parcool.ParCool;
-import com.alrex.parcool.api.ParCoolMobEffects;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.alchemy.Potion;
@@ -10,7 +9,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-public class Potions {
+public class ParCoolPotions {
 	private static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(ForgeRegistries.POTIONS, ParCool.MOD_ID);
 	public static final RegistryObject<Potion> POOR_ENERGY_DRINK =
 			POTIONS.register(

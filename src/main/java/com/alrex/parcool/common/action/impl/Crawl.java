@@ -4,9 +4,9 @@ import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.action.Action;
-import com.alrex.parcool.common.action.ActionEntry;
-import com.alrex.parcool.common.action.ContinuableAction;
+import com.alrex.parcool.api.action.Action;
+import com.alrex.parcool.api.action.ActionEntry;
+import com.alrex.parcool.api.action.ContinuableAction;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.Pose;
 

@@ -5,8 +5,8 @@ import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.client.input.LogicalMovement;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.action.Action;
-import com.alrex.parcool.common.action.ActionEntry;
+import com.alrex.parcool.api.action.Action;
+import com.alrex.parcool.api.action.ActionEntry;
 import com.alrex.parcool.common.action.ActionExtension;
 import net.minecraft.client.player.AbstractClientPlayer;
 

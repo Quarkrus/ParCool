@@ -1,7 +1,8 @@
 package com.alrex.parcool.common.stamina;
 
 import com.alrex.parcool.ParCool;
-import com.alrex.parcool.api.event.RegisterParCoolStaminaTypeEvent;
+import com.alrex.parcool.api.stamina.RegisterParCoolStaminaTypeEvent;
+import com.alrex.parcool.api.stamina.StaminaTypeEntry;
 import com.alrex.parcool.common.stamina.impl.HungerStamina;
 import com.alrex.parcool.common.stamina.impl.NoneStamina;
 import com.alrex.parcool.common.stamina.impl.ParCoolStamina;

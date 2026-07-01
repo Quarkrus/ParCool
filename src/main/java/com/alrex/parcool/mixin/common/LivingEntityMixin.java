@@ -1,7 +1,7 @@
 package com.alrex.parcool.mixin.common;
 
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.tags.BlockTags;
+import com.alrex.parcool.api.ParCoolBlockTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
@@ -97,6 +97,6 @@ public abstract class LivingEntityMixin extends Entity {
 			Direction direction = state.getValue(DirectionalBlock.FACING);
 			return !state.isCollisionShapeFullBlock(world, pos) && (direction == Direction.UP || direction == Direction.DOWN);
 		}
-		return state.getTags().anyMatch(it -> it.equals(BlockTags.POLE_CLIMBABLE));
+		return state.getTags().anyMatch(it -> it.equals(ParCoolBlockTags.POLE_CLIMBABLE));
 	}
 }

@@ -1,4 +1,4 @@
-package com.alrex.parcool.common.action;
+package com.alrex.parcool.api.action;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;

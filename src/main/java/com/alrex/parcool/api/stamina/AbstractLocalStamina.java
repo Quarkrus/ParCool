@@ -1,4 +1,4 @@
-package com.alrex.parcool.common.stamina;
+package com.alrex.parcool.api.stamina;
 
 import com.alrex.parcool.api.ParCoolMobEffects;
 import net.minecraft.world.entity.player.Player;

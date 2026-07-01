@@ -1,11 +1,11 @@
-package com.alrex.parcool.common.action;
+package com.alrex.parcool.api.action;
 
 import com.alrex.parcool.ParCool;
-import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.Parkourability;
+import com.alrex.parcool.common.action.IRequestable;
 import com.alrex.parcool.common.network.ActionStatePacket;
 import com.alrex.parcool.common.network.ActionStateSetPacket;
-import com.alrex.parcool.common.stamina.AbstractLocalStamina;
+import com.alrex.parcool.api.stamina.AbstractLocalStamina;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -60,7 +60,7 @@ public abstract class Action {
 			onStartInClient();
 			onStartInLocalClient();
 			if (parkourability.getStamina() instanceof AbstractLocalStamina stamina) {
-				stamina.consume(parkourability.getCost(entry, StaminaConsumeType.START));
+				stamina.consume(parkourability.getCost(entry, StaminaConsumption.Type.START));
 			}
 		} else {
 			if (parkourability.player().level.isClientSide()) {

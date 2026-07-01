@@ -1,4 +1,4 @@
-package com.alrex.parcool.common.action;
+package com.alrex.parcool.api.action;
 
 import com.alrex.parcool.common.network.ActionStatePacket;
 import org.apache.logging.log4j.LogManager;

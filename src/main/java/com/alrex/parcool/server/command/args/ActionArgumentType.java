@@ -1,7 +1,7 @@
 package com.alrex.parcool.server.command.args;
 
 import com.alrex.parcool.ParCool;
-import com.alrex.parcool.common.action.ActionEntry;
+import com.alrex.parcool.api.action.ActionEntry;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;

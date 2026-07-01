@@ -1,5 +1,9 @@
 package com.alrex.parcool.common.action.impl;
 
+import com.alrex.parcool.api.action.Action;
+import com.alrex.parcool.api.action.ActionEntry;
+import com.alrex.parcool.api.action.SynchronizedDataHolder;
+import com.alrex.parcool.api.action.SynchronizedProperty;
 import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.client.input.LogicalMovement;

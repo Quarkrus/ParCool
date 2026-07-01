@@ -1,5 +1,8 @@
 package com.alrex.parcool.common.stamina;
 
+import com.alrex.parcool.api.stamina.AbstractLocalStamina;
+import com.alrex.parcool.api.stamina.IStaminaProvider;
+import com.alrex.parcool.api.stamina.StaminaTypeEntry;
 import com.alrex.parcool.common.BasicRegistry;
 import net.minecraft.resources.ResourceLocation;
 

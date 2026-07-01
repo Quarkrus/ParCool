@@ -1,6 +1,5 @@
-package com.alrex.parcool.api.event;
+package com.alrex.parcool.api.action;
 
-import com.alrex.parcool.common.action.ActionGroup;
 import com.alrex.parcool.common.action.ActionRegistry;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.event.IModBusEvent;

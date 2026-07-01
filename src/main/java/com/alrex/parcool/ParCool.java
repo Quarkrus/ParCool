@@ -1,10 +1,10 @@
 package com.alrex.parcool;
 
-import com.alrex.parcool.api.Attributes;
+import com.alrex.parcool.api.ParCoolAttributes;
 import com.alrex.parcool.api.ParCoolMobEffects;
-import com.alrex.parcool.api.SoundEvents;
-import com.alrex.parcool.api.event.RegisterParCoolActionEvent;
-import com.alrex.parcool.api.event.RegisterParCoolStaminaTypeEvent;
+import com.alrex.parcool.api.ParCoolSoundEvents;
+import com.alrex.parcool.api.action.RegisterParCoolActionEvent;
+import com.alrex.parcool.api.stamina.RegisterParCoolStaminaTypeEvent;
 import com.alrex.parcool.client.animation.system.registration.AnimationSets;
 import com.alrex.parcool.client.animation.system.resource.AnimationResourceManager;
 import com.alrex.parcool.client.renderer.Renderers;
@@ -18,7 +18,7 @@ import com.alrex.parcool.common.handlers.AddAttributesHandler;
 import com.alrex.parcool.common.item.Items;
 import com.alrex.parcool.common.item.recipe.Recipes;
 import com.alrex.parcool.common.potion.PotionRecipeRegistry;
-import com.alrex.parcool.common.potion.Potions;
+import com.alrex.parcool.api.ParCoolPotions;
 import com.alrex.parcool.common.stamina.StaminaTypeRegistry;
 import com.alrex.parcool.common.stamina.StaminaTypes;
 import com.alrex.parcool.config.ParCoolConfig;
@@ -101,9 +101,9 @@ public class ParCool {
         MinecraftForge.EVENT_BUS.addListener(this::onServerStopping);
 
 		ParCoolMobEffects.register(eventBus);
-		Potions.register(eventBus);
-		Attributes.register(eventBus);
-		SoundEvents.register(eventBus);
+		ParCoolPotions.register(eventBus);
+		ParCoolAttributes.register(eventBus);
+		ParCoolSoundEvents.register(eventBus);
 		Blocks.register(eventBus);
 		Items.register(eventBus);
 		Recipes.register(eventBus);

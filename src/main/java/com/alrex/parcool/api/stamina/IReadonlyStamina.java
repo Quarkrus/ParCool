@@ -1,4 +1,4 @@
-package com.alrex.parcool.common.stamina;
+package com.alrex.parcool.api.stamina;
 
 public interface IReadonlyStamina {
     int max();

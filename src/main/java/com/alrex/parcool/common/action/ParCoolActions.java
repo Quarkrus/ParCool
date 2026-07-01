@@ -1,7 +1,11 @@
 package com.alrex.parcool.common.action;
 
 import com.alrex.parcool.ParCool;
-import com.alrex.parcool.api.event.RegisterParCoolActionEvent;
+import com.alrex.parcool.api.action.ActionEntry;
+import com.alrex.parcool.api.action.ActionGroup;
+import com.alrex.parcool.api.action.ActionOption;
+import com.alrex.parcool.api.action.StaminaConsumption;
+import com.alrex.parcool.api.action.RegisterParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;

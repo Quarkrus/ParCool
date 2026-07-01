@@ -1,6 +1,6 @@
 package com.alrex.parcool.common.stamina.impl;
 
-import com.alrex.parcool.common.stamina.AbstractLocalStamina;
+import com.alrex.parcool.api.stamina.AbstractLocalStamina;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;

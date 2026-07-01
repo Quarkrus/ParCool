@@ -1,5 +1,7 @@
 package com.alrex.parcool.common.action;
 
+import com.alrex.parcool.api.action.ActionEntry;
+import com.alrex.parcool.api.action.ActionGroup;
 import com.alrex.parcool.common.BasicRegistry;
 import net.minecraft.resources.ResourceLocation;
 

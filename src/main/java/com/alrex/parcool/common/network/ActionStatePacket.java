@@ -1,7 +1,7 @@
 package com.alrex.parcool.common.network;
 
 import com.alrex.parcool.ParCool;
-import com.alrex.parcool.common.action.ActionEntry;
+import com.alrex.parcool.api.action.ActionEntry;
 import com.alrex.parcool.common.action.ActionRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;

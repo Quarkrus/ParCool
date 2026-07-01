@@ -1,6 +1,6 @@
 package com.alrex.parcool.common.block.zipline;
 
-import com.alrex.parcool.api.SoundEvents;
+import com.alrex.parcool.api.ParCoolSoundEvents;
 import com.alrex.parcool.common.block.TileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -102,7 +102,7 @@ public class ZiplineHookBlock extends DirectionalBlock implements EntityBlock {
 
                 List<ItemStack> itemStacks = ziplineHookTileEntity.removeAllConnection();
                 if (!itemStacks.isEmpty()) {
-                    player.playSound(SoundEvents.ZIPLINE_REMOVE.get(), 1, 1);
+                    player.playSound(ParCoolSoundEvents.ZIPLINE_REMOVE.get(), 1, 1);
                 }
                 if (world.isClientSide()) {
                     return InteractionResult.SUCCESS;

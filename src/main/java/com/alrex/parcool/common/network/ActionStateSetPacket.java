@@ -1,9 +1,9 @@
 package com.alrex.parcool.common.network;
 
 import com.alrex.parcool.ParCool;
-import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
+import com.alrex.parcool.api.action.ParCoolActionEvent;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.action.ContinuableAction;
+import com.alrex.parcool.api.action.ContinuableAction;
 import com.alrex.parcool.util.NetworkUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;

@@ -1,13 +1,16 @@
 package com.alrex.parcool.common.action;
 
 import com.alrex.parcool.ParCool;
-import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
+import com.alrex.parcool.api.action.Action;
+import com.alrex.parcool.api.action.ContinuableAction;
+import com.alrex.parcool.api.action.ParCoolActionEvent;
+import com.alrex.parcool.api.action.StaminaConsumption;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.info.CompiledLimitation;
 import com.alrex.parcool.common.network.ActionStatePacket;
 import com.alrex.parcool.common.network.ActionStateSetPacket;
 import com.alrex.parcool.common.network.LimitationPacket;
-import com.alrex.parcool.common.stamina.AbstractLocalStamina;
+import com.alrex.parcool.api.stamina.AbstractLocalStamina;
 import com.alrex.parcool.common.stamina.StaminaSynchronizationDepot;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.server.limitation.Limitation;
@@ -137,14 +140,14 @@ public class ActionProcessor {
 		ActionStatePacket.Type type = ActionStatePacket.Type.DATA;
 		if (needSync) {
 			if (action instanceof ContinuableAction continuableAction && continuableAction.isDoing()) {
-				if (!(parkourability.permit(action.entry) && continuableAction.isPossibleToContinue())) {
+				if (!(parkourability.permit(action.getEntry()) && continuableAction.isPossibleToContinue())) {
 					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Pre(parkourability.player(), continuableAction));
 					continuableAction.finish();
 					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Post(parkourability.player(), continuableAction));
 					type = ActionStatePacket.Type.FINISH;
 				}
 			} else {
-				if (parkourability.permit(action.entry) && action.isReadyToStart()) {
+				if (parkourability.permit(action.getEntry()) && action.isReadyToStart()) {
 					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Pre(parkourability.player(), action));
 					action.start();
 					MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Post(parkourability.player(), action));
@@ -166,7 +169,7 @@ public class ActionProcessor {
 			}
 
 			if (parkourability.getStamina() instanceof AbstractLocalStamina stamina) {
-				stamina.consume(parkourability.getCost(action.entry, StaminaConsumeType.WORKING));
+				stamina.consume(parkourability.getCost(action.getEntry(), StaminaConsumption.Type.WORKING));
 			}
 		}
 		var data = action.getSynchronizedData().packToEntry(type, action.getEntry());

@@ -1,6 +1,5 @@
-package com.alrex.parcool.api.event;
+package com.alrex.parcool.api.stamina;
 
-import com.alrex.parcool.common.stamina.StaminaTypeEntry;
 import com.alrex.parcool.common.stamina.StaminaTypeRegistry;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.event.IModBusEvent;

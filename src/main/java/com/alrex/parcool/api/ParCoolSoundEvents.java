@@ -8,7 +8,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-public class SoundEvents {
+public class ParCoolSoundEvents {
     private static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, ParCool.MOD_ID);
     private static final SoundEvent VAULT_SOUND = new SoundEvent(new ResourceLocation(ParCool.MOD_ID, "action.vault"));
     private static final SoundEvent VERTICAL_WALL_RUN_SOUND = new SoundEvent(new ResourceLocation(ParCool.MOD_ID, "action.v_wall_run"));

@@ -5,8 +5,8 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 
-public class ParCoolHUDEvent extends Event {
-    public static class Render extends ParCoolHUDEvent {
+public class RenderParCoolHUDEvent extends Event {
+    public static class Render extends RenderParCoolHUDEvent {
         private final ForgeGui gui;
         private final PoseStack posestack;
         private final float partialTick;
@@ -74,7 +74,7 @@ public class ParCoolHUDEvent extends Event {
         }
     }
 
-    public static class Update extends ParCoolHUDEvent {
+    public static class Update extends RenderParCoolHUDEvent {
         public static class StaminaContext extends Update {
             private final StaminaDisplayContext currentContext;
             private final StaminaDisplayContext oldContext;

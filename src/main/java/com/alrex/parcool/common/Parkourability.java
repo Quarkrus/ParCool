@@ -1,10 +1,13 @@
 package com.alrex.parcool.common;
 
 import com.alrex.parcool.ParCool;
+import com.alrex.parcool.api.action.Action;
+import com.alrex.parcool.api.action.ActionEntry;
+import com.alrex.parcool.api.action.StaminaConsumption;
 import com.alrex.parcool.common.action.*;
 import com.alrex.parcool.common.info.ActionInfo;
 import com.alrex.parcool.common.info.CompiledLimitation;
-import com.alrex.parcool.common.stamina.IReadonlyStamina;
+import com.alrex.parcool.api.stamina.IReadonlyStamina;
 import com.alrex.parcool.common.stamina.ReadonlyStamina;
 import com.alrex.parcool.common.stamina.StaminaTypes;
 import com.alrex.parcool.config.ParCoolConfig;
@@ -134,7 +137,7 @@ public class Parkourability {
 		return entry.select(getActionInfo().getClientLimitation().get(entry), getActionInfo().getServerLimitation().get(entry));
 	}
 
-	public int getCost(ActionEntry<?> entry, StaminaConsumeType type) {
+	public int getCost(ActionEntry<?> entry, StaminaConsumption.Type type) {
 		return Math.max(
 				getActionInfo().getClientLimitation().get(entry).cost().get(type),
 				getActionInfo().getServerLimitation().get(entry).cost().get(type)

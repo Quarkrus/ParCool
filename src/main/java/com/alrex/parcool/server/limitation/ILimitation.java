@@ -1,6 +1,6 @@
 package com.alrex.parcool.server.limitation;
 
-import com.alrex.parcool.common.action.ActionEntry;
+import com.alrex.parcool.api.action.ActionEntry;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;

@@ -1,7 +1,7 @@
 package com.alrex.parcool.server.limitation;
 
-import com.alrex.parcool.common.action.ActionEntry;
-import com.alrex.parcool.common.action.StaminaConsumption;
+import com.alrex.parcool.api.action.ActionEntry;
+import com.alrex.parcool.api.action.StaminaConsumption;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.network.FriendlyByteBuf;
