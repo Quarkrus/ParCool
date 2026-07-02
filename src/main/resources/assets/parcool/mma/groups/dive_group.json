@@ -1,0 +1,14 @@
+{
+  "infinite": true,
+  "components": [
+    {
+      "name": "parcool:dive.json",
+      "progress": {
+        "name": "parcool:builtin/dive",
+        "args": {
+          "scale": 10
+        }
+      }
+    }
+  ]
+}

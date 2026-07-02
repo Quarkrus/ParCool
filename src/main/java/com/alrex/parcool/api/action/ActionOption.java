@@ -11,8 +11,10 @@ public class ActionOption {
             @Nullable ActionEntry<? extends ContinuableAction> parent,
             @Nullable Pose neededPose,
             boolean needOnGround,
+            boolean needNotOnGround,
             boolean needParentWorking,
             boolean availableInFluid,
+            boolean availableWithFallFlying,
             LogicalSide triggeredSide
     ) {
     }
@@ -24,12 +26,14 @@ public class ActionOption {
     private Pose neededPose = Pose.STANDING;
     private boolean needParentWorking = false;
     private boolean availableInFluid = false;
+    private boolean availableWithFallFlying = false;
     private boolean needOnGround = false;
+    private boolean needNotOnGround = false;
     private LogicalSide triggeredSide = LogicalSide.CLIENT;
 
     public Value build() {
         return new Value(
-                staminaConsumption, parent, neededPose, needOnGround, needParentWorking, availableInFluid, triggeredSide
+                staminaConsumption, parent, neededPose, needOnGround, needNotOnGround, needParentWorking, availableInFluid, availableWithFallFlying, triggeredSide
         );
     }
 
@@ -61,8 +65,18 @@ public class ActionOption {
         return this;
     }
 
+    public ActionOption needNotOnGround(boolean value) {
+        this.needNotOnGround = value;
+        return this;
+    }
+
     public ActionOption availableInFluid(boolean availableInFluid) {
         this.availableInFluid = availableInFluid;
+        return this;
+    }
+
+    public ActionOption availableWithFallFlying(boolean availableWithFallFlying) {
+        this.availableWithFallFlying = availableWithFallFlying;
         return this;
     }
 

@@ -5,7 +5,8 @@ import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.action.*;
+import com.alrex.parcool.common.action.InteractingWallDirection;
+import com.alrex.parcool.common.action.ParCoolActions;
 import com.alrex.parcool.util.EntityUtil;
 import com.alrex.parcool.util.MathUtil;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -39,7 +40,7 @@ public class HangOn extends ContinuableAction {
     private HangState startingHangState;
 
     public HangOn(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP));
+        super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP, ParCoolActions.DIVE));
         dataHolder = SynchronizedDataHolder.create(entry,
                 propertyDirection = SynchronizedProperty.newEnum(InteractingWallDirection.class, (newV, oldV) -> oldDirection = oldV),
                 propertyFullWall = SynchronizedProperty.newBoolean()

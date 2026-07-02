@@ -10,6 +10,7 @@ public class ParCoolActions {
     private static final ActionGroup GROUP;
 
     public static final ActionEntry<FastRun> FAST_RUN;
+    public static final ActionEntry<Dive> DIVE;
     public static final ActionEntry<Crawl> CRAWL;
     public static final ActionEntry<Slide> SLIDE;
     public static final ActionEntry<HangOn> HANG_ON;
@@ -25,6 +26,10 @@ public class ParCoolActions {
         FAST_RUN = builder.add("fast_run", FastRun.class, FastRun::new, new ActionOption()
                 .cost(StaminaConsumption.get(0, 2, 0))
         );
+        DIVE = builder.add("dive", Dive.class, Dive::new, new ActionOption()
+                .parent(FAST_RUN).needParentWorking(false)
+                .needNotOnGround(true)
+        );
         CRAWL = builder.add("crawl", Crawl.class, Crawl::new, new ActionOption().needPose(null));
         SLIDE = builder.add("slide", Slide.class, Slide::new, new ActionOption()
                 .parent(CRAWL).needParentWorking(true)
@@ -38,6 +43,7 @@ public class ParCoolActions {
         );
         SLIDE_DOWN = builder.add("slide_down", SlideDown.class, SlideDown::new, new ActionOption()
                 .parent(HANG_ON).needParentWorking(false)
+                .needNotOnGround(true)
                 .cost(StaminaConsumption.get(0, 1, 0))
         );
         DODGE = builder.add("dodge", Dodge.class, Dodge::new, new ActionOption()
@@ -51,6 +57,7 @@ public class ParCoolActions {
         );
         HORIZONTAL_WALL_RUN = builder.add("horizontal_wall_run", HorizontalWallRun.class, HorizontalWallRun::new, new ActionOption()
                 .parent(FAST_RUN).needParentWorking(true)
+                .needNotOnGround(true)
                 .cost(StaminaConsumption.get(0, 3, 0))
         );
         GROUP = builder.build();

@@ -88,7 +88,7 @@ public class WorkingAnimation implements IWorkingAnimation {
 
                 var transform = map.get(modelPart);
                 if (transform == null) transform = Transform.NO_TRANSFORMATION;
-                var componentTransform = component.component.getTransform(player, modelPart, component.progress.getProgress(partialTick), partialTick, mirror);
+                var componentTransform = component.component.getTransform(player, modelPart, component.progress.getProgress(player, partialTick), partialTick, mirror);
                 if (componentTransform != null) {
                     switch (method) {
                         case ADD ->

@@ -76,5 +76,11 @@
     "fade_in_duration": 6,
     "fade_out_duration": 8,
     "main": "parcool:slide_group.json"
+  },
+  {
+    "name": "parcool:dive",
+    "fade_in_duration": 2,
+    "fade_out_duration": 5,
+    "main": "parcool:dive_group.json"
   }
 ]

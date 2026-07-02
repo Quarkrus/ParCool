@@ -42,7 +42,7 @@ public abstract class AnimationProgress {
         }
     }
 
-    float getProgress(float partialTick) {
+    public float getProgress(AbstractClientPlayer player, float partialTick) {
         if (loop) {
             var progressWithPartial = Mth.lerp(partialTick, this.oldProgress, this.progress);
             return progressWithPartial - rangeMin - range * Mth.floor((progressWithPartial - rangeMin) / range);
@@ -63,17 +63,21 @@ public abstract class AnimationProgress {
         float get(AbstractClientPlayer player);
     }
 
-    public static class FunctionAnimationProgress extends AnimationProgress {
+    public interface IDirectProgressProvider {
+        float get(AbstractClientPlayer player, float partialTick);
+    }
+
+    public static class FunctionDeltaAnimationProgress extends AnimationProgress {
         private final IDeltaProgressProvider progressProvider;
         private final float scale;
 
-        public FunctionAnimationProgress(boolean loop, float rangeMin, float rangeMax, Argument args, IDeltaProgressProvider deltaProgressProvider) {
+        public FunctionDeltaAnimationProgress(boolean loop, float rangeMin, float rangeMax, Argument args, IDeltaProgressProvider deltaProgressProvider) {
             super(loop, rangeMin, rangeMax);
             scale = args.request("scale", 1f);
             progressProvider = deltaProgressProvider;
         }
 
-        public FunctionAnimationProgress(IDeltaProgressProvider deltaProgressProvider) {
+        public FunctionDeltaAnimationProgress(IDeltaProgressProvider deltaProgressProvider) {
             super();
             scale = 1f;
             progressProvider = deltaProgressProvider;
@@ -82,6 +86,26 @@ public abstract class AnimationProgress {
         @Override
         protected float getDeltaProgress(AbstractClientPlayer player) {
             return progressProvider.get(player) * scale;
+        }
+    }
+
+    public static class FunctionDirectAnimationProgress extends AnimationProgress {
+        private final IDirectProgressProvider progressProvider;
+        private final float scale;
+
+        public FunctionDirectAnimationProgress(Argument args, IDirectProgressProvider progressProvider) {
+            this.progressProvider = progressProvider;
+            this.scale = args.request("scale", 1f);
+        }
+
+        @Override
+        public float getProgress(AbstractClientPlayer player, float partialTick) {
+            return Mth.clamp(progressProvider.get(player, partialTick), 0f, 1f) * scale;
+        }
+
+        @Override
+        protected float getDeltaProgress(AbstractClientPlayer player) {
+            return 0;
         }
     }
 }

@@ -1,19 +1,17 @@
 package com.alrex.parcool.common.action.impl;
 
-import com.alrex.parcool.api.action.Action;
-import com.alrex.parcool.api.action.ActionEntry;
-import com.alrex.parcool.api.action.SynchronizedDataHolder;
-import com.alrex.parcool.api.action.SynchronizedProperty;
+import com.alrex.parcool.api.action.*;
 import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.client.input.LogicalMovement;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.action.*;
+import com.alrex.parcool.common.action.ActionExtension;
 import com.alrex.parcool.util.EntityUtil;
 import com.alrex.parcool.util.VectorUtil;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 
 public class Breakfall extends Action implements ActionExtension.LandListener {
@@ -53,7 +51,7 @@ public class Breakfall extends Action implements ActionExtension.LandListener {
     public void onLand(LivingFallEvent event) {
         var breakfallType = propertyInputBreakfallType.get();
         if (breakfallType == null || breakfallType == BreakfallType.NONE) return;
-        if (isPossible()) {
+        if (isPossible() && !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(parkourability.player(), this))) {
             event.setDamageMultiplier(event.getDamageMultiplier() * 0.5f);
             propertyWorkingBreakfallType.set(breakfallType);
 

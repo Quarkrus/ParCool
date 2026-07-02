@@ -27,11 +27,19 @@ public class AnimationProgresses extends AnimationRegistry<AnimationProgress, An
     }
 
     public ID<AnimationProgress> register(String subName, AnimationProgress.IDeltaProgressProvider progressProvider) {
-        return this.register(subName, (loop, min, max, args) -> new AnimationProgress.FunctionAnimationProgress(loop, min, max, args, progressProvider));
+        return this.register(subName, (loop, min, max, args) -> new AnimationProgress.FunctionDeltaAnimationProgress(loop, min, max, args, progressProvider));
     }
 
     public ID<AnimationProgress> register(ResourceLocation name, AnimationProgress.IDeltaProgressProvider progressProvider) {
-        return register(name, (loop, min, max, args) -> new AnimationProgress.FunctionAnimationProgress(loop, min, max, args, progressProvider));
+        return register(name, (loop, min, max, args) -> new AnimationProgress.FunctionDeltaAnimationProgress(loop, min, max, args, progressProvider));
+    }
+
+    public ID<AnimationProgress> register(String subName, AnimationProgress.IDirectProgressProvider progressProvider) {
+        return this.register(subName, (loop, min, max, args) -> new AnimationProgress.FunctionDirectAnimationProgress(args, progressProvider));
+    }
+
+    public ID<AnimationProgress> register(ResourceLocation name, AnimationProgress.IDirectProgressProvider progressProvider) {
+        return this.register(name, (loop, min, max, args) -> new AnimationProgress.FunctionDirectAnimationProgress(args, progressProvider));
     }
 
     public ID<AnimationProgress> register(String subName, AnimationProgress.Constructor<?> progressProvider) {

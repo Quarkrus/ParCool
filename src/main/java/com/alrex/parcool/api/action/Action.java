@@ -1,11 +1,11 @@
 package com.alrex.parcool.api.action;
 
 import com.alrex.parcool.ParCool;
+import com.alrex.parcool.api.stamina.AbstractLocalStamina;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.IRequestable;
 import com.alrex.parcool.common.network.ActionStatePacket;
 import com.alrex.parcool.common.network.ActionStateSetPacket;
-import com.alrex.parcool.api.stamina.AbstractLocalStamina;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -91,7 +91,9 @@ public abstract class Action {
 		var player = parkourability.player();
 		if (parkourability.player().isSpectator() //TODO
 				|| (!entry.option().availableInFluid() && player.isInFluidType())
+				|| (!entry.option().availableWithFallFlying() && player.isFallFlying())
 				|| (entry.option().needOnGround() && !player.isOnGround())
+				|| (entry.option().needNotOnGround() && player.isOnGround())
 				|| (entry.option().neededPose() != null && entry.option().neededPose() != player.getPose())
 				|| !parkourability.permit(entry)
 		) {
@@ -110,11 +112,13 @@ public abstract class Action {
 				}
 			}
 		}
-		return !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(parkourability.player(), this));
+		return true;
 	}
 
 	public final boolean isReadyToStart() {
 		if (!isPossible()) return false;
+		if (MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(parkourability.player(), this)))
+			return false;
 		return (this instanceof IRequestable<?> requestable)
 				? parkourability.canStartByRequest(requestable)
 				: canStart();

@@ -92,8 +92,19 @@ public abstract class SynchronizedProperty<T> {
                 b.put(v != null ? v : 0);
             }
     );
+    private static final Handler<java.lang.Float> FLOAT_HANDLER = new Handler<>(
+            (byte) (Float.BYTES + 1),
+            (b) -> {
+                var notNull = b.get();
+                return notNull != 0 ? b.getFloat() : null;
+            },
+            (b, v) -> {
+                b.put(v != null ? (byte) 1 : (byte) 0);
+                b.putFloat(v != null ? v : Float.NaN);
+            }
+    );
     private static final Handler<Vec3> VEC_3_HORIZONTAL_HANDLER = new Handler<>(
-            (byte) 8,
+            (byte) (Float.BYTES * 2),
             (b) -> {
                 var x = b.getFloat();
                 var z = b.getFloat();
@@ -130,6 +141,19 @@ public abstract class SynchronizedProperty<T> {
             @Override
             IHandler<java.lang.Byte> getHandler() {
                 return BYTE_HANDLER;
+            }
+        };
+    }
+
+    public static SynchronizedProperty<java.lang.Float> newFloat() {
+        return newFloat(null);
+    }
+
+    public static SynchronizedProperty<java.lang.Float> newFloat(@Nullable IUpdateListener<java.lang.Float> updateListener) {
+        return new SynchronizedProperty<>(updateListener) {
+            @Override
+            IHandler<java.lang.Float> getHandler() {
+                return FLOAT_HANDLER;
             }
         };
     }

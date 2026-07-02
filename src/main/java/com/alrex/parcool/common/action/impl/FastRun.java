@@ -24,7 +24,7 @@ public class FastRun extends ContinuableAction {
     private static final BehaviorEnforcer.ID ENFORCE_SPRINT_ID = BehaviorEnforcer.newID();
 
     public FastRun(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry, List.of(ParCoolActions.CRAWL));
+        super(parkourability, entry, List.of(ParCoolActions.CRAWL, ParCoolActions.HANG_ON, ParCoolActions.DIVE));
     }
 
     @Override

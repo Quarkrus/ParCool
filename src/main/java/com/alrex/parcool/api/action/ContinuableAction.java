@@ -1,7 +1,7 @@
 package com.alrex.parcool.api.action;
 
-import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.api.stamina.AbstractLocalStamina;
+import com.alrex.parcool.common.Parkourability;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -55,7 +55,7 @@ public abstract class ContinuableAction extends Action {
     public void finish() {
         if (!doing) return;
         for (var child : entry.children()) {
-            if (parkourability.get(child) instanceof ContinuableAction continuableAction) {
+            if (parkourability.get(child) instanceof ContinuableAction continuableAction && child.option().needParentWorking()) {
                 continuableAction.finish();
             }
         }
@@ -78,21 +78,7 @@ public abstract class ContinuableAction extends Action {
     }
 
     public final boolean isPossibleToContinue() {
-        var player = parkourability.player();
-        if (!entry.option().availableInFluid() && player.isInFluidType()) return false;
-        if (entry.option().needParentWorking()) {
-            var parent = entry.parent();
-            if (parent != null && !parkourability.get(parent).isDoing()) {
-                return false;
-            }
-        }
-        if (exclusiveActions != null) {
-            for (var exclusiveAction : exclusiveActions) {
-                if (parkourability.get(exclusiveAction).isDoing()) {
-                    return false;
-                }
-            }
-        }
+        if (!isPossible()) return false;
         if (MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToContinue(parkourability.player(), this)))
             return false;
         return canContinue();

@@ -5,13 +5,15 @@ import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.action.*;
+import com.alrex.parcool.common.action.InteractingWallDirection;
+import com.alrex.parcool.common.action.ParCoolActions;
 import com.alrex.parcool.util.VectorUtil;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class HorizontalWallRun extends ContinuableAction {
     private final SynchronizedDataHolder dataHolder;
@@ -19,7 +21,7 @@ public class HorizontalWallRun extends ContinuableAction {
     private final SynchronizedProperty<Boolean> propertyLeftToWall;
 
     public HorizontalWallRun(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry);
+        super(parkourability, entry, List.of(ParCoolActions.DIVE));
         dataHolder = SynchronizedDataHolder.create(entry,
                 propertyDirection = SynchronizedProperty.newEnum(InteractingWallDirection.class),
                 propertyLeftToWall = SynchronizedProperty.newBoolean()
@@ -47,7 +49,7 @@ public class HorizontalWallRun extends ContinuableAction {
 
     @Override
     public boolean canStart() {
-        if (!ParCoolKeyBinds.HORIZONTAL_WALL_RUN.state().isDown() || parkourability.player().isOnGround()) return false;
+        if (!ParCoolKeyBinds.HORIZONTAL_WALL_RUN.state().isDown()) return false;
 
         var wallDirection = InteractingWallDirection.getAdjacentWall(parkourability.player());
         if (wallDirection == null) return false;

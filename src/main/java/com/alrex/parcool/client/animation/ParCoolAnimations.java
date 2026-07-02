@@ -74,6 +74,11 @@ public class ParCoolAnimations {
             () -> (p) -> Parkourability.get(p).get(ParCoolActions.SLIDE).isDoing(),
             null
     );
+    public static final ID<AnimationSet> DIVE = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "dive"),
+            () -> (p) -> Parkourability.get(p).get(ParCoolActions.DIVE).isDoing(),
+            null
+    );
 
     public static void register() {
     }
