@@ -11,6 +11,7 @@ public class ParCoolActions {
 
     public static final ActionEntry<FastRun> FAST_RUN;
     public static final ActionEntry<Dive> DIVE;
+    public static final ActionEntry<Skydive> SKYDIVE;
     public static final ActionEntry<Crawl> CRAWL;
     public static final ActionEntry<Slide> SLIDE;
     public static final ActionEntry<HangOn> HANG_ON;
@@ -30,9 +31,13 @@ public class ParCoolActions {
                 .parent(FAST_RUN).needParentWorking(false)
                 .needNotOnGround(true)
         );
+        SKYDIVE = builder.add("skydive", Skydive.class, Skydive::new, new ActionOption()
+                .parent(DIVE).needParentWorking(true)
+        );
         CRAWL = builder.add("crawl", Crawl.class, Crawl::new, new ActionOption().needPose(null));
         SLIDE = builder.add("slide", Slide.class, Slide::new, new ActionOption()
                 .parent(CRAWL).needParentWorking(true)
+                .needPose(null)
         );
         HANG_ON = builder.add("hang_on", HangOn.class, HangOn::new, new ActionOption()
                 .cost(StaminaConsumption.get(0, 3, 0))

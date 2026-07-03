@@ -72,12 +72,17 @@ public class ParCoolAnimations {
     public static final ID<AnimationSet> SLIDE = AnimationSets.getInstance().register(
             new ResourceLocation(ParCool.MOD_ID, "slide"),
             () -> (p) -> Parkourability.get(p).get(ParCoolActions.SLIDE).isDoing(),
-            null
+            CRAWL
     );
     public static final ID<AnimationSet> DIVE = AnimationSets.getInstance().register(
             new ResourceLocation(ParCool.MOD_ID, "dive"),
             () -> (p) -> Parkourability.get(p).get(ParCoolActions.DIVE).isDoing(),
             null
+    );
+    public static final ID<AnimationSet> SKYDIVE = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "skydive"),
+            () -> (p) -> Parkourability.get(p).get(ParCoolActions.SKYDIVE).isDoing(),
+            DIVE
     );
 
     public static void register() {

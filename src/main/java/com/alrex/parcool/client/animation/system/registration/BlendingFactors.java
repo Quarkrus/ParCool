@@ -99,9 +99,7 @@ public class BlendingFactors extends AnimationRegistry<IBlendingFactor, Blending
             (args, method) -> {
                 var min = Mth.clamp(args.request("min", 0f), 0f, 10f);
                 var max = Mth.clamp(args.request("max", 0.25f), min, 100f);
-                return new SimpleBlendFactor((player, partial) -> {
-                    return Mth.clamp(EasingFunctions.QUAD.easeInOut((float) (((new Vec3(player.position().x - player.xo, 0., player.position().z - player.zo)).length() - min) / (max - min))), 0f, 1f);
-                }, method);
+                return new SimpleBlendFactor((player, partial) -> Mth.clamp(EasingFunctions.QUAD.easeInOut((float) (((new Vec3(player.position().x - player.xo, 0., player.position().z - player.zo)).length() - min) / (max - min))), 0f, 1f), method);
             }
     );
     public final ID<IBlendingFactor> ANGULAR_VELOCITY_RIGHT = register(

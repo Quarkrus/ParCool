@@ -1,0 +1,16 @@
+{
+  "infinite": true,
+  "components": [
+    {
+      "name": "parcool:skydive.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "loop": true,
+          "max": 1,
+          "scale": 10
+        }
+      }
+    }
+  ]
+}

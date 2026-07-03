@@ -12,11 +12,13 @@ import com.alrex.parcool.common.action.ParCoolActions;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.Pose;
 
+import java.util.List;
+
 public class Crawl extends ContinuableAction {
     private static final BehaviorEnforcer.ID CANCEL_SPRINT_ID = BehaviorEnforcer.newID();
 
     public Crawl(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry);
+        super(parkourability, entry, List.of(ParCoolActions.DIVE, ParCoolActions.HORIZONTAL_WALL_RUN, ParCoolActions.HANG_ON, ParCoolActions.DODGE));
     }
 
     @Override
