@@ -18,6 +18,7 @@ public class ChargeJump extends ContinuableAction implements ActionExtension.Jum
 
     // Only for client
     private boolean jumped = false;
+    private boolean shouldConsumeCost = false;
     private byte oldChargingTick = 0;
     private byte chargingTick = 0;
 
@@ -71,6 +72,7 @@ public class ChargeJump extends ContinuableAction implements ActionExtension.Jum
     public void onJump() {
         if (isDoing()) {
             jumped = true;
+            shouldConsumeCost = true;
             var deltaMove = parkourability.player().getDeltaMovement();
             parkourability.player().setDeltaMovement(deltaMove.x, deltaMove.y + 0.16 * chargingTick / CHARGE_DURATION, deltaMove.z);
         }
@@ -82,6 +84,11 @@ public class ChargeJump extends ContinuableAction implements ActionExtension.Jum
     }
 
     @Override
+    public void onStartInLocalClient() {
+        shouldConsumeCost = false;
+    }
+
+    @Override
     public void onStop() {
         oldChargingTick = chargingTick = 0;
     }
@@ -89,6 +96,17 @@ public class ChargeJump extends ContinuableAction implements ActionExtension.Jum
     @Override
     public void onStopInClient() {
         PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.CHARGE_JUMP);
+    }
+
+    @Override
+    protected void takeCost(StaminaConsumption.Type type) {
+        if (type == StaminaConsumption.Type.FINISH) {
+            if (shouldConsumeCost) {
+                super.takeCost(type);
+            }
+        } else {
+            super.takeCost(type);
+        }
     }
 
     private boolean isInputActive() {

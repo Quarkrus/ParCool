@@ -1,0 +1,17 @@
+{
+  "duration": 15,
+  "components": [
+    {
+      "name": "parcool:charge_jump.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "max": 13
+        }
+      }
+    },
+    {
+      "name": "parcool:builtin/lock_body"
+    }
+  ]
+}

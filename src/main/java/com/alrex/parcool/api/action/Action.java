@@ -135,7 +135,8 @@ public abstract class Action {
 
 	protected void takeCost(StaminaConsumption.Type type) {
 		if (parkourability.getStamina() instanceof AbstractLocalStamina stamina) {
-			stamina.consume(parkourability.getCost(entry, type));
+			var cost = parkourability.getCost(entry, type);
+			if (cost != 0) stamina.consume(cost);
 		}
 	}
 

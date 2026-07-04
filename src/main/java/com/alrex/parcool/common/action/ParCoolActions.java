@@ -67,7 +67,7 @@ public class ParCoolActions {
                 .cost(StaminaConsumption.get(0, 3, 0))
         );
         CHARGE_JUMP = builder.add("charge_jump", ChargeJump.class, ChargeJump::new, new ActionOption()
-                .cost(StaminaConsumption.get(0, 0, 0))
+                .cost(StaminaConsumption.get(0, 0, 50))
                 .needPose(null)
         );
         GROUP = builder.build();
