@@ -37,6 +37,8 @@ public class Skydive extends ContinuableAction {
     public boolean canStart() {
         var player = parkourability.player();
         if (player.position().y - player.yo >= 0) return false;
+        propertyMovingForwardTick.set((byte) 0);
+        propertyMovingLeftTick.set((byte) 0);
         return ParCoolKeyBinds.JUMP.state().isJustPressed();
     }
 
@@ -55,8 +57,10 @@ public class Skydive extends ContinuableAction {
 
     @Override
     public void onWorkingTickInClient() {
-        oldMovingForwardTick = propertyMovingForwardTick.get();
-        oldMovingLeftTick = propertyMovingLeftTick.get();
+        var oldMovingForwardTick = propertyMovingForwardTick.get();
+        if (oldMovingForwardTick != null) this.oldMovingForwardTick = oldMovingForwardTick;
+        var oldMovingLeftTick = propertyMovingLeftTick.get();
+        if (oldMovingLeftTick != null) this.oldMovingLeftTick = oldMovingLeftTick;
     }
 
     @Override
@@ -102,7 +106,7 @@ public class Skydive extends ContinuableAction {
         }
         if (input.forwardImpulse > 1e-4) {
             if (tickMovingForward < TRANSITION_TICK) tickMovingForward++;
-        } else if (input.forwardImpulse < 1e-4) {
+        } else if (input.forwardImpulse < -1e-4) {
             if (tickMovingForward > -TRANSITION_TICK) tickMovingForward--;
         } else {
             if (tickMovingForward > 0) tickMovingForward--;
@@ -110,7 +114,7 @@ public class Skydive extends ContinuableAction {
         }
         if (input.leftImpulse > 1e-4) {
             if (tickMovingLeft < TRANSITION_TICK) tickMovingLeft++;
-        } else if (input.forwardImpulse < 1e-4) {
+        } else if (input.leftImpulse < -1e-4) {
             if (tickMovingLeft > -TRANSITION_TICK) tickMovingLeft--;
         } else {
             if (tickMovingLeft > 0) tickMovingLeft--;

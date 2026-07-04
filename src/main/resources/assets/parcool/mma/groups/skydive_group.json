@@ -7,10 +7,74 @@
         "name": "parcool:time",
         "args": {
           "loop": true,
-          "max": 1,
-          "scale": 10
+          "max": 10,
+          "scale": 0.6
         }
       }
+    },
+    {
+      "name": "parcool:skydive_forward.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "loop": true,
+          "max": 10,
+          "scale": 0.6
+        }
+      },
+      "blend": {
+        "name": "parcool:builtin/skydive_lean_forward",
+        "method": "set"
+      }
+    },
+    {
+      "name": "parcool:skydive_back.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "loop": true,
+          "max": 10,
+          "scale": 0.6
+        }
+      },
+      "blend": {
+        "name": "parcool:builtin/skydive_lean_backward",
+        "method": "set"
+      }
+    },
+    {
+      "name": "parcool:skydive_left.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "loop": true,
+          "max": 10,
+          "scale": 0.6
+        }
+      },
+      "blend": {
+        "name": "parcool:builtin/skydive_lean_left",
+        "method": "set"
+      }
+    },
+    {
+      "name": "parcool:skydive_left.json",
+      "mirror": true,
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "loop": true,
+          "max": 10,
+          "scale": 0.6
+        }
+      },
+      "blend": {
+        "name": "parcool:builtin/skydive_lean_right",
+        "method": "set"
+      }
+    },
+    {
+      "name": "parcool:builtin/lock_body"
     }
   ]
 }

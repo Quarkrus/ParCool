@@ -3,12 +3,27 @@ package com.alrex.parcool.client.animation.system.data;
 import com.alrex.parcool.client.animation.system.math.MathUtil;
 import com.alrex.parcool.client.animation.system.math.Vec3f;
 import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.util.Mth;
 
 public record Transform(Vec3f translation, Quaternion rotation) {
     public static final Transform NO_TRANSFORMATION = new Transform(Vec3f.ZERO, Quaternion.ONE.copy());
     public static final Transform NO_TRANSFORMATION_INV = NO_TRANSFORMATION.getInverseRotated();
+
+    public static Transform fromRotationParams(float xRot, float yRot, float zRot) {
+        var rot = Quaternion.ONE.copy();
+        if (zRot != 0f) {
+            rot.mul(Vector3f.ZP.rotation(zRot));
+        }
+        if (yRot != 0f) {
+            rot.mul(Vector3f.YP.rotation(yRot));
+        }
+        if (xRot != 0f) {
+            rot.mul(Vector3f.XP.rotation(xRot));
+        }
+        return new Transform(Vec3f.ZERO, rot);
+    }
 
     public Transform getInverseRotated() {
         return new Transform(translation, new Quaternion(-rotation.i(), -rotation.j(), -rotation.k(), -rotation.r()));

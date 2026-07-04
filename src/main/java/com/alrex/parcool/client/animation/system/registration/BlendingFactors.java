@@ -54,6 +54,10 @@ public class BlendingFactors extends AnimationRegistry<IBlendingFactor, Blending
         return newInstance(id, argument, method);
     }
 
+    public final ID<IBlendingFactor> ONE = register(
+            "one",
+            (args, method) -> new SimpleBlendFactor((player, partial) -> 1, method)
+    );
     public final ID<IBlendingFactor> TIME = register(
             "time",
             (args, method) -> {

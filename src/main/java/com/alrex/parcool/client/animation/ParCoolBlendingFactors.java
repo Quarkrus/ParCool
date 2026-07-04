@@ -3,6 +3,7 @@ package com.alrex.parcool.client.animation;
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.client.animation.system.IBlendingFactor;
 import com.alrex.parcool.client.animation.system.SimpleBlendFactor;
+import com.alrex.parcool.client.animation.system.math.EasingFunctions;
 import com.alrex.parcool.client.animation.system.registration.BlendingFactors;
 import com.alrex.parcool.client.animation.system.registration.ID;
 import com.alrex.parcool.common.Parkourability;
@@ -40,19 +41,19 @@ public class ParCoolBlendingFactors {
             );
     public static final ID<IBlendingFactor> SKYDIVE_LEAN_FORWARD = BlendingFactors.getInstance()
             .register(new ResourceLocation(ParCool.MOD_ID, "builtin/skydive_lean_forward"), (args, method) ->
-                    new SimpleBlendFactor((player, partial) -> Parkourability.get(player).get(ParCoolActions.SKYDIVE).getBlendingFactorLeanForward(partial), method)
+                    new SimpleBlendFactor((player, partial) -> EasingFunctions.QUAD.easeInOut(Parkourability.get(player).get(ParCoolActions.SKYDIVE).getBlendingFactorLeanForward(partial)), method)
             );
     public static final ID<IBlendingFactor> SKYDIVE_LEAN_BACKWARD = BlendingFactors.getInstance()
-            .register(new ResourceLocation(ParCool.MOD_ID, "builtin/skydive_lean_forward"), (args, method) ->
-                    new SimpleBlendFactor((player, partial) -> Parkourability.get(player).get(ParCoolActions.SKYDIVE).getBlendingFactorLeanBackward(partial), method)
+            .register(new ResourceLocation(ParCool.MOD_ID, "builtin/skydive_lean_backward"), (args, method) ->
+                    new SimpleBlendFactor((player, partial) -> EasingFunctions.QUAD.easeInOut(Parkourability.get(player).get(ParCoolActions.SKYDIVE).getBlendingFactorLeanBackward(partial)), method)
             );
     public static final ID<IBlendingFactor> SKYDIVE_LEAN_LEFT = BlendingFactors.getInstance()
             .register(new ResourceLocation(ParCool.MOD_ID, "builtin/skydive_lean_left"), (args, method) ->
-                    new SimpleBlendFactor((player, partial) -> Parkourability.get(player).get(ParCoolActions.SKYDIVE).getBlendingFactorLeanLeft(partial), method)
+                    new SimpleBlendFactor((player, partial) -> EasingFunctions.QUAD.easeInOut(Parkourability.get(player).get(ParCoolActions.SKYDIVE).getBlendingFactorLeanLeft(partial)), method)
             );
     public static final ID<IBlendingFactor> SKYDIVE_LEAN_RIGHT = BlendingFactors.getInstance()
             .register(new ResourceLocation(ParCool.MOD_ID, "builtin/skydive_lean_right"), (args, method) ->
-                    new SimpleBlendFactor((player, partial) -> Parkourability.get(player).get(ParCoolActions.SKYDIVE).getBlendingFactorLeanRight(partial), method)
+                    new SimpleBlendFactor((player, partial) -> EasingFunctions.QUAD.easeInOut(Parkourability.get(player).get(ParCoolActions.SKYDIVE).getBlendingFactorLeanRight(partial)), method)
             );
 
     public static void register() {

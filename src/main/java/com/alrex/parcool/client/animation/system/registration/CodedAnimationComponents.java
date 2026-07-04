@@ -54,4 +54,58 @@ public class CodedAnimationComponents extends AnimationRegistry<CodedAnimationCo
         );
         return new Transform(Vec3f.ZERO, q);
     });
+
+    private static Transform getBobTransform(float progress) {
+        var zRot = Mth.cos(progress * 0.09f) * 0.05f + 0.05f;
+        var xRot = Mth.sin(progress * 0.067f) * 0.05f;
+        return Transform.fromRotationParams(xRot, 0f, zRot);
+    }
+
+    public final ID<CodedAnimationComponent> BOB_LEFT_ARM = register("builtin/bob_left_arm", (player, part, progress, partial, mirror) -> {
+        if (part != AnimatableModelPart.LEFT_ARM) return null;
+        var transform = getBobTransform(progress);
+        return mirror ? transform.mirror() : transform;
+    });
+    public final ID<CodedAnimationComponent> BOB_RIGHT_ARM = register("builtin/bob_right_arm", (player, part, progress, partial, mirror) -> {
+        if (part != AnimatableModelPart.RIGHT_ARM) return null;
+        var transform = getBobTransform(progress);
+        return mirror ? transform.mirror() : transform;
+    });
+    public final ID<CodedAnimationComponent> BOB_LEFT_LEG = register("builtin/bob_left_leg", (player, part, progress, partial, mirror) -> {
+        if (part != AnimatableModelPart.LEFT_LEG) return null;
+        var transform = getBobTransform(progress);
+        return mirror ? transform.mirror() : transform;
+    });
+    public final ID<CodedAnimationComponent> BOB_RIGHT_LEG = register("builtin/bob_right_leg", (player, part, progress, partial, mirror) -> {
+        if (part != AnimatableModelPart.RIGHT_LEG) return null;
+        var transform = getBobTransform(progress);
+        return mirror ? transform.mirror() : transform;
+    });
+
+    private static Transform getShakeTransform(float progress) {
+        var zRot = Mth.cos(progress * 0.56f) * 0.6f + 0.05f;
+        var xRot = Mth.sin(progress * 0.56f) * 0.6f;
+        return Transform.fromRotationParams(xRot, 0f, zRot);
+    }
+
+    public final ID<CodedAnimationComponent> SHAKE_LEFT_ARM = register("builtin/shake_left_arm", (player, part, progress, partial, mirror) -> {
+        if (part != AnimatableModelPart.LEFT_ARM) return null;
+        var transform = getShakeTransform(progress);
+        return mirror ? transform.mirror() : transform;
+    });
+    public final ID<CodedAnimationComponent> SHAKE_RIGHT_ARM = register("builtin/shake_right_arm", (player, part, progress, partial, mirror) -> {
+        if (part != AnimatableModelPart.RIGHT_ARM) return null;
+        var transform = getShakeTransform(progress);
+        return mirror ? transform.mirror() : transform;
+    });
+    public final ID<CodedAnimationComponent> SHAKE_LEFT_LEG = register("builtin/shake_left_leg", (player, part, progress, partial, mirror) -> {
+        if (part != AnimatableModelPart.LEFT_LEG) return null;
+        var transform = getShakeTransform(progress);
+        return mirror ? transform.mirror() : transform;
+    });
+    public final ID<CodedAnimationComponent> SHAKE_RIGHT_LEG = register("builtin/shake_right_leg", (player, part, progress, partial, mirror) -> {
+        if (part != AnimatableModelPart.RIGHT_LEG) return null;
+        var transform = getShakeTransform(progress);
+        return mirror ? transform.mirror() : transform;
+    });
 }
