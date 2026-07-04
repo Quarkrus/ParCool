@@ -1,12 +1,13 @@
 {
-  "duration": 22,
+  "duration": 21,
   "components": [
     {
       "name": "parcool:dodge_back.json",
       "progress": {
         "name": "parcool:time",
         "args": {
-          "max": 20
+          "max": 20,
+          "scale": 1.1111
         }
       }
     },

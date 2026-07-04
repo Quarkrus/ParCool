@@ -26,7 +26,7 @@
   {
     "name": "parcool:dodge_back",
     "fade_in_duration": 2,
-    "fade_out_duration": 4,
+    "fade_out_duration": 5,
     "main": "parcool:dodge_back_group.json"
   },
   {
