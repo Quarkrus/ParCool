@@ -95,7 +95,8 @@ public class ChargeJump extends ContinuableAction implements ActionExtension.Jum
 
     @Override
     public void onStopInClient() {
-        PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.CHARGE_JUMP);
+        if (shouldConsumeCost)
+            PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.CHARGE_JUMP);
     }
 
     @Override

@@ -156,7 +156,7 @@ public abstract class Transition {
                                 + 3 * vx3 * t
                                 + x0 - timeAtThisCachePoint;
                         var timeGradByT = 3 * vx1 * t * t
-                                + 6 * vx2
+                                + 6 * vx2 * t
                                 + 3 * vx3;
 
                         var tNew = t - (timeByT) / timeGradByT;

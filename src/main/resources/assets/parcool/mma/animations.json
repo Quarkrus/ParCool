@@ -48,6 +48,12 @@
     "main": "parcool:back_flip_group.json"
   },
   {
+    "name": "parcool:front_flip",
+    "fade_in_duration": 2,
+    "fade_out_duration": 5,
+    "main": "parcool:front_flip_group.json"
+  },
+  {
     "name": "parcool:slide_down",
     "fade_in_duration": 5,
     "fade_out_duration": 5,
