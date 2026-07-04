@@ -4,7 +4,6 @@ import com.alrex.parcool.ParCool;
 import com.alrex.parcool.api.action.Action;
 import com.alrex.parcool.api.action.ContinuableAction;
 import com.alrex.parcool.api.action.ParCoolActionEvent;
-import com.alrex.parcool.api.action.StaminaConsumption;
 import com.alrex.parcool.api.stamina.AbstractLocalStamina;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.info.CompiledLimitation;
@@ -126,17 +125,6 @@ public class ActionProcessor {
 		boolean needSync = (triggeredSide.isClient() && player.isLocalPlayer())
 				|| (triggeredSide.isServer() && logicalSide.isServer());
 		action.tick();
-		action.onTick();
-		if (logicalSide.isClient()) {
-			action.onClientTick();
-			if (player.isLocalPlayer()) {
-				action.onLocalClientTick();
-			} else {
-				action.onOtherClientTick();
-			}
-		} else {
-			action.onServerTick();
-		}
 		ActionStatePacket.Type type = ActionStatePacket.Type.DATA;
 		if (needSync) {
 			if (action instanceof ContinuableAction continuableAction && continuableAction.isDoing()) {
@@ -156,21 +144,7 @@ public class ActionProcessor {
 			}
 		}
 		if (action instanceof ContinuableAction continuableAction && continuableAction.isDoing()) {
-			continuableAction.onWorkingTick();
-			if (logicalSide.isClient()) {
-				continuableAction.onWorkingTickInClient();
-				if (parkourability.player().isLocalPlayer()) {
-					continuableAction.onWorkingTickInLocalClient();
-				} else {
-					continuableAction.onWorkingTickInOtherClient();
-				}
-			} else {
-				continuableAction.onWorkingTickInServer();
-			}
-
-			if (parkourability.getStamina() instanceof AbstractLocalStamina stamina) {
-				stamina.consume(parkourability.getCost(action.getEntry(), StaminaConsumption.Type.WORKING));
-			}
+			continuableAction.tickOnWorking();
 		}
 		var data = action.getSynchronizedData().packToEntry(type, action.getEntry());
 		if (data != null) {

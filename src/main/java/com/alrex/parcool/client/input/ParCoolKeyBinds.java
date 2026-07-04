@@ -42,6 +42,7 @@ public class ParCoolKeyBinds {
         private boolean down;
 		private int pressedDurationTick = 0;
 		private int notPressedDurationTick = 0;
+		private int previousNotPressedDurationTick = 0;
 
 		private void update(KeyMapping key) {
             update(key.isDown());
@@ -51,6 +52,7 @@ public class ParCoolKeyBinds {
             down = keyDown;
             if (keyDown) {
 				pressedDurationTick++;
+				if (pressedDurationTick == 0) previousNotPressedDurationTick = notPressedDurationTick;
 				notPressedDurationTick = -1;
 			} else {
 				pressedDurationTick = -1;
@@ -68,6 +70,10 @@ public class ParCoolKeyBinds {
 
 		public int getNotPressedDuration() {
 			return notPressedDurationTick;
+		}
+
+		public int getPreviousNotPressedDurationTick() {
+			return previousNotPressedDurationTick;
 		}
 
 		public boolean isJustPressed() {
@@ -104,6 +110,7 @@ public class ParCoolKeyBinds {
 	public static final Input HORIZONTAL_WALL_RUN = register(new KeyMapping("key.parcool.horizontal_wall_run", GLFW.GLFW_KEY_R, KEY_CATEGORY));
 
     public static final LogicalInput JUMP = listen(Minecraft.getInstance().options.keyJump::isDown);
+	public static final LogicalInput SHIFT = listen(Minecraft.getInstance().options.keyShift::isDown);
     public static final LogicalInput MOVEMENT_FORWARD = listen(Minecraft.getInstance().options.keyUp::isDown);
     public static final LogicalInput MOVEMENT_BACK = listen(Minecraft.getInstance().options.keyDown::isDown);
     public static final LogicalInput MOVEMENT_RIGHT = listen(Minecraft.getInstance().options.keyRight::isDown);

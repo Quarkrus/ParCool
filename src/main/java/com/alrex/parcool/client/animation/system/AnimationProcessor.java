@@ -14,12 +14,18 @@ public class AnimationProcessor {
     private record WorkingAnimationEntry(AnimationSets.Entry registration, WorkingAnimationSet animator) {
     }
 
+    private final AbstractClientPlayer owner;
+
+    public AnimationProcessor(AbstractClientPlayer owner) {
+        this.owner = owner;
+    }
+
     private final ArrayList<WorkingAnimationEntry> animators = new ArrayList<>();
 
-    public void tick(AbstractClientPlayer player) {
+    public void tick() {
         var finished = new LinkedList<WorkingAnimationEntry>();
         for (var working : animators) {
-            working.animator.tick(player);
+            working.animator.tick(owner);
             if (working.animator.isFinished()) {
                 finished.addFirst(working);
             }
@@ -47,7 +53,7 @@ public class AnimationProcessor {
         if (animEntry.parent() != null) {
             startIfNotWorking(animEntry.parent().id(), mirror);
         }
-        animators.add(new WorkingAnimationEntry(animEntry, new WorkingAnimationSet(newAnimationSet, animEntry.controllerSupplier().get(), mirror)));
+        animators.add(new WorkingAnimationEntry(animEntry, new WorkingAnimationSet(newAnimationSet, animEntry.controllerSupplier().apply(owner), mirror)));
         return true;
     }
 

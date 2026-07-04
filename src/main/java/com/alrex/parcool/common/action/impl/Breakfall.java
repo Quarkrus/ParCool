@@ -40,7 +40,7 @@ public class Breakfall extends Action implements ActionExtension.LandListener {
     }
 
     @Override
-    public void onLocalClientTick() {
+    public void onTickInLocalClient() {
         propertyInputBreakfallType.set(ParCoolKeyBinds.BREAKFALL.state().isDown() ?
                 (ParCoolKeyBinds.getMovementInput(LogicalMovement.FORWARD).isDown() ? BreakfallType.ROLL : BreakfallType.TAP)
                 : BreakfallType.NONE

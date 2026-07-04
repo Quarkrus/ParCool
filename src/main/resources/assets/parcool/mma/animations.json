@@ -88,5 +88,11 @@
     "fade_in_duration": 8,
     "fade_out_duration": 8,
     "main": "parcool:skydive_group.json"
+  },
+  {
+    "name": "parcool:jump_charging",
+    "fade_in_duration": 5,
+    "fade_out_duration": 5,
+    "main": "parcool:jump_charging_group.json"
   }
 ]

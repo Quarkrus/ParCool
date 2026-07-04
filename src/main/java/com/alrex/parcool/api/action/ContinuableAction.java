@@ -1,6 +1,5 @@
 package com.alrex.parcool.api.action;
 
-import com.alrex.parcool.api.stamina.AbstractLocalStamina;
 import com.alrex.parcool.common.Parkourability;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -45,6 +44,22 @@ public abstract class ContinuableAction extends Action {
         super.tick();
     }
 
+    public void tickOnWorking() {
+        onWorkingTick();
+        if (parkourability.player().level.isClientSide) {
+            onWorkingTickInClient();
+            if (parkourability.player().isLocalPlayer()) {
+                onWorkingTickInLocalClient();
+            } else {
+                onWorkingTickInOtherClient();
+            }
+        } else {
+            onWorkingTickInServer();
+        }
+
+        takeCost(StaminaConsumption.Type.WORKING);
+    }
+
     @Override
     public void start() {
         if (doing) return;
@@ -61,9 +76,7 @@ public abstract class ContinuableAction extends Action {
         }
         doing = false;
         if (parkourability.player().isLocalPlayer()) {
-            if (parkourability.getStamina() instanceof AbstractLocalStamina stamina) {
-                stamina.consume(parkourability.getCost(entry, StaminaConsumption.Type.FINISH));
-            }
+            takeCost(StaminaConsumption.Type.FINISH);
             onStopInLocalClient();
             onStopInClient();
         } else {

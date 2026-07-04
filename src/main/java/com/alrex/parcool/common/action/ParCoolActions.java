@@ -21,6 +21,7 @@ public class ParCoolActions {
     public static final ActionEntry<SlideDown> SLIDE_DOWN;
     public static final ActionEntry<Breakfall> BREAKFALL;
     public static final ActionEntry<HorizontalWallRun> HORIZONTAL_WALL_RUN;
+    public static final ActionEntry<ChargeJump> CHARGE_JUMP;
 
     static {
         var builder = new ActionGroup.Builder(ParCool.MOD_ID);
@@ -64,6 +65,10 @@ public class ParCoolActions {
                 .parent(FAST_RUN).needParentWorking(true)
                 .needNotOnGround(true)
                 .cost(StaminaConsumption.get(0, 3, 0))
+        );
+        CHARGE_JUMP = builder.add("charge_jump", ChargeJump.class, ChargeJump::new, new ActionOption()
+                .cost(StaminaConsumption.get(0, 0, 0))
+                .needPose(null)
         );
         GROUP = builder.build();
     }

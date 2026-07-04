@@ -50,6 +50,17 @@ public abstract class Action {
 		if (tickSinceStarted >= 0) {
 			tickSinceStarted++;
 		}
+		onTick();
+		if (parkourability.player().level.isClientSide) {
+			onTickInClient();
+			if (parkourability.player().isLocalPlayer()) {
+				onTickInLocalClient();
+			} else {
+				onTickInOtherClient();
+			}
+		} else {
+			onTickInServer();
+		}
 	}
 
 	public void start() {
@@ -59,9 +70,7 @@ public abstract class Action {
 		if (parkourability.player().isLocalPlayer()) {
 			onStartInClient();
 			onStartInLocalClient();
-			if (parkourability.getStamina() instanceof AbstractLocalStamina stamina) {
-				stamina.consume(parkourability.getCost(entry, StaminaConsumption.Type.START));
-			}
+			takeCost(StaminaConsumption.Type.START);
 		} else {
 			if (parkourability.player().level.isClientSide()) {
 				onStartInClient();
@@ -124,6 +133,11 @@ public abstract class Action {
 				: canStart();
 	}
 
+	protected void takeCost(StaminaConsumption.Type type) {
+		if (parkourability.getStamina() instanceof AbstractLocalStamina stamina) {
+			stamina.consume(parkourability.getCost(entry, type));
+		}
+	}
 
 	public abstract boolean canStart();
 
@@ -148,19 +162,19 @@ public abstract class Action {
 	public void onTick() {
 	}
 
-	public void onServerTick() {
+	public void onTickInServer() {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void onClientTick() {
+	public void onTickInClient() {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void onLocalClientTick() {
+	public void onTickInLocalClient() {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void onOtherClientTick() {
+	public void onTickInOtherClient() {
 	}
 
 	@OnlyIn(Dist.CLIENT)

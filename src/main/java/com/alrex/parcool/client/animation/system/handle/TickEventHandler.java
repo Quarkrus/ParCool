@@ -13,7 +13,7 @@ public class TickEventHandler {
             if (level == null) return;
             for (var p : level.players()) {
                 if (p instanceof IPlayerAnimatorHolder holder) {
-                    holder.getParCoolPlayerAnimator().tick(p);
+                    holder.getParCoolPlayerAnimator().tick();
                 }
             }
         }

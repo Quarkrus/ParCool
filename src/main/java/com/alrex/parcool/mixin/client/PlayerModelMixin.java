@@ -2,6 +2,7 @@ package com.alrex.parcool.mixin.client;
 
 import com.alrex.parcool.client.animation.system.AnimatableModelPart;
 import com.alrex.parcool.client.animation.system.IPlayerAnimatorHolder;
+import com.alrex.parcool.client.animation.system.data.Transform;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -86,6 +87,7 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 			if (lATransform != null) lATransform.apply(leftArm, blendingFactor);
 			var lLTransform = transform.transformation().transforms().get(AnimatableModelPart.LEFT_LEG);
 			if (lLTransform != null) lLTransform.apply(leftLeg, blendingFactor);
+			Transform.NO_TRANSFORMATION.apply(body, blendingFactor);
 		}
 	}
 

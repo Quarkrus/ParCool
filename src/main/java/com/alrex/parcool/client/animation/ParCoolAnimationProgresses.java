@@ -13,6 +13,10 @@ public class ParCoolAnimationProgresses {
             new ResourceLocation(ParCool.MOD_ID, "builtin/dive"),
             (player, partialTick) -> Parkourability.get(player).get(ParCoolActions.DIVE).getAnimationProgress(partialTick)
     );
+    public static ID<AnimationProgress> JUMP_CHARGING_PROGRESS = AnimationProgresses.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "builtin/jump_charging"),
+            (player, partialTick) -> Parkourability.get(player).get(ParCoolActions.CHARGE_JUMP).getChargeProgress(partialTick)
+    );
 
     public static void register() {
     }

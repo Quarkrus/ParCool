@@ -2,8 +2,10 @@ package com.alrex.parcool.api.action;
 
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -18,12 +20,18 @@ public abstract class SynchronizedProperty<T> {
         this.updateListener = updateListener;
     }
 
+    @Nullable
     public T get() {
         return value;
     }
 
+    @Nonnull
+    public T getOrDefaultIfNull(@Nonnull T defaultValue) {
+        return value != null ? value : defaultValue;
+    }
+
     public void set(@Nullable T value) {
-        if (this.value != value) {
+        if (!Objects.equals(this.value, value)) {
             if (updateListener != null) updateListener.onUpdate(value, this.value);
             this.dirty = true;
             this.value = value;

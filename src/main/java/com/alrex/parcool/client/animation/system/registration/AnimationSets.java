@@ -2,11 +2,12 @@ package com.alrex.parcool.client.animation.system.registration;
 
 import com.alrex.parcool.client.animation.system.IAnimationController;
 import com.alrex.parcool.client.animation.system.data.AnimationSet;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.TreeMap;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class AnimationSets {
     @Nullable
@@ -18,7 +19,8 @@ public class AnimationSets {
     }
 
     public record Entry(ID<AnimationSet> id, ResourceLocation location,
-                        Supplier<IAnimationController> controllerSupplier, @Nullable Entry parent) {
+                        Function<AbstractClientPlayer, IAnimationController> controllerSupplier,
+                        @Nullable Entry parent) {
         public boolean isDescendantOf(ID<AnimationSet> otherId) {
             Entry ancestor = this.parent;
             while (ancestor != null) {
@@ -34,7 +36,22 @@ public class AnimationSets {
     private final TreeMap<ID<AnimationSet>, Entry> registry = new TreeMap<>();
     private final TreeMap<ResourceLocation, Entry> nameToRegistry = new TreeMap<>();
 
-    public ID<AnimationSet> register(ResourceLocation location, Supplier<IAnimationController> controllerSupplier, @Nullable ID<AnimationSet> parent) {
+    public ID<AnimationSet> register(ResourceLocation location, IAnimationController controller, @Nullable ID<AnimationSet> parent) {
+        return register(location, (AbstractClientPlayer p) -> controller, parent);
+    }
+
+    public ID<AnimationSet> registerTimeout(ResourceLocation location, int timeoutInTick, @Nullable ID<AnimationSet> parent) {
+        return register(
+                location,
+                (AbstractClientPlayer p) -> {
+                    var startTick = p.tickCount;
+                    return (IAnimationController) ((workingPlayer) -> (workingPlayer.tickCount - startTick < timeoutInTick));
+                },
+                parent
+        );
+    }
+
+    private ID<AnimationSet> register(ResourceLocation location, Function<AbstractClientPlayer, IAnimationController> controllerSupplier, @Nullable ID<AnimationSet> parent) {
         if (freeze) {
             throw new IllegalStateException(String.format("Animation set [%s] is tried to be registered, into freezed registry", location));
         }

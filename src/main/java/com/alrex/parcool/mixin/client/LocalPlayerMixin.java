@@ -1,7 +1,5 @@
 package com.alrex.parcool.mixin.client;
 
-import com.alrex.parcool.client.animation.system.IPlayerAnimatorHolder;
-import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.common.Parkourability;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -13,7 +11,6 @@ import net.minecraft.world.entity.player.ProfilePublicKey;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,21 +19,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.Nullable;
 
 @Mixin(LocalPlayer.class)
-public abstract class LocalPlayerMixin extends AbstractClientPlayer implements IPlayerAnimatorHolder {
+public abstract class LocalPlayerMixin extends AbstractClientPlayer {
 
     @Shadow
     public int sprintTime;
 
     @Shadow
     public abstract void setSprinting(boolean p_108751_);
-
-    @Unique
-    private final PlayerAnimator parcool$animator = new PlayerAnimator();
-
-    @Override
-    public PlayerAnimator getParCoolPlayerAnimator() {
-        return parcool$animator;
-    }
 
 	public LocalPlayerMixin(ClientLevel p_234112_, GameProfile p_234113_, @Nullable ProfilePublicKey p_234114_) {
 		super(p_234112_, p_234113_, p_234114_);

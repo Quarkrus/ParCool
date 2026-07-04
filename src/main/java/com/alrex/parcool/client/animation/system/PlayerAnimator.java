@@ -10,12 +10,17 @@ public class PlayerAnimator {
     public static PlayerAnimator get(AbstractClientPlayer player) {
         return ((IPlayerAnimatorHolder) player).getParCoolPlayerAnimator();
     }
-    private final AnimationProcessor animationProcessor = new AnimationProcessor();
+
+    private final AnimationProcessor animationProcessor;
     @Nullable
     private BlendingModelTransform currentTransformation = null;
 
-    public void tick(AbstractClientPlayer player) {
-        animationProcessor.tick(player);
+    public PlayerAnimator(AbstractClientPlayer owner) {
+        animationProcessor = new AnimationProcessor(owner);
+    }
+
+    public void tick() {
+        animationProcessor.tick();
     }
 
     public void onRenderTick(AbstractClientPlayer player, float partialTick) {

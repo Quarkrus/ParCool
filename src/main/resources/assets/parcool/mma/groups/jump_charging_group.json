@@ -1,0 +1,17 @@
+{
+  "infinite": true,
+  "components": [
+    {
+      "name": "parcool:jump_charging.json",
+      "progress": {
+        "name": "parcool:builtin/jump_charging",
+        "args": {
+          "scale": 10
+        }
+      }
+    },
+    {
+      "name": "parcool:builtin/lock_body"
+    }
+  ]
+}

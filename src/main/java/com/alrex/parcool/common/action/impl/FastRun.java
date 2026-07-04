@@ -51,7 +51,7 @@ public class FastRun extends ContinuableAction {
     }
 
     @Override
-    public void onServerTick() {
+    public void onTickInServer() {
         var player = parkourability.player();
         var attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (attr == null) return;
