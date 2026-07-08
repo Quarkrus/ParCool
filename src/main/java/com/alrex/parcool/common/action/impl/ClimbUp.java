@@ -3,9 +3,10 @@ package com.alrex.parcool.common.action.impl;
 import com.alrex.parcool.api.action.*;
 import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
+import com.alrex.parcool.client.animation.system.math.EasingFunctions;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.action.*;
-import com.alrex.parcool.util.EasingFunctions;
+import com.alrex.parcool.common.action.IRequestable;
+import com.alrex.parcool.common.action.InteractingWallDirection;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
@@ -68,7 +69,7 @@ public class ClimbUp extends ContinuableAction implements IRequestable<ClimbUp.R
                 final int borderTick = 9;
                 final double borderPhase = borderTick / (double) MAX_TICK;
 
-                var phase = EasingFunctions.cubicInOut(getDoingTick() / (double) MAX_TICK);
+                var phase = EasingFunctions.CUBE.easeInOut(getDoingTick() / (float) MAX_TICK);
                 if (phase < borderPhase) {
                     return fStartPos.add(0, (fDestination.y - fStartPos.y) * phase, 0);
                 } else {

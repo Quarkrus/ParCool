@@ -1,0 +1,14 @@
+{
+  "duration": 15,
+  "components": [
+    {
+      "name": "parcool:speed_vault.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "max": 15
+        }
+      }
+    }
+  ]
+}

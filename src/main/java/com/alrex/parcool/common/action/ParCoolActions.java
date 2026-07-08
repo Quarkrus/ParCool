@@ -10,6 +10,7 @@ public class ParCoolActions {
     private static final ActionGroup GROUP;
 
     public static final ActionEntry<FastRun> FAST_RUN;
+    public static final ActionEntry<Vault> VAULT;
     public static final ActionEntry<Dive> DIVE;
     public static final ActionEntry<Skydive> SKYDIVE;
     public static final ActionEntry<Crawl> CRAWL;
@@ -27,6 +28,10 @@ public class ParCoolActions {
         var builder = new ActionGroup.Builder(ParCool.MOD_ID);
         FAST_RUN = builder.add("fast_run", FastRun.class, FastRun::new, new ActionOption()
                 .cost(StaminaConsumption.get(0, 2, 0))
+        );
+        VAULT = builder.add("vault", Vault.class, Vault::new, new ActionOption()
+                .parent(FAST_RUN).needParentWorking(true)
+                .cost(StaminaConsumption.get(50, 0, 0))
         );
         DIVE = builder.add("dive", Dive.class, Dive::new, new ActionOption()
                 .parent(FAST_RUN).needParentWorking(false)

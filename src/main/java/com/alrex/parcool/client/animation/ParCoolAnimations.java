@@ -99,6 +99,16 @@ public class ParCoolAnimations {
             100,
             null
     );
+    public static final ID<AnimationSet> KONG_VAULT = AnimationSets.getInstance().registerTimeout(
+            new ResourceLocation(ParCool.MOD_ID, "kong_vault"),
+            100,
+            null
+    );
+    public static final ID<AnimationSet> SPEED_VAULT = AnimationSets.getInstance().registerTimeout(
+            new ResourceLocation(ParCool.MOD_ID, "speed_vault"),
+            100,
+            null
+    );
 
     public static void register() {
     }

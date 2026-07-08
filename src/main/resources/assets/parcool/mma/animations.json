@@ -106,5 +106,17 @@
     "fade_in_duration": 0,
     "fade_out_duration": 5,
     "main": "parcool:charge_jump_group.json"
+  },
+  {
+    "name": "parcool:kong_vault",
+    "fade_in_duration": 0,
+    "fade_out_duration": 4,
+    "main": "parcool:kong_vault_group.json"
+  },
+  {
+    "name": "parcool:speed_vault",
+    "fade_in_duration": 0,
+    "fade_out_duration": 6,
+    "main": "parcool:speed_vault_group.json"
   }
 ]

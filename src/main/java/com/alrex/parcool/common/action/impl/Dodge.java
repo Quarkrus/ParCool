@@ -6,16 +6,19 @@ import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.client.input.LogicalMovement;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.action.*;
+import com.alrex.parcool.common.action.ActionExtension;
+import com.alrex.parcool.common.action.ParCoolActions;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+
+import java.util.List;
 
 public class Dodge extends ContinuableAction implements ActionExtension.AttackedListener {
     private final SynchronizedDataHolder dataHolder;
     private final SynchronizedProperty<AnimationType> propertyAnimationType;
 
     public Dodge(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry);
+        super(parkourability, entry, List.of(ParCoolActions.FAST_RUN));
         dataHolder = SynchronizedDataHolder.create(entry,
                 propertyAnimationType = SynchronizedProperty.newEnum(AnimationType.class)
         );
