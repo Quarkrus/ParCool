@@ -109,6 +109,11 @@ public class ParCoolAnimations {
             100,
             null
     );
+    public static final ID<AnimationSet> WALL_JUMP = AnimationSets.getInstance().registerTimeout(
+            new ResourceLocation(ParCool.MOD_ID, "wall_jump"),
+            100,
+            null
+    );
 
     public static void register() {
     }

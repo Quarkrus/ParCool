@@ -61,7 +61,7 @@ public class ActionProcessor {
 		if (player.isLocalPlayer()) {
 			onTick$checkLimitationSynchronization(player, parkourability);
 		}
-		parkourability.getAdditionalProperties().onTick(player, parkourability);
+        parkourability.getAdditionalProperties().onTick();
 		for (Action action : parkourability.getActions()) {
 			MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Tick.Pre(player, action));
 			processAction(parkourability, event.side, action, synchronizedData);

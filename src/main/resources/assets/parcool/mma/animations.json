@@ -118,5 +118,11 @@
     "fade_in_duration": 0,
     "fade_out_duration": 6,
     "main": "parcool:speed_vault_group.json"
+  },
+  {
+    "name": "parcool:wall_jump",
+    "fade_in_duration": 1,
+    "fade_out_duration": 4,
+    "main": "parcool:wall_jump_group.json"
   }
 ]

@@ -4,10 +4,10 @@ import com.alrex.parcool.ParCool;
 import com.alrex.parcool.api.action.Action;
 import com.alrex.parcool.api.action.ActionEntry;
 import com.alrex.parcool.api.action.StaminaConsumption;
+import com.alrex.parcool.api.stamina.IReadonlyStamina;
 import com.alrex.parcool.common.action.*;
 import com.alrex.parcool.common.info.ActionInfo;
 import com.alrex.parcool.common.info.CompiledLimitation;
-import com.alrex.parcool.api.stamina.IReadonlyStamina;
 import com.alrex.parcool.common.stamina.ReadonlyStamina;
 import com.alrex.parcool.common.stamina.StaminaTypes;
 import com.alrex.parcool.config.ParCoolConfig;
@@ -28,7 +28,7 @@ public class Parkourability {
 	}
 
 	private final ActionInfo info = new ActionInfo();
-	private final AdditionalProperties properties = new AdditionalProperties();
+	private final AdditionalProperties properties;
 	private final BehaviorEnforcer enforcer = new BehaviorEnforcer();
 	private final ActionSet actions;
 	private final TreeMap<ActionEntry<?>, Object> requestedContexts = new TreeMap<>();
@@ -38,6 +38,7 @@ public class Parkourability {
 	public Parkourability(Player player, ActionRegistry registry) {
 		this.player = player;
 		this.actions = new ActionSet(this, registry);
+		this.properties = new AdditionalProperties(player);
 		if (player.isLocalPlayer()) {
 			this.info.setClientLimitation(CompiledLimitation.compile(
 					Limitation.readFromConfig(

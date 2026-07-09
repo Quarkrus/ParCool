@@ -128,7 +128,7 @@ public class Vault extends ContinuableAction {
     private static Type getVaultType(Vec3 movementVec) {
         movementVec = movementVec.normalize();
         var xAbs = Math.abs(movementVec.x);
-        if (xAbs > 0.9848 || xAbs < 0.1736) { // 0.9848 is cos(10 angle), 0.1736 is cos(80 angle)
+        if (xAbs > 0.9848 || xAbs < 0.1736) { // 0.9848 is cos(10 degrees), 0.1736 is cos(80 degrees)
             return Type.KONG;
         }
         if (0 < movementVec.z) {

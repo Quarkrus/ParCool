@@ -23,40 +23,62 @@ public class ParCoolActions {
     public static final ActionEntry<Breakfall> BREAKFALL;
     public static final ActionEntry<HorizontalWallRun> HORIZONTAL_WALL_RUN;
     public static final ActionEntry<ChargeJump> CHARGE_JUMP;
+    public static final ActionEntry<WallJump> WALL_JUMP;
 
     static {
         var builder = new ActionGroup.Builder(ParCool.MOD_ID);
+        WALL_JUMP = builder.add("wall_jump", WallJump.class, WallJump::new, new ActionOption()
+                .cost(StaminaConsumption.get(50, 0, 0))
+                .needNotOnGround(true)
+        );
+
         FAST_RUN = builder.add("fast_run", FastRun.class, FastRun::new, new ActionOption()
                 .cost(StaminaConsumption.get(0, 2, 0))
         );
-        VAULT = builder.add("vault", Vault.class, Vault::new, new ActionOption()
-                .parent(FAST_RUN).needParentWorking(true)
-                .cost(StaminaConsumption.get(50, 0, 0))
-        );
-        DIVE = builder.add("dive", Dive.class, Dive::new, new ActionOption()
-                .parent(FAST_RUN).needParentWorking(false)
-                .needNotOnGround(true)
-        );
-        SKYDIVE = builder.add("skydive", Skydive.class, Skydive::new, new ActionOption()
-                .parent(DIVE).needParentWorking(true)
-        );
+        {
+            VAULT = builder.add("vault", Vault.class, Vault::new, new ActionOption()
+                    .parent(FAST_RUN).needParentWorking(true)
+                    .cost(StaminaConsumption.get(50, 0, 0))
+            );
+            HORIZONTAL_WALL_RUN = builder.add("horizontal_wall_run", HorizontalWallRun.class, HorizontalWallRun::new, new ActionOption()
+                    .parent(FAST_RUN).needParentWorking(true)
+                    .needNotOnGround(true)
+                    .cost(StaminaConsumption.get(0, 3, 0))
+            );
+            DIVE = builder.add("dive", Dive.class, Dive::new, new ActionOption()
+                    .parent(FAST_RUN).needParentWorking(false)
+                    .needNotOnGround(true)
+            );
+            {
+                SKYDIVE = builder.add("skydive", Skydive.class, Skydive::new, new ActionOption()
+                        .parent(DIVE).needParentWorking(true)
+                );
+            }
+        }
+
         CRAWL = builder.add("crawl", Crawl.class, Crawl::new, new ActionOption().needPose(null));
-        SLIDE = builder.add("slide", Slide.class, Slide::new, new ActionOption()
-                .parent(CRAWL).needParentWorking(true)
-                .needPose(null)
-        );
+        {
+            SLIDE = builder.add("slide", Slide.class, Slide::new, new ActionOption()
+                    .parent(CRAWL).needParentWorking(true)
+                    .needPose(null)
+            );
+        }
+
         HANG_ON = builder.add("hang_on", HangOn.class, HangOn::new, new ActionOption()
                 .cost(StaminaConsumption.get(0, 3, 0))
         );
-        CLIMB_UP = builder.add("climb_up", ClimbUp.class, ClimbUp::new, new ActionOption()
-                .parent(HANG_ON).needParentWorking(false)
-                .cost(StaminaConsumption.get(50, 0, 0))
-        );
-        SLIDE_DOWN = builder.add("slide_down", SlideDown.class, SlideDown::new, new ActionOption()
-                .parent(HANG_ON).needParentWorking(false)
-                .needNotOnGround(true)
-                .cost(StaminaConsumption.get(0, 1, 0))
-        );
+        {
+            CLIMB_UP = builder.add("climb_up", ClimbUp.class, ClimbUp::new, new ActionOption()
+                    .parent(HANG_ON).needParentWorking(false)
+                    .cost(StaminaConsumption.get(50, 0, 0))
+            );
+            SLIDE_DOWN = builder.add("slide_down", SlideDown.class, SlideDown::new, new ActionOption()
+                    .parent(HANG_ON).needParentWorking(false)
+                    .needNotOnGround(true)
+                    .cost(StaminaConsumption.get(0, 1, 0))
+            );
+        }
+
         DODGE = builder.add("dodge", Dodge.class, Dodge::new, new ActionOption()
                 .needOnGround(true)
                 .cost(StaminaConsumption.get(50, 0, 0))
@@ -65,11 +87,6 @@ public class ParCoolActions {
         BREAKFALL = builder.add("breakfall", Breakfall.class, Breakfall::new, new ActionOption()
                 .triggeredSide(LogicalSide.SERVER)
                 .cost(StaminaConsumption.get(50, 0, 0))
-        );
-        HORIZONTAL_WALL_RUN = builder.add("horizontal_wall_run", HorizontalWallRun.class, HorizontalWallRun::new, new ActionOption()
-                .parent(FAST_RUN).needParentWorking(true)
-                .needNotOnGround(true)
-                .cost(StaminaConsumption.get(0, 3, 0))
         );
         CHARGE_JUMP = builder.add("charge_jump", ChargeJump.class, ChargeJump::new, new ActionOption()
                 .cost(StaminaConsumption.get(0, 0, 50))

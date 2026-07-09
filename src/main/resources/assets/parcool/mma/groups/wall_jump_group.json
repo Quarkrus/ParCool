@@ -1,0 +1,15 @@
+{
+  "duration": 13,
+  "components": [
+    {
+      "name": "parcool:wall_jump.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "max": 15,
+          "scale": 1.2
+        }
+      }
+    }
+  ]
+}

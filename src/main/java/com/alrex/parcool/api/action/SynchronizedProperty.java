@@ -122,8 +122,30 @@ public abstract class SynchronizedProperty<T> {
                 return new Vec3(x, 0, z);
             },
             (b, v) -> {
-                b.putFloat((float) v.x);
-                b.putFloat((float) v.z);
+                if (v == null) {
+                    b.putFloat(Float.NaN).putFloat(Float.NaN);
+                } else {
+                    b.putFloat((float) v.x).putFloat((float) v.z);
+                }
+            }
+    );
+    private static final Handler<Vec3> VEC_3_HANDLER = new Handler<>(
+            (byte) (Float.BYTES * 3),
+            (b) -> {
+                var x = b.getFloat();
+                var y = b.getFloat();
+                var z = b.getFloat();
+                if (Float.isNaN(x) && Float.isNaN(y) && Float.isNaN(z)) {
+                    return null;
+                }
+                return new Vec3(x, y, z);
+            },
+            (b, v) -> {
+                if (v == null) {
+                    b.putFloat(Float.NaN).putFloat(Float.NaN).putFloat(Float.NaN);
+                } else {
+                    b.putFloat((float) v.x).putFloat((float) v.y).putFloat((float) v.z);
+                }
             }
     );
 
@@ -175,6 +197,19 @@ public abstract class SynchronizedProperty<T> {
             @Override
             IHandler<Vec3> getHandler() {
                 return VEC_3_HORIZONTAL_HANDLER;
+            }
+        };
+    }
+
+    public static SynchronizedProperty<Vec3> newVec3() {
+        return newVec3(null);
+    }
+
+    public static SynchronizedProperty<Vec3> newVec3(@Nullable IUpdateListener<Vec3> updateListener) {
+        return new SynchronizedProperty<>(updateListener) {
+            @Override
+            IHandler<Vec3> getHandler() {
+                return VEC_3_HANDLER;
             }
         };
     }

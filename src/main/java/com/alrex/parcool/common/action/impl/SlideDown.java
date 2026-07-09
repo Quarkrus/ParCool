@@ -45,7 +45,7 @@ public class SlideDown extends ContinuableAction {
     @Override
     public boolean canStart() {
         if (ParCoolKeyBinds.SLIDE_DOWN.key().isDown()) {
-            var direction = InteractingWallDirection.getAdjacentWall(parkourability.player());
+            var direction = parkourability.getAdditionalProperties().getDefaultWallInteraction();
             if (direction == null) return false;
             propertyDirection.set(direction);
             return true;

@@ -234,7 +234,7 @@ public class HangOn extends ContinuableAction {
         var level = player.level;
         var playerBB = player.getBoundingBox();
         double xRange = playerBB.getXsize() * 0.25, zRange = playerBB.getZsize() * 0.25;
-        var direction = InteractingWallDirection.getAdjacentWall(player, xRange, zRange);
+        var direction = parkourability.getAdditionalProperties().getDefaultWallInteraction();
 
         if (direction == null) return null;
 

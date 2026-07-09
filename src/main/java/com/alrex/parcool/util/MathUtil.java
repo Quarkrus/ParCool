@@ -4,10 +4,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 public class MathUtil {
-	public static float lerp(float start, float end, float factor) {
-		return start + (end - start) * factor;
-	}
-
     public static float normalizeRadian(float angle) {
         return (float) (angle - 2 * Math.PI * Math.floor((angle + Math.PI) / (2. * Math.PI)));
     }

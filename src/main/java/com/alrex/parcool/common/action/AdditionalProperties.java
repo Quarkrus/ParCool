@@ -1,9 +1,14 @@
 package com.alrex.parcool.common.action;
 
-import com.alrex.parcool.common.Parkourability;
 import net.minecraft.world.entity.player.Player;
 
+import javax.annotation.Nullable;
+
 public class AdditionalProperties {
+	public AdditionalProperties(Player player) {
+		this.player = player;
+	}
+
 	public static class StatusTick {
 		private int duration;
 		private boolean doing;
@@ -25,24 +30,30 @@ public class AdditionalProperties {
 			return !doing ? duration : 0;
 		}
 	}
+
+	private final Player player;
 	private int tickAfterLastJump = 0;
 	private final StatusTick sprint = new StatusTick();
 	private final StatusTick sneak = new StatusTick();
 	private final StatusTick onGround = new StatusTick();
 	private final StatusTick flying = new StatusTick();
 	private final StatusTick inWater = new StatusTick();
+	private boolean wallDirectionCached = false;
+	@Nullable
+	private InteractingWallDirection cachedDefaultWallDirection = null;
 
 	public void onJump() {
 		tickAfterLastJump = 0;
 	}
 
-	public void onTick(Player player, Parkourability parkourability) {
+	public void onTick() {
 		tickAfterLastJump++;
 		sprint.update(player.isSprinting());
 		sneak.update(player.isShiftKeyDown());
 		onGround.update(player.isOnGround());
 		flying.update(player.getAbilities().flying);
 		inWater.update(player.isInWater());
+		wallDirectionCached = false;
 	}
 
 	public StatusTick getSprintDurations() {
@@ -63,5 +74,14 @@ public class AdditionalProperties {
 
 	public StatusTick getInWaterDurations() {
 		return inWater;
+	}
+
+	@Nullable
+	public InteractingWallDirection getDefaultWallInteraction() {
+		if (!wallDirectionCached) {
+			cachedDefaultWallDirection = InteractingWallDirection.getAdjacentWall(player);
+			wallDirectionCached = true;
+		}
+		return cachedDefaultWallDirection;
 	}
 }

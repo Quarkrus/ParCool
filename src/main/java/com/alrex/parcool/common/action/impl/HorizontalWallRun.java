@@ -37,7 +37,7 @@ public class HorizontalWallRun extends ContinuableAction {
     public boolean canContinue() {
         if (!ParCoolKeyBinds.HORIZONTAL_WALL_RUN.state().isDown()) return false;
 
-        var wallDirection = InteractingWallDirection.getAdjacentWall(parkourability.player());
+        var wallDirection = parkourability.getAdditionalProperties().getDefaultWallInteraction();
         if (wallDirection == null) return false;
 
         var wallVec = wallDirection.asVec();
@@ -51,7 +51,7 @@ public class HorizontalWallRun extends ContinuableAction {
     public boolean canStart() {
         if (!ParCoolKeyBinds.HORIZONTAL_WALL_RUN.state().isDown()) return false;
 
-        var wallDirection = InteractingWallDirection.getAdjacentWall(parkourability.player());
+        var wallDirection = parkourability.getAdditionalProperties().getDefaultWallInteraction();
         if (wallDirection == null) return false;
         var wallVec = wallDirection.asVec();
         var lookVec = VectorUtil.fromYawDegree(parkourability.player().getYRot());
@@ -84,7 +84,7 @@ public class HorizontalWallRun extends ContinuableAction {
 
     @Override
     public void onWorkingTickInLocalClient() {
-        propertyDirection.set(InteractingWallDirection.getAdjacentWall(parkourability.player()));
+        propertyDirection.set(parkourability.getAdditionalProperties().getDefaultWallInteraction());
     }
 
     @Nullable

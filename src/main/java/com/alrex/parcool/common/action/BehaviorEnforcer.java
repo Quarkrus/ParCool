@@ -101,6 +101,14 @@ public class BehaviorEnforcer {
         deltaMovementEnforcer = new Enforcer<>(marker, movementSupplier);
     }
 
+    public void removeEnforceMovePoint() {
+        movementEnforcer = null;
+    }
+
+    public void removeEnforceDeltaMovement() {
+        deltaMovementEnforcer = null;
+    }
+
     public boolean cancelJump() {
         jumpCancelMarks.values().removeIf(it -> !it.remain());
         return !jumpCancelMarks.isEmpty();
