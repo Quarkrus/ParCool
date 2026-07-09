@@ -3,10 +3,13 @@ package com.alrex.parcool.mixin.client;
 import com.alrex.parcool.client.animation.system.AnimatableModelPart;
 import com.alrex.parcool.client.animation.system.IPlayerAnimatorHolder;
 import com.alrex.parcool.client.animation.system.data.Transform;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,8 +17,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.List;
 
 @Mixin(PlayerModel.class)
 public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
@@ -39,10 +40,6 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 	@Final
 	public ModelPart jacket;
 
-	@Shadow
-	@Final
-	private List<ModelPart> parts;
-
 	public PlayerModelMixin(ModelPart p_i1148_1_) {
 		super(p_i1148_1_);
 	}
@@ -50,11 +47,14 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 	@Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("HEAD"), cancellable = true)
 	protected void onSetupAnimHead(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo info) {
 		if (entity.isFallFlying()) return;
+		if (entity instanceof Player player && player.isLocalPlayer()) {
+			if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) return;
+		}
 		if (entity instanceof IPlayerAnimatorHolder holder) {
 			var transform = holder.getParCoolPlayerAnimator().getCurrentTransformation();
-			parcool$resetModel();
 			if (transform == null) return;
 			if (transform.isOverwriting()) {
+				parcool$resetModel();
 				var headTransform = transform.transformation().transforms().get(AnimatableModelPart.HEAD);
 				if (headTransform != null) headTransform.apply(head);
 				var rATransform = transform.transformation().transforms().get(AnimatableModelPart.RIGHT_ARM);
@@ -73,6 +73,9 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 	@Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("TAIL"))
 	protected void onSetupAnimTail(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo info) {
 		if (entity.isFallFlying()) return;
+		if (entity instanceof Player player && player.isLocalPlayer()) {
+			if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) return;
+		}
 		if (entity instanceof IPlayerAnimatorHolder holder) {
 			var transform = holder.getParCoolPlayerAnimator().getCurrentTransformation();
 			if (transform == null) return;
@@ -89,15 +92,6 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 			if (lLTransform != null) lLTransform.apply(leftLeg, blendingFactor);
 			Transform.NO_TRANSFORMATION.apply(body, blendingFactor);
 		}
-	}
-
-	@Unique
-	private void parCool$copyWearTransformation() {
-		leftPants.copyFrom(this.leftLeg);
-		rightPants.copyFrom(this.rightLeg);
-		leftSleeve.copyFrom(this.leftArm);
-		rightSleeve.copyFrom(this.rightArm);
-		jacket.copyFrom(this.body);
 	}
 
 	@Unique
