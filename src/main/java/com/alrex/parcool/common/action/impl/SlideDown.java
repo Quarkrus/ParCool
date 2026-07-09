@@ -5,6 +5,7 @@ import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
+import com.alrex.parcool.common.action.ActionExtension;
 import com.alrex.parcool.common.action.InteractingWallDirection;
 import com.alrex.parcool.common.action.ParCoolActions;
 import com.alrex.parcool.util.EntityUtil;
@@ -18,12 +19,13 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class SlideDown extends ContinuableAction {
+public class SlideDown extends ContinuableAction implements ActionExtension.LeaveFromWallListener {
     private final SynchronizedDataHolder dataHolder;
     private final SynchronizedProperty<InteractingWallDirection> propertyDirection;
 
     private AnimationData currentAnimData = AnimationData.NONE;
     private AnimationData oldAnimData = AnimationData.NONE;
+    private short tickSinceCanceled = 0;
 
     public SlideDown(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP, ParCoolActions.HANG_ON, ParCoolActions.DIVE));
@@ -39,11 +41,17 @@ public class SlideDown extends ContinuableAction {
 
     @Override
     public boolean canContinue() {
+        if (tickSinceCanceled < 3) {
+            return false;
+        }
         return canStart();
     }
 
     @Override
     public boolean canStart() {
+        if (tickSinceCanceled < 3) {
+            return false;
+        }
         if (ParCoolKeyBinds.SLIDE_DOWN.key().isDown()) {
             var direction = parkourability.getAdditionalProperties().getDefaultWallInteraction();
             if (direction == null) return false;
@@ -92,6 +100,11 @@ public class SlideDown extends ContinuableAction {
     }
 
     @Override
+    public void onTickInLocalClient() {
+        if (tickSinceCanceled < 255) tickSinceCanceled++;
+    }
+
+    @Override
     public void onStartInClient() {
         PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.SLIDE_DOWN);
     }
@@ -123,6 +136,11 @@ public class SlideDown extends ContinuableAction {
     @Override
     public void onWorkingTickInServer() {
         parkourability.player().fallDistance *= 0.9f;
+    }
+
+    @Override
+    public void onLeaveFromWall() {
+        tickSinceCanceled = 0;
     }
 
     private record AnimationData(

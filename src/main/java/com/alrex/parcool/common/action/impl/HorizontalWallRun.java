@@ -5,6 +5,7 @@ import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
+import com.alrex.parcool.common.action.ActionExtension;
 import com.alrex.parcool.common.action.InteractingWallDirection;
 import com.alrex.parcool.common.action.ParCoolActions;
 import com.alrex.parcool.util.VectorUtil;
@@ -15,10 +16,12 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class HorizontalWallRun extends ContinuableAction {
+public class HorizontalWallRun extends ContinuableAction implements ActionExtension.LeaveFromWallListener {
     private final SynchronizedDataHolder dataHolder;
     private final SynchronizedProperty<InteractingWallDirection> propertyDirection;
     private final SynchronizedProperty<Boolean> propertyLeftToWall;
+
+    private short tickSinceCanceled = 0;
 
     public HorizontalWallRun(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry, List.of(ParCoolActions.DIVE));
@@ -35,6 +38,9 @@ public class HorizontalWallRun extends ContinuableAction {
 
     @Override
     public boolean canContinue() {
+        if (tickSinceCanceled < 3) {
+            return false;
+        }
         if (!ParCoolKeyBinds.HORIZONTAL_WALL_RUN.state().isDown()) return false;
 
         var wallDirection = parkourability.getAdditionalProperties().getDefaultWallInteraction();
@@ -49,6 +55,9 @@ public class HorizontalWallRun extends ContinuableAction {
 
     @Override
     public boolean canStart() {
+        if (tickSinceCanceled < 3) {
+            return false;
+        }
         if (!ParCoolKeyBinds.HORIZONTAL_WALL_RUN.state().isDown()) return false;
 
         var wallDirection = parkourability.getAdditionalProperties().getDefaultWallInteraction();
@@ -83,6 +92,11 @@ public class HorizontalWallRun extends ContinuableAction {
     }
 
     @Override
+    public void onTickInLocalClient() {
+        if (tickSinceCanceled < 255) tickSinceCanceled++;
+    }
+
+    @Override
     public void onWorkingTickInLocalClient() {
         propertyDirection.set(parkourability.getAdditionalProperties().getDefaultWallInteraction());
     }
@@ -95,5 +109,10 @@ public class HorizontalWallRun extends ContinuableAction {
         if (leftToWall == null) return null;
 
         return wallDirection.asVec().yRot(Mth.HALF_PI * (leftToWall ? 1f : -1f));
+    }
+
+    @Override
+    public void onLeaveFromWall() {
+        tickSinceCanceled = 0;
     }
 }

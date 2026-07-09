@@ -5,6 +5,7 @@ import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
+import com.alrex.parcool.common.action.ActionExtension;
 import com.alrex.parcool.common.action.InteractingWallDirection;
 import com.alrex.parcool.common.action.ParCoolActions;
 import com.alrex.parcool.util.EntityUtil;
@@ -21,7 +22,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-public class HangOn extends ContinuableAction {
+public class HangOn extends ContinuableAction implements ActionExtension.LeaveFromWallListener {
     private static final double REACH_SCALE = 0.25;
     private final SynchronizedDataHolder dataHolder;
     private final SynchronizedProperty<InteractingWallDirection> propertyDirection;
@@ -38,6 +39,7 @@ public class HangOn extends ContinuableAction {
     private HangState currentHangState;
     @Nullable
     private HangState startingHangState;
+    private short tickSinceCanceled = 0;
 
     public HangOn(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP, ParCoolActions.DIVE));
@@ -49,12 +51,12 @@ public class HangOn extends ContinuableAction {
 
     @Override
     public boolean canStart() {
-        return ParCoolKeyBinds.HANG_ON.key().isDown() && (startingHangState = getHangState()) != null;
+        return tickSinceCanceled >= 3 && ParCoolKeyBinds.HANG_ON.key().isDown() && (startingHangState = getHangState()) != null;
     }
 
     @Override
     public boolean canContinue() {
-        return ParCoolKeyBinds.HANG_ON.key().isDown() && currentHangState != null && !ParCoolKeyBinds.JUMP.state().isJustPressed();
+        return tickSinceCanceled >= 3 && ParCoolKeyBinds.HANG_ON.key().isDown() && currentHangState != null && !ParCoolKeyBinds.JUMP.state().isJustPressed();
     }
 
     @Override
@@ -117,8 +119,13 @@ public class HangOn extends ContinuableAction {
     }
 
     @Override
+    public void onTickInLocalClient() {
+        if (tickSinceCanceled < 255) tickSinceCanceled++;
+    }
+
+    @Override
     public void onStopInLocalClient() {
-        if (currentHangState != null && ParCoolKeyBinds.JUMP.state().isJustPressed()) {
+        if (tickSinceCanceled >= 3 && currentHangState != null && ParCoolKeyBinds.JUMP.state().isJustPressed()) {
             parkourability.request(ParCoolActions.CLIMB_UP, new ClimbUp.RequestContext(this.currentHangState));
         }
     }
@@ -150,6 +157,11 @@ public class HangOn extends ContinuableAction {
 
     public float getBlendFactorMovingLeft(float partial) {
         return Mth.lerp(partial, oldAnimData.blendFactorMovementLeft, currentAnimData.blendFactorMovementLeft);
+    }
+
+    @Override
+    public void onLeaveFromWall() {
+        tickSinceCanceled = 0;
     }
 
     private record AnimationData(

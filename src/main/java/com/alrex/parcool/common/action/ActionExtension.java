@@ -28,12 +28,17 @@ public interface ActionExtension {
         void onUpdateVisibility(LivingEvent.LivingVisibilityEvent event);
     }
 
+    interface LeaveFromWallListener extends ActionExtension {
+        void onLeaveFromWall();
+    }
+
     public static final List<Class<? extends ActionExtension>> EXTENSIONS = List.of(
             VisibilityListener.class,
             LandListener.class,
             JumpListener.class,
             KeyMapTriggeredListener.class,
-            AttackedListener.class
+            AttackedListener.class,
+            LeaveFromWallListener.class
     );
 
     final class Handler<T extends ActionExtension> {

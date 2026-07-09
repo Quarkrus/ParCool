@@ -8,6 +8,7 @@ import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
+import com.alrex.parcool.common.action.ActionExtension;
 import com.alrex.parcool.util.EntityUtil;
 import com.alrex.parcool.util.MathUtil;
 import com.alrex.parcool.util.VectorUtil;
@@ -58,8 +59,9 @@ public class WallJump extends Action {
                 deltaMovement.y > jumpVec.y ? deltaMovement.y + jumpVec.y : jumpVec.y,
                 deltaMovement.z + jumpVec.z
         );
-        parkourability.getBehaviorEnforcer().removeEnforceMovePoint();
-        parkourability.getBehaviorEnforcer().removeEnforceDeltaMovement();
+        for (var listener : parkourability.getActions().getExtensionListeners(ActionExtension.LeaveFromWallListener.class)) {
+            listener.onLeaveFromWall();
+        }
     }
 
     @Override
