@@ -65,6 +65,15 @@ public class ParCoolCodedAnimationComponents {
                 return lockBody(player, slidingDirection, partial);
             }
     );
+    public static final ID<CodedAnimationComponent> HIDE_IN_BLOCK_LOCK_BODY = CodedAnimationComponents.getInstance().register(
+            "builtin/hide_in_block_lock_body",
+            (player, part, progress, partial, mirror) -> {
+                if (part != AnimatableModelPart.BODY) return null;
+                var facingDirection = Parkourability.get(player).get(ParCoolActions.HIDE_IN_BLOCK).getFacingVec();
+                if (facingDirection == null) return null;
+                return lockBody(player, facingDirection, partial);
+            }
+    );
     public static void register() {
     }
 }

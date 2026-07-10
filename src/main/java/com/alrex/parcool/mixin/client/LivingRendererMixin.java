@@ -21,11 +21,10 @@ public abstract class LivingRendererMixin<T extends LivingEntity, M extends Enti
 
     @Inject(method = "shouldShowName(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
     protected void onShouldShowName(T entity, CallbackInfoReturnable<Boolean> cir) {
-        if (entity instanceof Player) {
-            Player player = (Player) entity;
+        if (entity instanceof Player player) {
             Parkourability parkourability = Parkourability.get(player);
             if (parkourability == null) return;
-            if (parkourability.getBehaviorEnforcer().cancelShowingName()) {
+            if (parkourability.getBehaviorEnforcer().enforceNoShowingName()) {
                 cir.setReturnValue(false);
             }
         }

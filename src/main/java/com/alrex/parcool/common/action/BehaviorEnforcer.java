@@ -4,7 +4,6 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Supplier;
 
 public class BehaviorEnforcer {
@@ -39,109 +38,133 @@ public class BehaviorEnforcer {
         final Marker marker;
         final Supplier<T> behaviorSupplier;
 
-        Enforcer(Marker marker, Supplier<T> supplier) {
+        public Enforcer(Marker marker, Supplier<T> supplier) {
             this.marker = marker;
             this.behaviorSupplier = supplier;
         }
 
-        boolean remain() {
+        public boolean remain() {
             return marker.remain();
         }
 
-        T getBehavior() {
+        public T getBehavior() {
             return behaviorSupplier.get();
         }
     }
 
-    private final TreeMap<ID, Marker> jumpCancelMarks = new TreeMap<>();
-    private final TreeMap<ID, Marker> descendFromEdgeCancelMarks = new TreeMap<>();
-    private final ConcurrentSkipListMap<ID, Marker> sneakCancelMarks = new ConcurrentSkipListMap<>();
-    private final TreeMap<ID, Marker> sprintCancelMarks = new TreeMap<>();
-    private final TreeMap<ID, Marker> fallFlyingCancelMarks = new TreeMap<>();
-    private final TreeMap<ID, Marker> showNameCancelMarks = new TreeMap<>();
+    private final TreeMap<ID, Marker> enforceNoJumpMarks = new TreeMap<>();
+    private final TreeMap<ID, Marker> enforceNoDescendingFromEdgeMarks = new TreeMap<>();
+    private final TreeMap<ID, Marker> enforceNoSneakMarks = new TreeMap<>();
+    private final TreeMap<ID, Marker> enforceNoSprintMarks = new TreeMap<>();
+    private final TreeMap<ID, Marker> enforceNoFallFlyingMarks = new TreeMap<>();
+    private final TreeMap<ID, Marker> enforceNoShowNameMarks = new TreeMap<>();
+    private final TreeMap<ID, Marker> enforceNoPhysicsMarks = new TreeMap<>();
     private final TreeMap<ID, Marker> enforceSprintMarks = new TreeMap<>();
+
+    @Nullable
+    private Enforcer<Vec3> positionEnforcer = null;
     @Nullable
     private Enforcer<Vec3> movementEnforcer = null;
     @Nullable
     private Enforcer<Vec3> deltaMovementEnforcer = null;
+    @Nullable
+    private Enforcer<Float> eyeHeightEnforcer = null;
 
-    public void addMarkerCancellingJump(ID id, Marker marker) {
-        jumpCancelMarks.put(id, marker);
+    public void addMarkerEnforcingNoJump(ID id, Marker marker) {
+        enforceNoJumpMarks.put(id, marker);
     }
 
-    public void addMarkerCancellingSneak(ID id, Marker marker) {
-        sneakCancelMarks.put(id, marker);
+    public void addMarkerEnforcingNoSneak(ID id, Marker marker) {
+        enforceNoSneakMarks.put(id, marker);
     }
 
-    public void addMarkerCancellingDescendFromEdge(ID id, Marker marker) {
-        descendFromEdgeCancelMarks.put(id, marker);
+    public void addMarkerEnforcingNoDescendingFromEdge(ID id, Marker marker) {
+        enforceNoDescendingFromEdgeMarks.put(id, marker);
     }
 
-    public void addMarkerCancellingSprint(ID id, Marker marker) {
-        sprintCancelMarks.put(id, marker);
+    public void addMarkerEnforcingNoSprint(ID id, Marker marker) {
+        enforceNoSprintMarks.put(id, marker);
     }
 
-    public void addMarkerCancellingFallFlying(ID id, Marker marker) {
-        fallFlyingCancelMarks.put(id, marker);
+    public void addMarkerEnforcingNoFallFlying(ID id, Marker marker) {
+        enforceNoFallFlyingMarks.put(id, marker);
     }
 
-    public void addMarkerCancellingShowName(ID id, Marker marker) {
-        showNameCancelMarks.put(id, marker);
+    public void addMarkerEnforcingNoShowName(ID id, Marker marker) {
+        enforceNoShowNameMarks.put(id, marker);
     }
 
-    public void addMarkerEnforceSprint(ID id, Marker marker) {
+    public void addMarkerEnforcingSprint(ID id, Marker marker) {
         enforceSprintMarks.put(id, marker);
     }
 
-    public void setMarkerEnforceMovePoint(Marker marker, Supplier<Vec3> movementSupplier) {
+    public void addMarkerEnforcingNoPhysics(ID id, Marker marker) {
+        enforceNoPhysicsMarks.put(id, marker);
+    }
+
+    public void setMarkerEnforcingPosition(Marker marker, Supplier<Vec3> positionSupplier) {
+        positionEnforcer = new Enforcer<>(marker, positionSupplier);
+    }
+
+    public void setMarkerEnforcingMovePoint(Marker marker, Supplier<Vec3> movementSupplier) {
         movementEnforcer = new Enforcer<>(marker, movementSupplier);
     }
 
-    public void setMarkerEnforceDeltaMovement(Marker marker, Supplier<Vec3> movementSupplier) {
+    public void setMarkerEnforcingDeltaMovement(Marker marker, Supplier<Vec3> movementSupplier) {
         deltaMovementEnforcer = new Enforcer<>(marker, movementSupplier);
     }
 
-    public void removeEnforceMovePoint() {
-        movementEnforcer = null;
+    public void setMarkerEnforcingEyeHeight(Marker marker, Supplier<Float> eyeHeightSupplier) {
+        eyeHeightEnforcer = new Enforcer<>(marker, eyeHeightSupplier);
     }
 
-    public void removeEnforceDeltaMovement() {
-        deltaMovementEnforcer = null;
+    public boolean enforceNoJump() {
+        enforceNoJumpMarks.values().removeIf(it -> !it.remain());
+        return !enforceNoJumpMarks.isEmpty();
     }
 
-    public boolean cancelJump() {
-        jumpCancelMarks.values().removeIf(it -> !it.remain());
-        return !jumpCancelMarks.isEmpty();
+    public boolean enforceNoSneak() {
+        enforceNoSneakMarks.values().removeIf(it -> !it.remain());
+        return !enforceNoSneakMarks.isEmpty();
     }
 
-    public boolean cancelSneak() {
-        sneakCancelMarks.values().removeIf(it -> !it.remain());
-        return !sneakCancelMarks.isEmpty();
+    public boolean enforceNoDescendingFromEdge() {
+        enforceNoDescendingFromEdgeMarks.values().removeIf(it -> !it.remain());
+        return !enforceNoDescendingFromEdgeMarks.isEmpty();
     }
 
-    public boolean cancelDescendFromEdge() {
-        descendFromEdgeCancelMarks.values().removeIf(it -> !it.remain());
-        return !descendFromEdgeCancelMarks.isEmpty();
+    public boolean enforceNoSprint() {
+        enforceNoSprintMarks.values().removeIf(it -> !it.remain());
+        return !enforceNoSprintMarks.isEmpty();
     }
 
-    public boolean cancelSprint() {
-        sprintCancelMarks.values().removeIf(it -> !it.remain());
-        return !sprintCancelMarks.isEmpty();
+    public boolean enforceNoFallFlying() {
+        enforceNoFallFlyingMarks.values().removeIf(it -> !it.remain());
+        return !enforceNoFallFlyingMarks.isEmpty();
     }
 
-    public boolean cancelFallFlying() {
-        fallFlyingCancelMarks.values().removeIf(it -> !it.remain());
-        return !fallFlyingCancelMarks.isEmpty();
-    }
-
-    public boolean cancelShowingName() {
-        showNameCancelMarks.values().removeIf(it -> !it.remain());
-        return !showNameCancelMarks.isEmpty();
+    public boolean enforceNoShowingName() {
+        enforceNoShowNameMarks.values().removeIf(it -> !it.remain());
+        return !enforceNoShowNameMarks.isEmpty();
     }
 
     public boolean enforceSprint() {
         enforceSprintMarks.values().removeIf(it -> !it.remain());
         return !enforceSprintMarks.isEmpty();
+    }
+
+    public boolean enforceNoPhysics() {
+        enforceNoPhysicsMarks.values().removeIf(it -> !it.remain());
+        return !enforceNoPhysicsMarks.isEmpty();
+    }
+
+    @Nullable
+    public Vec3 getEnforcedPosition() {
+        if (positionEnforcer != null && positionEnforcer.remain()) {
+            return positionEnforcer.getBehavior();
+        }
+        positionEnforcer = null;
+        return null;
     }
 
     @Nullable
@@ -159,6 +182,15 @@ public class BehaviorEnforcer {
             return deltaMovementEnforcer.getBehavior();
         }
         deltaMovementEnforcer = null;
+        return null;
+    }
+
+    @Nullable
+    public Float getEnforcedEyeHeight() {
+        if (eyeHeightEnforcer != null && eyeHeightEnforcer.remain()) {
+            return eyeHeightEnforcer.getBehavior();
+        }
+        eyeHeightEnforcer = null;
         return null;
     }
 }

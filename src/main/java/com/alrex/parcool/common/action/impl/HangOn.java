@@ -10,6 +10,7 @@ import com.alrex.parcool.common.action.InteractingWallDirection;
 import com.alrex.parcool.common.action.ParCoolActions;
 import com.alrex.parcool.util.EntityUtil;
 import com.alrex.parcool.util.MathUtil;
+import com.alrex.parcool.util.VectorUtil;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
@@ -61,7 +62,7 @@ public class HangOn extends ContinuableAction implements ActionExtension.LeaveFr
 
     @Override
     public void onStartInLocalClient() {
-        parkourability.getBehaviorEnforcer().setMarkerEnforceMovePoint(
+        parkourability.getBehaviorEnforcer().setMarkerEnforcingMovePoint(
                 this::isDoing, () -> {
                     if (currentHangState == null) return null;
                     if (!(parkourability.player() instanceof LocalPlayer player)) return null;
@@ -140,7 +141,7 @@ public class HangOn extends ContinuableAction implements ActionExtension.LeaveFr
             return direction.asVec();
         }
         if (direction == null) return oldDirection.asVec();
-        return MathUtil.lerp(partial, oldDirection.asVec(), direction.asVec()).normalize();
+        return VectorUtil.lerp(partial, oldDirection.asVec(), direction.asVec()).normalize();
     }
 
     public float getBlendFactorRightToWall(float partial) {

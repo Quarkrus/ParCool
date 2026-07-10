@@ -18,7 +18,13 @@ public class Crawl extends ContinuableAction {
     private static final BehaviorEnforcer.ID CANCEL_SPRINT_ID = BehaviorEnforcer.newID();
 
     public Crawl(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry, List.of(ParCoolActions.DIVE, ParCoolActions.HORIZONTAL_WALL_RUN, ParCoolActions.HANG_ON, ParCoolActions.DODGE));
+        super(parkourability, entry, List.of(
+                ParCoolActions.DIVE,
+                ParCoolActions.HORIZONTAL_WALL_RUN,
+                ParCoolActions.HANG_ON,
+                ParCoolActions.DODGE,
+                ParCoolActions.HIDE_IN_BLOCK
+        ));
     }
 
     @Override
@@ -41,7 +47,7 @@ public class Crawl extends ContinuableAction {
 
     @Override
     public void onStartInLocalClient() {
-        parkourability.getBehaviorEnforcer().addMarkerCancellingSprint(CANCEL_SPRINT_ID, this::isDoing);
+        parkourability.getBehaviorEnforcer().addMarkerEnforcingNoSprint(CANCEL_SPRINT_ID, this::isDoing);
         if (parkourability.get(ParCoolActions.FAST_RUN).isDoing()) {
             parkourability.request(ParCoolActions.SLIDE, new Slide.RequestContext());
         }

@@ -52,7 +52,7 @@ public class Slide extends ContinuableAction implements IRequestable<Slide.Reque
     public void onStartInLocalClient() {
         final var movingDirection = propertyMovingDirection.get();
         if (movingDirection == null) return;
-        parkourability.getBehaviorEnforcer().setMarkerEnforceDeltaMovement(
+        parkourability.getBehaviorEnforcer().setMarkerEnforcingDeltaMovement(
                 this::isDoing,
                 () -> new Vec3(movingDirection.x, parkourability.player().getDeltaMovement().y, movingDirection.z)
         );

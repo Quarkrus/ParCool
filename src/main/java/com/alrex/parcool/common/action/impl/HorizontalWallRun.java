@@ -73,7 +73,7 @@ public class HorizontalWallRun extends ContinuableAction implements ActionExtens
 
     @Override
     public void onStartInLocalClient() {
-        parkourability.getBehaviorEnforcer().setMarkerEnforceDeltaMovement(this::isDoing, () -> {
+        parkourability.getBehaviorEnforcer().setMarkerEnforcingDeltaMovement(this::isDoing, () -> {
             var wallDirection = propertyDirection.get();
             if (wallDirection == null) return null;
             return parkourability.player().getDeltaMovement().add(wallDirection.asVec().scale(1 / 16d)).multiply(1, 0, 1);

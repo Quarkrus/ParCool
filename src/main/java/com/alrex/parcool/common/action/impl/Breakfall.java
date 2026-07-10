@@ -74,14 +74,14 @@ public class Breakfall extends Action implements ActionExtension.LandListener {
     public void onStartInLocalClient() {
         switch (propertyWorkingBreakfallType.get()) {
             case TAP:
-                parkourability.getBehaviorEnforcer().setMarkerEnforceDeltaMovement(
+                parkourability.getBehaviorEnforcer().setMarkerEnforcingDeltaMovement(
                         () -> this.getTickSinceStarted() < 10,
                         () -> parkourability.player().getDeltaMovement().multiply(0, 1, 0)
                 );
                 return;
             case ROLL:
                 var deltaMove = VectorUtil.fromYawDegree(parkourability.player().getYRot()).scale(1.25 * EntityUtil.getHorizontalMaximumSpeed(parkourability.player()));
-                parkourability.getBehaviorEnforcer().setMarkerEnforceDeltaMovement(
+                parkourability.getBehaviorEnforcer().setMarkerEnforcingDeltaMovement(
                         () -> this.getTickSinceStarted() < 10,
                         () -> new Vec3(deltaMove.x, parkourability.player().getDeltaMovement().y, deltaMove.z)
                 );

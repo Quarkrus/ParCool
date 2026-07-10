@@ -65,7 +65,7 @@ public class ClimbUp extends ContinuableAction implements IRequestable<ClimbUp.R
         final var fStartPos = this.startPos;
         final var fDestination = this.destination;
         if (fStartPos != null && fDestination != null) {
-            parkourability.getBehaviorEnforcer().setMarkerEnforceMovePoint(this::isDoing, () -> {
+            parkourability.getBehaviorEnforcer().setMarkerEnforcingMovePoint(this::isDoing, () -> {
                 final int borderTick = 9;
                 final double borderPhase = borderTick / (double) MAX_TICK;
 

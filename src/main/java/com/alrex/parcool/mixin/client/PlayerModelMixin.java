@@ -53,8 +53,8 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 		if (entity instanceof IPlayerAnimatorHolder holder) {
 			var transform = holder.getParCoolPlayerAnimator().getCurrentTransformation();
 			if (transform == null) return;
+			parcool$resetModel();
 			if (transform.isOverwriting()) {
-				parcool$resetModel();
 				var headTransform = transform.transformation().transforms().get(AnimatableModelPart.HEAD);
 				if (headTransform != null) headTransform.apply(head);
 				var rATransform = transform.transformation().transforms().get(AnimatableModelPart.RIGHT_ARM);

@@ -1,48 +1,46 @@
 package com.alrex.parcool.client;
 
+import com.alrex.parcool.common.action.BehaviorEnforcer;
 import net.minecraft.client.CameraType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
+import java.util.TreeMap;
 import java.util.function.Supplier;
 
 @OnlyIn(Dist.CLIENT)
 public final class RenderBehaviorEnforcer {
+    private static RenderBehaviorEnforcer INSTANCE = null;
 
-    public interface Marker {
-        boolean remain();
+    public static RenderBehaviorEnforcer getInstance() {
+        if (INSTANCE == null) INSTANCE = new RenderBehaviorEnforcer();
+        return INSTANCE;
     }
 
-    public static class Enforcer<T> {
-        final Marker marker;
-        final Supplier<T> behaviorSupplier;
+    public static void reset() {
+        INSTANCE = null;
+    }
 
-        Enforcer(Marker marker, Supplier<T> supplier) {
-            this.marker = marker;
-            this.behaviorSupplier = supplier;
-        }
+    private final TreeMap<BehaviorEnforcer.ID, BehaviorEnforcer.Marker> enforceImmediateEyeHeightChangeMarker = new TreeMap<>();
+    @Nullable
+    private BehaviorEnforcer.Enforcer<CameraType> cameraTypeEnforcer = null;
 
-        boolean remain() {
-            return marker.remain();
-        }
+    public void addMarkerEnforcingImmediateEyeHeightChange(BehaviorEnforcer.ID id, BehaviorEnforcer.Marker marker) {
+        enforceImmediateEyeHeightChangeMarker.put(id, marker);
+    }
 
-        T getBehavior() {
-            return behaviorSupplier.get();
-        }
+    public void setMarkerEnforcingCameraType(BehaviorEnforcer.Marker marker, Supplier<CameraType> cameraTypeSupplier) {
+        cameraTypeEnforcer = new BehaviorEnforcer.Enforcer<>(marker, cameraTypeSupplier);
+    }
+
+    public boolean enforceImmediateEyeHeightChange() {
+        enforceImmediateEyeHeightChangeMarker.values().removeIf(it -> !it.remain());
+        return !enforceImmediateEyeHeightChangeMarker.isEmpty();
     }
 
     @Nullable
-    private static Enforcer<CameraType> cameraTypeEnforcer = null;
-
-    @OnlyIn(Dist.CLIENT)
-    public static void serMarkerEnforceCameraType(Marker marker, Supplier<CameraType> cameraTypeSupplier) {
-        cameraTypeEnforcer = new Enforcer<>(marker, cameraTypeSupplier);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Nullable
-    public static CameraType getEnforcedCameraType() {
+    public CameraType getEnforcedCameraType() {
         if (cameraTypeEnforcer != null && cameraTypeEnforcer.remain()) {
             return cameraTypeEnforcer.getBehavior();
         }

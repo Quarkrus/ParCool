@@ -114,6 +114,16 @@ public class ParCoolAnimations {
             100,
             null
     );
+    public static final ID<AnimationSet> HIDE_IN_BLOCK_STANDING = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "hide_in_block_stand"),
+            (p) -> Parkourability.get(p).get(ParCoolActions.HIDE_IN_BLOCK).isDoing(),
+            null
+    );
+    public static final ID<AnimationSet> HIDE_IN_BLOCK_CRAWLING = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "hide_in_block_crawl"),
+            (p) -> Parkourability.get(p).get(ParCoolActions.HIDE_IN_BLOCK).isDoing(),
+            null
+    );
 
     public static void register() {
     }

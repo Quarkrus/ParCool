@@ -1,0 +1,8 @@
+{
+  "infinite": true,
+  "components": [
+    {
+      "name": "parcool:builtin/hide_in_block_lock_body"
+    }
+  ]
+}

@@ -69,7 +69,7 @@ public class SlideDown extends ContinuableAction implements ActionExtension.Leav
 
     @Override
     public void onStartInLocalClient() {
-        parkourability.getBehaviorEnforcer().setMarkerEnforceMovePoint(
+        parkourability.getBehaviorEnforcer().setMarkerEnforcingMovePoint(
                 this::isDoing, () -> {
                     if (!(parkourability.player() instanceof LocalPlayer player)) return null;
                     var direction = propertyDirection.get();

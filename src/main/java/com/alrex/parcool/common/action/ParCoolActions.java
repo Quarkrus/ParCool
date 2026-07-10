@@ -24,6 +24,7 @@ public class ParCoolActions {
     public static final ActionEntry<HorizontalWallRun> HORIZONTAL_WALL_RUN;
     public static final ActionEntry<ChargeJump> CHARGE_JUMP;
     public static final ActionEntry<WallJump> WALL_JUMP;
+    public static final ActionEntry<HideInBlock> HIDE_IN_BLOCK;
 
     static {
         var builder = new ActionGroup.Builder(ParCool.MOD_ID);
@@ -56,12 +57,20 @@ public class ParCoolActions {
             }
         }
 
-        CRAWL = builder.add("crawl", Crawl.class, Crawl::new, new ActionOption().needPose(null));
+        HIDE_IN_BLOCK = builder.add("hide_in_block", HideInBlock.class, HideInBlock::new, new ActionOption()
+                .needPose(null)
+        );
         {
-            SLIDE = builder.add("slide", Slide.class, Slide::new, new ActionOption()
-                    .parent(CRAWL).needParentWorking(true)
+            CRAWL = builder.add("crawl", Crawl.class, Crawl::new, new ActionOption()
+                    .parent(HIDE_IN_BLOCK).needParentWorking(false)
                     .needPose(null)
             );
+            {
+                SLIDE = builder.add("slide", Slide.class, Slide::new, new ActionOption()
+                        .parent(CRAWL).needParentWorking(true)
+                        .needPose(null)
+                );
+            }
         }
 
         HANG_ON = builder.add("hang_on", HangOn.class, HangOn::new, new ActionOption()

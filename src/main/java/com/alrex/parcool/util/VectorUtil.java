@@ -1,5 +1,6 @@
 package com.alrex.parcool.util;
 
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
@@ -25,5 +26,13 @@ public class VectorUtil {
         var xRotRad = Math.toRadians(xRotInDegrees);
         var yRotRad = -Math.toRadians(yRotInDegrees);
         return new Vec3(Math.sin(yRotRad) * Math.cos(xRotRad), -Math.sin(xRotRad), Math.cos(yRotRad) * Math.cos(xRotRad));
+    }
+
+    public static Vec3 lerp(double factor, Vec3 v1, Vec3 v2) {
+        return new Vec3(
+                Mth.lerp(factor, v1.x, v2.x),
+                Mth.lerp(factor, v1.y, v2.y),
+                Mth.lerp(factor, v1.z, v2.z)
+        );
     }
 }

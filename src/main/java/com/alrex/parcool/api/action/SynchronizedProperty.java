@@ -1,5 +1,7 @@
 package com.alrex.parcool.api.action;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
@@ -148,6 +150,31 @@ public abstract class SynchronizedProperty<T> {
                 }
             }
     );
+    private static final Handler<Vec3i> VEC_3_I_HANDLER = new Handler<>(
+            (byte) (Integer.BYTES * 3 + 1),
+            (b) -> {
+                var isNotNull = b.get();
+                var x = b.getInt();
+                var y = b.getInt();
+                var z = b.getInt();
+                return isNotNull != 0 ? new Vec3i(x, y, z) : null;
+            },
+            (b, v) -> {
+                if (v == null) {
+                    b.put((byte) 0).putInt(0).putInt(0).putInt(0);
+                } else {
+                    b.put((byte) 1).putInt(v.getX()).putInt(v.getY()).putInt(v.getZ());
+                }
+            }
+    );
+    private static final Handler<BlockPos> BLOCK_POS_HANDLER = new Handler<>(
+            VEC_3_I_HANDLER.dataLengthInBytes,
+            (b) -> {
+                var vec3i = VEC_3_I_HANDLER.read(b);
+                return vec3i != null ? new BlockPos(vec3i) : null;
+            },
+            VEC_3_I_HANDLER::write
+    );
 
     public static SynchronizedProperty<Boolean> newBoolean() {
         return newBoolean(null);
@@ -210,6 +237,32 @@ public abstract class SynchronizedProperty<T> {
             @Override
             IHandler<Vec3> getHandler() {
                 return VEC_3_HANDLER;
+            }
+        };
+    }
+
+    public static SynchronizedProperty<Vec3i> newVec3i() {
+        return newVec3i(null);
+    }
+
+    public static SynchronizedProperty<Vec3i> newVec3i(@Nullable IUpdateListener<Vec3i> updateListener) {
+        return new SynchronizedProperty<>(updateListener) {
+            @Override
+            IHandler<Vec3i> getHandler() {
+                return VEC_3_I_HANDLER;
+            }
+        };
+    }
+
+    public static SynchronizedProperty<BlockPos> newBlockPos() {
+        return newBlockPos(null);
+    }
+
+    public static SynchronizedProperty<BlockPos> newBlockPos(@Nullable IUpdateListener<BlockPos> updateListener) {
+        return new SynchronizedProperty<>(updateListener) {
+            @Override
+            IHandler<BlockPos> getHandler() {
+                return BLOCK_POS_HANDLER;
             }
         };
     }

@@ -27,22 +27,24 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class ActionProcessor {
-	private final StaminaSynchronizationDepot staminaDepot = new StaminaSynchronizationDepot();
-	private final ActionSynchronizationDepot actionDepot = new ActionSynchronizationDepot();
+	private final StaminaSynchronizationDepot clientStaminaDepot = new StaminaSynchronizationDepot();
+	private final StaminaSynchronizationDepot serverStaminaDepot = new StaminaSynchronizationDepot();
+	private final ActionSynchronizationDepot clientActionDepot = new ActionSynchronizationDepot();
+	private final ActionSynchronizationDepot serverActionDepot = new ActionSynchronizationDepot();
 
-	public StaminaSynchronizationDepot getStaminaSyncDepot() {
-		return staminaDepot;
+	public StaminaSynchronizationDepot getStaminaSyncDepot(LogicalSide side) {
+		return side == LogicalSide.CLIENT ? clientStaminaDepot : serverStaminaDepot;
 	}
 
-	public ActionSynchronizationDepot getActionSyncDepot() {
-		return actionDepot;
+	public ActionSynchronizationDepot getActionSyncDepot(LogicalSide side) {
+		return side == LogicalSide.CLIENT ? clientActionDepot : serverActionDepot;
 	}
 
 	@SubscribeEvent
 	public void onTickLevel(TickEvent.LevelTickEvent event) {
 		if (event.phase == TickEvent.Phase.START) return;
-		staminaDepot.tick();
-		actionDepot.tick();
+		getStaminaSyncDepot(event.side).tick();
+		getActionSyncDepot(event.side).tick();
 	}
 
 	@SubscribeEvent
@@ -99,7 +101,7 @@ public class ActionProcessor {
 		if (side.isClient()) {
 			ParCool.CONNECTION.send(PacketDistributor.SERVER.noArg(), packet);
 		} else {
-			actionDepot.requestSync(packet);
+			getActionSyncDepot(side).requestSync(packet);
 		}
 	}
 

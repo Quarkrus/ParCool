@@ -64,7 +64,7 @@ public class Vault extends ContinuableAction {
         final float moveHeight = this.vaultHeight;
         final var moveVec = this.obstacleDistance.scale(1.5);
         final var startPos = parkourability.player().position();
-        parkourability.getBehaviorEnforcer().setMarkerEnforceMovePoint(this::isDoing,
+        parkourability.getBehaviorEnforcer().setMarkerEnforcingMovePoint(this::isDoing,
                 () -> {
                     var tick = getDoingTick() + 1;
                     var moveProgress = tick / (float) jumpDuration;

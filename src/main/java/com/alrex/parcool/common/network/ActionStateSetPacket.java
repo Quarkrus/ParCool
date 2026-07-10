@@ -1,9 +1,9 @@
 package com.alrex.parcool.common.network;
 
 import com.alrex.parcool.ParCool;
+import com.alrex.parcool.api.action.ContinuableAction;
 import com.alrex.parcool.api.action.ParCoolActionEvent;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.api.action.ContinuableAction;
 import com.alrex.parcool.util.NetworkUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
@@ -41,7 +41,7 @@ public class ActionStateSetPacket extends MultiComposablePacket<ActionStatePacke
             var player = NetworkUtil.getPlayerInPhysicalServer(actionStateSetPacket.playerID, contextSupplier.get());
             if (player == null) return;
             processPlayer(actionStateSetPacket, player);
-            ParCool.getActionProcessor().getActionSyncDepot().requestSync(actionStateSetPacket);
+            ParCool.getActionProcessor().getActionSyncDepot(LogicalSide.SERVER).requestSync(actionStateSetPacket);
         }
 
         @Override
@@ -51,7 +51,7 @@ public class ActionStateSetPacket extends MultiComposablePacket<ActionStatePacke
             if (player == null) return;
             processPlayer(actionStateSetPacket, player);
             if (context.getDirection().getReceptionSide() == LogicalSide.SERVER) {
-                ParCool.getActionProcessor().getActionSyncDepot().requestSync(actionStateSetPacket);
+                ParCool.getActionProcessor().getActionSyncDepot(LogicalSide.SERVER).requestSync(actionStateSetPacket);
             }
         }
 

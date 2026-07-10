@@ -44,7 +44,7 @@ public abstract class PlayerMixin extends LivingEntity implements IParkourabilit
     public void onTryToStartFallFlying(CallbackInfoReturnable<Boolean> cir) {
         var player = (Player) (Object) this;
         Parkourability parkourability = Parkourability.get(player);
-        if (parkourability != null && parkourability.getBehaviorEnforcer().cancelFallFlying()) {
+        if (parkourability != null && parkourability.getBehaviorEnforcer().enforceNoFallFlying()) {
             cir.setReturnValue(false);
         }
     }
@@ -53,7 +53,7 @@ public abstract class PlayerMixin extends LivingEntity implements IParkourabilit
     public void onJumpFromGround(CallbackInfo ci) {
         Parkourability parkourability = Parkourability.get((Player) (Object) this);
         if (parkourability == null) return;
-        if (parkourability.getBehaviorEnforcer().cancelJump()) {
+        if (parkourability.getBehaviorEnforcer().enforceNoJump()) {
             ci.cancel();
         }
     }
@@ -62,7 +62,7 @@ public abstract class PlayerMixin extends LivingEntity implements IParkourabilit
     public void onIsStayingOnGroundSurface(CallbackInfoReturnable<Boolean> cir) {
         Parkourability parkourability = Parkourability.get((Player) (Object) this);
         if (parkourability == null) return;
-        if (parkourability.getBehaviorEnforcer().cancelDescendFromEdge()) {
+        if (parkourability.getBehaviorEnforcer().enforceNoDescendingFromEdge()) {
             cir.setReturnValue(true);
         }
     }

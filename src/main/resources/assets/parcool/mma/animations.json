@@ -124,5 +124,17 @@
     "fade_in_duration": 1,
     "fade_out_duration": 4,
     "main": "parcool:wall_jump_group.json"
+  },
+  {
+    "name": "parcool:hide_in_block_stand",
+    "fade_in_duration": 4,
+    "fade_out_duration": 5,
+    "main": "parcool:hide_in_block_stand_group.json"
+  },
+  {
+    "name": "parcool:hide_in_block_crawl",
+    "fade_in_duration": 4,
+    "fade_out_duration": 5,
+    "main": "parcool:hide_in_block_crawl_group.json"
   }
 ]

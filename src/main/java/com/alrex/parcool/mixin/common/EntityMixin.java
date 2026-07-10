@@ -2,56 +2,34 @@ package com.alrex.parcool.mixin.common;
 
 import com.alrex.parcool.common.Parkourability;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin extends CapabilityProvider<Entity> {
+    @Shadow
+    public boolean noPhysics;
+
     protected EntityMixin(Class<Entity> baseClass) {
         super(baseClass);
     }
 
-    @Inject(method = "getEyeHeight()F", at = @At("HEAD"), cancellable = true)
-    public void onGetEyeHeight(CallbackInfoReturnable<Float> cir) {
+    @Inject(method = "move", at = @At("HEAD"))
+    public void onMove(MoverType moverType, Vec3 movement, CallbackInfo ci) {
         if (!(((Object) this) instanceof Player player)) {
             return;
         }
-
-        Parkourability parkourability = Parkourability.get(player);
+        var parkourability = Parkourability.get(player);
         if (parkourability == null) return;
-        /*
-        HideInBlock ability = parkourability.get(HideInBlock.class);
-        Tuple<BlockPos, BlockPos> area = ability.getHidingArea();
-        if (ability.isDoing() && area != null) {
-            int areaHeight = area.getB().getY() - area.getA().getY() + 1;
-            float eyeHeight = player.getDimensions(Pose.STANDING).height * 0.85f;
-            if (areaHeight < eyeHeight) {
-                cir.setReturnValue(eyeHeight);
-            } else {
-                cir.setReturnValue(areaHeight + 0.2f);
-            }
-            return;
+        if (parkourability.getBehaviorEnforcer().enforceNoPhysics()) {
+            noPhysics = true;
         }
-
-         */
-    }
-
-    @Inject(method = "isInWall", at = @At("HEAD"), cancellable = true)
-    public void onIsInWall(CallbackInfoReturnable<Boolean> cir) {
-        if (!(((Object) this) instanceof Player player)) {
-            return;
-        }
-        Parkourability parkourability = Parkourability.get(player);
-        if (parkourability == null) return;
-        /*
-        HideInBlock hideInBlock = parkourability.get(HideInBlock.class);
-        if (hideInBlock.isDoing() || hideInBlock.getNotDoingTick() < 2) {
-            cir.setReturnValue(false);
-        }
-         */
     }
 }

@@ -44,7 +44,7 @@ public class Skydive extends ContinuableAction {
 
     @Override
     public void onStartInLocalClient() {
-        parkourability.getBehaviorEnforcer().setMarkerEnforceDeltaMovement(this::isDoing, () -> {
+        parkourability.getBehaviorEnforcer().setMarkerEnforcingDeltaMovement(this::isDoing, () -> {
             var deltaMove = parkourability.player().getDeltaMovement();
             return new Vec3(deltaMove.x, deltaMove.y * 0.97, deltaMove.z);
         });

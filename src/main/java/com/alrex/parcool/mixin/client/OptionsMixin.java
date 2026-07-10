@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class OptionsMixin {
     @Inject(method = "getCameraType", at = @At("HEAD"), cancellable = true)
     public void onGetCameraType(CallbackInfoReturnable<CameraType> cir) {
-        var cameraType = RenderBehaviorEnforcer.getEnforcedCameraType();
+        var cameraType = RenderBehaviorEnforcer.getInstance().getEnforcedCameraType();
         if (cameraType != null) {
             cir.setReturnValue(cameraType);
         }
