@@ -28,12 +28,13 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class HideInBlock extends ContinuableAction implements ActionExtension.VisibilityListener {
+public class HideInBlock extends ContinuableAction implements ActionExtension.VisibilityListener, ActionExtension.LandListener {
     private static final BehaviorEnforcer.ID ID_CANCEL_SHOW_NAME = BehaviorEnforcer.newID();
     private static final BehaviorEnforcer.ID ID_CANCEL_SNEAK = BehaviorEnforcer.newID();
     private static final BehaviorEnforcer.ID ID_NO_PHYSICS = BehaviorEnforcer.newID();
@@ -44,11 +45,13 @@ public class HideInBlock extends ContinuableAction implements ActionExtension.Vi
     private final SynchronizedProperty<Vec3> propertyHidingStartedPoint;
     private final SynchronizedProperty<Vec3> propertyHidingPoint;
     private final SynchronizedProperty<Boolean> propertyStanding;
+    private final SynchronizedProperty<Boolean> propertyDiving;
     private final SynchronizedProperty<BlockPos> propertyHidingAreaEdge1;
     private final SynchronizedProperty<BlockPos> propertyHidingAreaEdge2;
     private final SynchronizedProperty<Byte> propertyTransitionDuration;
 
     private boolean hidingBlockChanged = false;
+    private boolean startingFromDive = false;
 
     public HideInBlock(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry, List.of(ParCoolActions.CRAWL));
@@ -59,6 +62,7 @@ public class HideInBlock extends ContinuableAction implements ActionExtension.Vi
                 propertyHidingAreaEdge1 = SynchronizedProperty.newBlockPos(),
                 propertyHidingAreaEdge2 = SynchronizedProperty.newBlockPos(),
                 propertyStanding = SynchronizedProperty.newBoolean(),
+                propertyDiving = SynchronizedProperty.newBoolean(),
                 propertyTransitionDuration = SynchronizedProperty.newByte()
         );
     }
@@ -167,21 +171,29 @@ public class HideInBlock extends ContinuableAction implements ActionExtension.Vi
     @Override
     public boolean canContinue() {
         if (hidingBlockChanged) return hidingBlockChanged = false;
-        return parkourability.player().hurtTime <= 0
+        return (parkourability.player().hurtTime <= 0 || (propertyDiving.getOrDefaultIfNull(Boolean.FALSE) && getDoingTick() < 10))
                 && (getDoingTick() < 6 || ParCoolKeyBinds.HIDE_IN_BLOCK.key().isDown());
     }
 
     @Override
     public boolean canStart() {
+        var fromDive = startingFromDive;
+        startingFromDive = false;
         var player = parkourability.player();
-        if (!player.isShiftKeyDown() || !ParCoolKeyBinds.HIDE_IN_BLOCK.key().isDown() || player.hurtTime > 0)
-            return false;
-
-        var result = Minecraft.getInstance().hitResult;
-        if (!(result instanceof BlockHitResult blockHitResult)) {
+        if ((!fromDive && (!player.isShiftKeyDown() || player.hurtTime > 0)) || !ParCoolKeyBinds.HIDE_IN_BLOCK.key().isDown()) {
             return false;
         }
-        var hideBaseBlockPos = blockHitResult.getBlockPos();
+
+        var result = Minecraft.getInstance().hitResult;
+        BlockPos hideBaseBlockPos;
+        if (fromDive) {
+            hideBaseBlockPos = player.getBlockPosBelowThatAffectsMyMovement();
+        } else {
+            if (!(result instanceof BlockHitResult blockHitResult)) {
+                return false;
+            }
+            hideBaseBlockPos = blockHitResult.getBlockPos();
+        }
         var hideArea = getHideAbleSpace(player, hideBaseBlockPos);
         if (hideArea == null) return false;
         hideArea = new Tuple<>(
@@ -204,6 +216,7 @@ public class HideInBlock extends ContinuableAction implements ActionExtension.Vi
         if (!player.position().closerThan(hidePoint, 1.8)) return false;
         boolean stand = player.getBbHeight() < (hideArea.getB().getY() - hideArea.getA().getY() + 1);
 
+        propertyDiving.set(fromDive);
         propertyStanding.set(stand);
         propertyTransitionDuration.set((byte) 2);
         propertyHidingDirection.set(getHidingBodyDirection(stand, player, hideArea));
@@ -332,6 +345,13 @@ public class HideInBlock extends ContinuableAction implements ActionExtension.Vi
                     particleEngine.destroy(pos, world.getBlockState(pos));
                 }
             }
+        }
+    }
+
+    @Override
+    public void onLand(LivingFallEvent event) {
+        if (parkourability.get(ParCoolActions.DIVE).isDoing()) {
+            startingFromDive = true;
         }
     }
 }

@@ -61,7 +61,7 @@ public class Breakfall extends Action implements ActionExtension.LandListener {
 
     @Override
     public void onStartInClient() {
-        switch (propertyWorkingBreakfallType.get()) {
+        switch (propertyWorkingBreakfallType.getOrDefaultIfNull(BreakfallType.NONE)) {
             case TAP:
                 PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.TAP);
                 return;
@@ -72,7 +72,7 @@ public class Breakfall extends Action implements ActionExtension.LandListener {
 
     @Override
     public void onStartInLocalClient() {
-        switch (propertyWorkingBreakfallType.get()) {
+        switch (propertyWorkingBreakfallType.getOrDefaultIfNull(BreakfallType.NONE)) {
             case TAP:
                 parkourability.getBehaviorEnforcer().setMarkerEnforcingDeltaMovement(
                         () -> this.getTickSinceStarted() < 10,
