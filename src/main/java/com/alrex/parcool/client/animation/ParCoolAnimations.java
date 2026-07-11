@@ -129,6 +129,16 @@ public class ParCoolAnimations {
             (p) -> Parkourability.get(p).get(ParCoolActions.HANG_DOWN).isDoing(),
             null
     );
+    public static final ID<AnimationSet> HANG_DOWN_JUMP_FORWARD = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "hang_down_jump_forward"),
+            (p) -> !p.isOnGround(),
+            null
+    );
+    public static final ID<AnimationSet> HANG_DOWN_JUMP_BACKWARD = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "hang_down_jump_backward"),
+            (p) -> !p.isOnGround(),
+            null
+    );
 
     public static void register() {
     }

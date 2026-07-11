@@ -50,10 +50,12 @@ public class HangDown extends ContinuableAction {
     private final SynchronizedProperty<BarAxis> propertyHangingBarAxis;
     private final SynchronizedProperty<Float> propertyBodySwingAngleInRad;
     private final SynchronizedProperty<Float> propertyBodyAngularSpeedInRad;
+    private final SynchronizedProperty<Boolean> propertyJumpOff;
 
     // Only for local client
     @Nullable
     private BlockPos hangingPos;
+    private boolean barNotFound;
     // Only for client
     private float oldAngle;
     private float oldAngularSpeed;
@@ -63,7 +65,8 @@ public class HangDown extends ContinuableAction {
         dataHolder = SynchronizedDataHolder.create(entry,
                 propertyHangingBarAxis = SynchronizedProperty.newEnum(BarAxis.class),
                 propertyBodySwingAngleInRad = SynchronizedProperty.newFloat(),
-                propertyBodyAngularSpeedInRad = SynchronizedProperty.newFloat()
+                propertyBodyAngularSpeedInRad = SynchronizedProperty.newFloat(),
+                propertyJumpOff = SynchronizedProperty.newBoolean()
         );
     }
 
@@ -74,7 +77,13 @@ public class HangDown extends ContinuableAction {
 
     @Override
     public boolean canContinue() {
-        return ParCoolKeyBinds.HANG.key().isDown() || propertyBodySwingAngleInRad.get() == null;
+        var continuing = !barNotFound && ParCoolKeyBinds.HANG.key().isDown() && !ParCoolKeyBinds.JUMP.state().isJustPressed();
+        if (continuing) {
+            if (Math.abs(propertyBodyAngularSpeedInRad.getOrDefaultIfNull(0f)) > Mth.PI / 20f) {
+                propertyJumpOff.set(true);
+            }
+        }
+        return continuing;
     }
 
     @Override
@@ -95,6 +104,8 @@ public class HangDown extends ContinuableAction {
         propertyBodyAngularSpeedInRad.set((float) (speed / playerHeight));
         propertyBodySwingAngleInRad.set(0f);
         propertyHangingBarAxis.set(hangingBar.getB());
+        propertyJumpOff.set(false);
+        barNotFound = false;
         hangingPos = hangingBar.getA();
 
         return true;
@@ -130,6 +141,52 @@ public class HangDown extends ContinuableAction {
     }
 
     @Override
+    public void onStopInClient() {
+        if (propertyJumpOff.getOrDefaultIfNull(false)) {
+            if (propertyBodyAngularSpeedInRad.getOrDefaultIfNull(1f) > 0f) {
+                PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.HANG_DOWN_JUMP_FORWARD);
+            } else {
+                PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.HANG_DOWN_JUMP_BACKWARD);
+            }
+        }
+
+    }
+
+    @Override
+    public void onStopInLocalClient() {
+        var player = parkourability.player();
+        var barAxis = propertyHangingBarAxis.get();
+        if (barAxis == null) return;
+        var orthogonalVec = VectorUtil.reverseIfInReverseDirection(EntityUtil.getHorizontalLookAngle(player), barAxis.getOrthogonalVec());
+        float angle = propertyBodySwingAngleInRad.getOrDefaultIfNull(0f);
+        var sinAngle = Math.sin(angle);
+        var cosAngle = Math.cos(angle);
+        var finishedPos = player.position();
+        var playerHeight = player.getBbHeight();
+        var swingingPos = finishedPos.add(
+                orthogonalVec.x * sinAngle,
+                0.5 * playerHeight * (1. - cosAngle),
+                orthogonalVec.z * sinAngle
+        );
+        if (propertyJumpOff.getOrDefaultIfNull(false)) {
+            var movement = new Vec3(
+                    orthogonalVec.x * cosAngle,
+                    Math.abs(sinAngle),
+                    orthogonalVec.z * cosAngle
+            ).scale(2. * playerHeight * propertyBodyAngularSpeedInRad.getOrDefaultIfNull(0f));
+            parkourability.getBehaviorEnforcer().setMarkerEnforcingMovePoint(
+                    () -> getNotDoingTick() <= 5,
+                    () -> swingingPos.add(movement.scale((getNotDoingTick() + 1.) / 6.))
+            );
+        } else {
+            parkourability.getBehaviorEnforcer().setMarkerEnforcingPosition(
+                    () -> getNotDoingTick() <= 1,
+                    () -> VectorUtil.lerp((getNotDoingTick() + 1.) / 2., finishedPos, swingingPos)
+            );
+        }
+    }
+
+    @Override
     public void onWorkingTickInLocalClient() {
         var player = parkourability.player();
         if (!(player instanceof LocalPlayer localPlayer)) return;
@@ -147,7 +204,6 @@ public class HangDown extends ContinuableAction {
         var input = localPlayer.input;
         var movementInput = lookVec.scale(input.forwardImpulse).add(lookVec.yRot(Mth.HALF_PI).scale(input.leftImpulse));
         var inputAcceleration = 0.02f * (float) barOrthogonalVec.dot(movementInput);
-        var height = player.getBbHeight();
         var cosAngle = Mth.cos(angle);
         var sinAngle = Mth.sin(angle);
         var acceleration = new Vec2( // x is for horizontal, y is for vertical
@@ -155,7 +211,7 @@ public class HangDown extends ContinuableAction {
                 sinAngle * inputAcceleration + (float) -gravityAttr.getValue()
         ).dot(new Vec2(cosAngle, sinAngle));
 
-        angularSpeedInRad += acceleration / height;
+        angularSpeedInRad += acceleration / player.getBbHeight();
         angularSpeedInRad *= absDotOfOrthogonalAndLook * 0.98f;
         var newAngle = absDotOfOrthogonalAndLook * (angle + angularSpeedInRad);
         if (newAngle > Mth.PI * 0.75f) {
@@ -169,7 +225,11 @@ public class HangDown extends ContinuableAction {
         propertyBodySwingAngleInRad.set(newAngle);
         propertyBodyAngularSpeedInRad.set(angularSpeedInRad);
         var hangingBar = getHangAbleBars(player);
-        propertyHangingBarAxis.set(hangingBar != null ? hangingBar.getB() : null);
+        if (hangingBar != null) {
+            propertyHangingBarAxis.set(hangingBar.getB());
+        } else {
+            barNotFound = true;
+        }
         hangingPos = hangingBar != null ? hangingBar.getA() : null;
     }
 

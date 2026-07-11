@@ -142,5 +142,17 @@
     "fade_in_duration": 4,
     "fade_out_duration": 5,
     "main": "parcool:hang_down_group.json"
+  },
+  {
+    "name": "parcool:hang_down_jump_forward",
+    "fade_in_duration": 4,
+    "fade_out_duration": 5,
+    "main": "parcool:back_flip_group.json"
+  },
+  {
+    "name": "parcool:hang_down_jump_backward",
+    "fade_in_duration": 4,
+    "fade_out_duration": 5,
+    "main": "parcool:front_flip_group.json"
   }
 ]

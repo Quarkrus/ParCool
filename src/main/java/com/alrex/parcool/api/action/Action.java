@@ -124,7 +124,7 @@ public abstract class Action {
 		return true;
 	}
 
-	public final boolean isReadyToStart() {
+	public boolean isReadyToStart() {
 		if (!isPossible()) return false;
 		if (MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(parkourability.player(), this)))
 			return false;

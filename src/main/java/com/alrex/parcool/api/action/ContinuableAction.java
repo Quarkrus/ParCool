@@ -97,6 +97,11 @@ public abstract class ContinuableAction extends Action {
         return canContinue();
     }
 
+    @Override
+    public boolean isReadyToStart() {
+        return getNotDoingTick() >= 3 && super.isReadyToStart();
+    }
+
     public abstract boolean canContinue();
 
     public void onStop() {
