@@ -16,6 +16,7 @@ public class ParCoolActions {
     public static final ActionEntry<Crawl> CRAWL;
     public static final ActionEntry<Slide> SLIDE;
     public static final ActionEntry<HangOn> HANG_ON;
+    public static final ActionEntry<HangDown> HANG_DOWN;
     public static final ActionEntry<Dodge> DODGE;
     public static final ActionEntry<ClimbUp> CLIMB_UP;
     public static final ActionEntry<TrickJump> TRICK_JUMP;
@@ -80,6 +81,10 @@ public class ParCoolActions {
             CLIMB_UP = builder.add("climb_up", ClimbUp.class, ClimbUp::new, new ActionOption()
                     .parent(HANG_ON).needParentWorking(false)
                     .cost(StaminaConsumption.get(50, 0, 0))
+            );
+            HANG_DOWN = builder.add("hang_down", HangDown.class, HangDown::new, new ActionOption()
+                    .parent(HANG_ON).needParentWorking(false)
+                    .needNotOnGround(true)
             );
             SLIDE_DOWN = builder.add("slide_down", SlideDown.class, SlideDown::new, new ActionOption()
                     .parent(HANG_ON).needParentWorking(false)

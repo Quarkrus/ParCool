@@ -36,10 +36,6 @@ public record ModelTransform(EnumMap<AnimatableModelPart, Transform> transforms)
         return new ModelTransform(newMap);
     }
 
-    public ModelTransform multiply(float factor) {
-        return NO_TRANSFORMATION.morph(this, factor);
-    }
-
     public ModelTransform morph(ModelTransform to, float t) {
         if (t <= 1e-4) return this;
         if (t >= 0.9999) return to;

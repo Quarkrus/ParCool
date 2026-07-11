@@ -43,7 +43,7 @@ public class HangOn extends ContinuableAction implements ActionExtension.LeaveFr
     private short tickSinceCanceled = 0;
 
     public HangOn(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP, ParCoolActions.DIVE));
+        super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP, ParCoolActions.DIVE, ParCoolActions.HANG_DOWN));
         dataHolder = SynchronizedDataHolder.create(entry,
                 propertyDirection = SynchronizedProperty.newEnum(InteractingWallDirection.class, (newV, oldV) -> oldDirection = oldV),
                 propertyFullWall = SynchronizedProperty.newBoolean()
@@ -52,20 +52,20 @@ public class HangOn extends ContinuableAction implements ActionExtension.LeaveFr
 
     @Override
     public boolean canStart() {
-        return tickSinceCanceled >= 3 && ParCoolKeyBinds.HANG_ON.key().isDown() && (startingHangState = getHangState()) != null;
+        return tickSinceCanceled >= 3 && ParCoolKeyBinds.HANG.key().isDown() && (startingHangState = getHangState()) != null;
     }
 
     @Override
     public boolean canContinue() {
-        return tickSinceCanceled >= 3 && ParCoolKeyBinds.HANG_ON.key().isDown() && currentHangState != null && !ParCoolKeyBinds.JUMP.state().isJustPressed();
+        return tickSinceCanceled >= 3 && ParCoolKeyBinds.HANG.key().isDown() && currentHangState != null && !ParCoolKeyBinds.JUMP.state().isJustPressed();
     }
 
     @Override
     public void onStartInLocalClient() {
+        if (!(parkourability.player() instanceof LocalPlayer player)) return;
         parkourability.getBehaviorEnforcer().setMarkerEnforcingMovePoint(
                 this::isDoing, () -> {
                     if (currentHangState == null) return null;
-                    if (!(parkourability.player() instanceof LocalPlayer player)) return null;
                     var speed = currentHangState.fullWall
                             ? player.getSpeed() * MathUtil.mapLinear((float) currentHangState.direction.asVec().dot(player.getLookAngle().multiply(1, 0, 1).normalize()), -0.7071f, 1f, 0f, 1f)
                             : player.getSpeed();

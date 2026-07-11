@@ -56,15 +56,15 @@ public class CodedAnimationComponents extends AnimationRegistry<CodedAnimationCo
     });
 
     private static Transform getBobTransform(float progress) {
-        var zRot = Mth.cos(progress * 0.09f) * 0.05f + 0.05f;
-        var xRot = Mth.sin(progress * 0.067f) * 0.05f;
+        var zRot = Mth.cos(progress * 0.09f) * 0.025f + 0.05f;
+        var xRot = Mth.sin(progress * 0.067f) * 0.025f;
         return Transform.fromRotationParams(xRot, 0f, zRot);
     }
 
     public final ID<CodedAnimationComponent> BOB_LEFT_ARM = register("builtin/bob_left_arm", (player, part, progress, partial, mirror) -> {
         if (part != AnimatableModelPart.LEFT_ARM) return null;
         var transform = getBobTransform(progress);
-        return mirror ? transform.mirror() : transform;
+        return mirror ? transform : transform.mirror();
     });
     public final ID<CodedAnimationComponent> BOB_RIGHT_ARM = register("builtin/bob_right_arm", (player, part, progress, partial, mirror) -> {
         if (part != AnimatableModelPart.RIGHT_ARM) return null;
@@ -74,7 +74,7 @@ public class CodedAnimationComponents extends AnimationRegistry<CodedAnimationCo
     public final ID<CodedAnimationComponent> BOB_LEFT_LEG = register("builtin/bob_left_leg", (player, part, progress, partial, mirror) -> {
         if (part != AnimatableModelPart.LEFT_LEG) return null;
         var transform = getBobTransform(progress);
-        return mirror ? transform.mirror() : transform;
+        return mirror ? transform : transform.mirror();
     });
     public final ID<CodedAnimationComponent> BOB_RIGHT_LEG = register("builtin/bob_right_leg", (player, part, progress, partial, mirror) -> {
         if (part != AnimatableModelPart.RIGHT_LEG) return null;

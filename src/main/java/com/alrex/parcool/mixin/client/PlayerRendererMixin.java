@@ -62,10 +62,4 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 			ci.cancel();
 		}
 	}
-
-	/*
-	@Inject(method = "setupRotations(Lnet/minecraft/client/player/AbstractClientPlayer;Lcom/mojang/blaze3d/vertex/PoseStack;FFF)V", at = @At("RETURN"))
-	protected void onSetupRotationsTail(AbstractClientPlayer player, PoseStack stack, float xRot, float yRot, float zRot, CallbackInfo ci) {
-	}
-	 */
 }

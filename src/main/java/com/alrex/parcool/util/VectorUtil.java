@@ -28,6 +28,10 @@ public class VectorUtil {
         return new Vec3(Math.sin(yRotRad) * Math.cos(xRotRad), -Math.sin(xRotRad), Math.cos(yRotRad) * Math.cos(xRotRad));
     }
 
+    public static Vec3 reverseIfInReverseDirection(Vec3 base, Vec3 target) {
+        return base.dot(target) >= 0 ? target : target.reverse();
+    }
+
     public static Vec3 lerp(double factor, Vec3 v1, Vec3 v2) {
         return new Vec3(
                 Mth.lerp(factor, v1.x, v2.x),

@@ -1,0 +1,46 @@
+{
+  "infinite": true,
+  "components": [
+    {
+      "name": "parcool:hang_down_along_bar.json",
+      "progress": {
+        "name": "parcool:velocity_forward",
+        "args": {
+          "loop": true,
+          "max": 12,
+          "scale": 4.5
+        }
+      }
+    },
+    {
+      "name": "parcool:hang_down_orthogonal.json",
+      "progress": {
+        "name": "parcool:velocity_left",
+        "args": {
+          "loop": true,
+          "max": 12,
+          "scale": 4.5
+        }
+      },
+      "blend": {
+        "name": "parcool:builtin/hang_down_orthogonally",
+        "method": "set"
+      }
+    },
+    {
+      "name": "parcool:builtin/hang_down_swing_body"
+    },
+    {
+      "name": "parcool:builtin/hang_down_swing_limbs"
+    },
+    {
+      "name": "parcool:builtin/bob_left_leg"
+    },
+    {
+      "name": "parcool:builtin/bob_right_leg"
+    },
+    {
+      "name": "parcool:builtin/hang_down_rotate_body"
+    }
+  ]
+}

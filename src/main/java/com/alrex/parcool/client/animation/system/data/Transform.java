@@ -55,35 +55,40 @@ public record Transform(Vec3f translation, Quaternion rotation) {
         return new Transform(translation.add(after.translation.scale(t)), rot);
     }
 
+    public void applyInQuaternion(ModelPart part, float blendingFactor) {
+        var modelRot = MathUtil.fromModelPartRotation(-part.xRot, -part.yRot, part.zRot);
+        var appliedRotation = MathUtil.slerp(blendingFactor, modelRot, rotation, true);
+
+        applyTransformation(
+                part,
+                translation.scale(blendingFactor),
+                MathUtil.toModelPartRotation(appliedRotation)
+        );
+    }
+
     public void apply(ModelPart part, float blendingFactor) {
-        var q = rotation;
-        float xRot, zRot, yRot = (float) Math.asin(2 * (-q.i() * q.k() + q.j() * q.r()));
-        double cosY = Math.cos(yRot);
-        if (Math.abs(cosY) > 1e-4) {
-            xRot = (float) Math.atan2(
-                    q.j() * q.k() + q.i() * q.r(),
-                    q.r() * q.r() + q.k() * q.k() - 0.5
-            );
-            zRot = (float) Math.atan2(
-                    q.i() * q.j() + q.k() * q.r(),
-                    q.r() * q.r() + q.i() * q.i() - 0.5
-            );
-        } else {
-            xRot = 0;
-            zRot = (float) Math.atan2(
-                    -q.i() * q.j() + q.k() * q.r(),
-                    q.r() * q.r() + q.j() * q.j() - 0.5
-            );
-        }
-        part.xRot = MathUtil.rotLerp(blendingFactor, part.xRot, -xRot);
-        part.yRot = MathUtil.rotLerp(blendingFactor, part.yRot, -yRot);
-        part.zRot = MathUtil.rotLerp(blendingFactor, part.zRot, zRot);
-        part.x += blendingFactor * -translation.x() * 16f;
-        part.y += blendingFactor * -translation.y() * 16f;
-        part.z += blendingFactor * translation.z() * 16f;
+        var appliedRot = MathUtil.toModelPartRotation(rotation);
+        applyTransformation(
+                part,
+                translation.scale(blendingFactor),
+                new Vec3f(
+                        MathUtil.rotLerp(blendingFactor, part.xRot, appliedRot.x()),
+                        MathUtil.rotLerp(blendingFactor, part.yRot, appliedRot.y()),
+                        MathUtil.rotLerp(blendingFactor, part.zRot, appliedRot.z())
+                )
+        );
     }
 
     public void apply(ModelPart part) {
-        apply(part, 1f);
+        applyTransformation(part, translation, MathUtil.toModelPartRotation(rotation));
+    }
+
+    private static void applyTransformation(ModelPart part, Vec3f translation, Vec3f rotParams) {
+        part.xRot = rotParams.x();
+        part.yRot = rotParams.y();
+        part.zRot = rotParams.z();
+        part.x += -translation.x() * 16f;
+        part.y += -translation.y() * 16f;
+        part.z += translation.z() * 16f;
     }
 }

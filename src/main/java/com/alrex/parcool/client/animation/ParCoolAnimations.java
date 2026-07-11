@@ -124,6 +124,11 @@ public class ParCoolAnimations {
             (p) -> Parkourability.get(p).get(ParCoolActions.HIDE_IN_BLOCK).isDoing(),
             null
     );
+    public static final ID<AnimationSet> HANG_DOWN = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "hang_down"),
+            (p) -> Parkourability.get(p).get(ParCoolActions.HANG_DOWN).isDoing(),
+            null
+    );
 
     public static void register() {
     }

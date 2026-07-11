@@ -103,7 +103,7 @@ public class ParCoolKeyBinds {
 	public static final String KEY_CATEGORY = "key.category.parcool";
 
 	public static final Input CRAWL = register(new KeyMapping("key.parcool.crawl", GLFW.GLFW_KEY_C, KEY_CATEGORY));
-	public static final Input HANG_ON = register(new KeyMapping("key.parcool.hang_on", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, KEY_CATEGORY));
+    public static final Input HANG = register(new KeyMapping("key.parcool.hang", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, KEY_CATEGORY));
 	public static final Input SLIDE_DOWN = register(new KeyMapping("key.parcool.slide_down", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, KEY_CATEGORY));
     public static final Input DODGE = register(new KeyMapping("key.parcool.dodge", GLFW.GLFW_KEY_R, KEY_CATEGORY));
     public static final Input BREAKFALL = register(new KeyMapping("key.parcool.breakfall", GLFW.GLFW_KEY_R, KEY_CATEGORY));

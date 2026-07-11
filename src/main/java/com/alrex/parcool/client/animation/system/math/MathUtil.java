@@ -1,6 +1,7 @@
 package com.alrex.parcool.client.animation.system.math;
 
 import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
@@ -54,5 +55,41 @@ public class MathUtil {
 
     public static double toYawRadian(Vec3 vec) {
         return (Math.atan2(vec.x(), vec.z()));
+    }
+
+    public static Quaternion fromModelPartRotation(float rotX, float rotY, float rotZ) {
+        var q = Quaternion.ONE.copy();
+        if (rotZ != 0f) {
+            q.mul(Vector3f.ZP.rotation(rotZ));
+        }
+        if (rotY != 0f) {
+            q.mul(Vector3f.YP.rotation(rotY));
+        }
+        if (rotX != 0f) {
+            q.mul(Vector3f.XP.rotation(rotX));
+        }
+        return q;
+    }
+
+    public static Vec3f toModelPartRotation(Quaternion q) {
+        float xRot, zRot, yRot = (float) Math.asin(2 * (-q.i() * q.k() + q.j() * q.r()));
+        double cosY = Math.cos(yRot);
+        if (Math.abs(cosY) > 1e-4) {
+            xRot = (float) Math.atan2(
+                    q.j() * q.k() + q.i() * q.r(),
+                    q.r() * q.r() + q.k() * q.k() - 0.5
+            );
+            zRot = (float) Math.atan2(
+                    q.i() * q.j() + q.k() * q.r(),
+                    q.r() * q.r() + q.i() * q.i() - 0.5
+            );
+        } else {
+            xRot = 0;
+            zRot = (float) Math.atan2(
+                    -q.i() * q.j() + q.k() * q.r(),
+                    q.r() * q.r() + q.j() * q.j() - 0.5
+            );
+        }
+        return new Vec3f(-xRot, -yRot, zRot);
     }
 }

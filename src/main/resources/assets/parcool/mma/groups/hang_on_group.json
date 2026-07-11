@@ -8,7 +8,7 @@
         "args": {
           "loop": true,
           "max": 30,
-          "scale": 20
+          "scale": 11
         }
       }
     },
@@ -20,7 +20,7 @@
         "args": {
           "loop": true,
           "max": 30,
-          "scale": 20
+          "scale": 11
         }
       },
       "blend": {

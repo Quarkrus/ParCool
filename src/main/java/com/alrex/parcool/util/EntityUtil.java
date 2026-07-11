@@ -22,7 +22,7 @@ public class EntityUtil {
 	}
 
 	public static float getHorizontalMaximumDeltaMovementValue(LivingEntity entity, float blockFriction) {
-		return (0.91f * blockFriction) * getHorizontalAccelerationOnGround(entity, blockFriction) / (1f - 0.91f * blockFriction);
+		return (0.91f * blockFriction) * getHorizontalMaximumSpeed(entity, blockFriction);
 	}
 
 	public static float getHorizontalMaximumDeltaMovementValue(LivingEntity entity) {

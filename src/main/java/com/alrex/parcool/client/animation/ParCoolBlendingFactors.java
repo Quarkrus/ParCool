@@ -55,6 +55,10 @@ public class ParCoolBlendingFactors {
             .register(new ResourceLocation(ParCool.MOD_ID, "builtin/skydive_lean_right"), (args, method) ->
                     new SimpleBlendFactor((player, partial) -> EasingFunctions.QUAD.easeInOut(Parkourability.get(player).get(ParCoolActions.SKYDIVE).getBlendingFactorLeanRight(partial)), method)
             );
+    public static final ID<IBlendingFactor> HANG_DOWN_ORTHOGONAL = BlendingFactors.getInstance()
+            .register(new ResourceLocation(ParCool.MOD_ID, "builtin/hang_down_orthogonally"), (args, method) ->
+                    new SimpleBlendFactor((player, partial) -> EasingFunctions.QUAD.easeInOut(Parkourability.get(player).get(ParCoolActions.HANG_DOWN).getBlendFactorOrthogonalToBar(partial)), method)
+            );
 
     public static void register() {
     }

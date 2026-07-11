@@ -10,9 +10,7 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,25 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerModel.class)
 public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
-	@Shadow
-	@Final
-	public ModelPart leftPants;
-
-	@Shadow
-	@Final
-	public ModelPart rightPants;
-
-	@Shadow
-	@Final
-	public ModelPart leftSleeve;
-
-	@Shadow
-	@Final
-	public ModelPart rightSleeve;
-
-	@Shadow
-	@Final
-	public ModelPart jacket;
 
 	public PlayerModelMixin(ModelPart p_i1148_1_) {
 		super(p_i1148_1_);
@@ -81,16 +60,16 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 			if (transform == null) return;
 			var blendingFactor = transform.blendFactor();
 			var headTransform = transform.transformation().transforms().get(AnimatableModelPart.HEAD);
-			if (headTransform != null) headTransform.apply(head, blendingFactor);
+			if (headTransform != null) headTransform.applyInQuaternion(head, blendingFactor);
 			var rATransform = transform.transformation().transforms().get(AnimatableModelPart.RIGHT_ARM);
-			if (rATransform != null) rATransform.apply(rightArm, blendingFactor);
+			if (rATransform != null) rATransform.applyInQuaternion(rightArm, blendingFactor);
 			var rLTransform = transform.transformation().transforms().get(AnimatableModelPart.RIGHT_LEG);
-			if (rLTransform != null) rLTransform.apply(rightLeg, blendingFactor);
+			if (rLTransform != null) rLTransform.applyInQuaternion(rightLeg, blendingFactor);
 			var lATransform = transform.transformation().transforms().get(AnimatableModelPart.LEFT_ARM);
-			if (lATransform != null) lATransform.apply(leftArm, blendingFactor);
+			if (lATransform != null) lATransform.applyInQuaternion(leftArm, blendingFactor);
 			var lLTransform = transform.transformation().transforms().get(AnimatableModelPart.LEFT_LEG);
-			if (lLTransform != null) lLTransform.apply(leftLeg, blendingFactor);
-			Transform.NO_TRANSFORMATION.apply(body, blendingFactor);
+			if (lLTransform != null) lLTransform.applyInQuaternion(leftLeg, blendingFactor);
+			Transform.NO_TRANSFORMATION.applyInQuaternion(body, blendingFactor);
 		}
 	}
 

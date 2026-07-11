@@ -11,7 +11,7 @@
         "args": {
           "loop": true,
           "max": 30,
-          "scale": 20
+          "scale": 11
         }
       }
     }

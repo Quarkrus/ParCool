@@ -74,6 +74,49 @@ public class ParCoolCodedAnimationComponents {
                 return lockBody(player, facingDirection, partial);
             }
     );
+    public static final ID<CodedAnimationComponent> HANG_DOWN_ROTATE_BODY = CodedAnimationComponents.getInstance().register(
+            "builtin/hang_down_rotate_body",
+            (player, part, progress, partial, mirror) -> {
+                if (part != AnimatableModelPart.BODY) return null;
+                var vec = Parkourability.get(player).get(ParCoolActions.HANG_DOWN).getBodyDirection(partial);
+                if (vec == null) return null;
+                return lockBody(player, vec, partial);
+            }
+    );
+    public static final ID<CodedAnimationComponent> HANG_DOWN_SWING_BODY = CodedAnimationComponents.getInstance().register(
+            "builtin/hang_down_swing_body",
+            (player, part, progress, partial, mirror) -> {
+                switch (part) {
+                    case BODY -> {
+                        var pitch = Parkourability.get(player).get(ParCoolActions.HANG_DOWN).getRotationAngle(partial);
+                        return new Transform(
+                                new Vec3f(0, 0.9f - 1.1f * Mth.cos(pitch), -1.1f * Mth.sin(pitch)), Vector3f.XP.rotation(pitch)
+                        );
+                    }
+                    case HEAD -> {
+                        var pitch = Parkourability.get(player).get(ParCoolActions.HANG_DOWN).getRotationAngle(partial);
+                        return new Transform(Vec3f.ZERO, Vector3f.XN.rotation(Mth.clamp(pitch / 4f, -Mth.PI / 4f, Mth.PI / 4f)));
+                    }
+                    default -> {
+                        return null;
+                    }
+                }
+            }
+    );
+    public static final ID<CodedAnimationComponent> HANG_DOWN_SWING_LIMBS = CodedAnimationComponents.getInstance().register(
+            "builtin/hang_down_swing_limbs",
+            (player, part, progress, partial, mirror) -> {
+                switch (part) {
+                    case LEFT_LEG, RIGHT_LEG -> {
+                        var angularSpeed = -3f * Parkourability.get(player).get(ParCoolActions.HANG_DOWN).getAngularSpeed(partial);
+                        return new Transform(Vec3f.ZERO, Vector3f.XP.rotation(angularSpeed));
+                    }
+                    default -> {
+                        return null;
+                    }
+                }
+            }
+    );
     public static void register() {
     }
 }
