@@ -98,3 +98,7 @@ tasks.register("generateLimitationEntry", ParCoolLimitationGenerationTask) {
     inputFile = project.file("src/template/data/limitation_entries.json")
     outputFile = project.file("src/generated/java/com/alrex/parcool/server/limitation/LimitationEntries.java")
 }
+
+compileJava {
+    dependsOn tasks.named("generateLimitationEntry")
+}

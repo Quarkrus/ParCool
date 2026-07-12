@@ -1,0 +1,35 @@
+import com.google.gson.JsonParser
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.code.gson:gson:+'
+    }
+}
+
+abstract class MinifyJsonTask extends DefaultTask {
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDir()
+
+    @InputDirectory
+    abstract DirectoryProperty getInputDir()
+
+    @TaskAction
+    void action() {
+        var out = outputDir.get()
+        var inDir = inputDir.get().asFile
+        inputDir.asFileTree.matching { include("**/*.json") }.forEach {
+            var relativePath = inDir.relativePath(it)
+            var outFile = out.file(relativePath).asFile
+            outFile.parentFile.mkdirs()
+            outFile.text = JsonParser.parseReader(it.newReader()).toString()
+        }
+    }
+}
+
+tasks.register("minifyJsonResource", MinifyJsonTask) {
+    inputDir = project.file("src/template/resources")
+    outputDir = project.file("src/generated/resources")
+}

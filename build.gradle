@@ -16,6 +16,7 @@ import me.modmuss50.mpp.ReleaseType
 
 apply from: 'buildscripts/generate_resource.gradle'
 apply from: 'buildscripts/generate_java_source.gradle'
+apply from: 'buildscripts/minify_json_resource.gradle'
 
 compileJava.options.encoding("UTF-8")
 compileTestJava.options.encoding("UTF-8")
@@ -39,7 +40,7 @@ minecraft {
     mappings channel: 'official', version: minecraft_version
     copyIdeResources = true
 
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformer = file('accesstransformer.cfg')
 
     runs {
         client {
@@ -103,8 +104,10 @@ sourceSets {
     }
     main.resources {
         srcDir tasks.named("generateModMetadata")
+        srcDir tasks.named("minifyJsonResource")
     }
 }
+
 jar {
     manifest {
         attributes([

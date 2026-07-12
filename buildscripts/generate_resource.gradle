@@ -29,10 +29,6 @@ tasks.register("generateModMetadata", ProcessResources) {
     ]
     inputs.properties properties
     expand properties
-    with copySpec {
-        from("src/template/resources") {
-            include 'META-INF/mods.toml'
-        }
-    }
-    into "src/generated/resources"
+    from "src/template/resources/META-INF/mods.toml"
+    into "src/generated/resources/META-INF"
 }
