@@ -1,5 +1,6 @@
 package com.alrex.parcool.common.action;
 
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -32,13 +33,18 @@ public interface ActionExtension {
         void onLeaveFromWall();
     }
 
+    interface BlockChangedInClientListener extends ActionExtension {
+        void onChangeBlock(BlockPos pos);
+    }
+
     public static final List<Class<? extends ActionExtension>> EXTENSIONS = List.of(
             VisibilityListener.class,
             LandListener.class,
             JumpListener.class,
             KeyMapTriggeredListener.class,
             AttackedListener.class,
-            LeaveFromWallListener.class
+            LeaveFromWallListener.class,
+            BlockChangedInClientListener.class
     );
 
     final class Handler<T extends ActionExtension> {

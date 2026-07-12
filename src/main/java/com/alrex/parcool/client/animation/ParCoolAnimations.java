@@ -139,6 +139,11 @@ public class ParCoolAnimations {
             (p) -> !p.isOnGround(),
             null
     );
+    public static final ID<AnimationSet> RIDE_ZIPLINE = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "ride_zipline"),
+            (p) -> Parkourability.get(p).get(ParCoolActions.RIDE_ZIPLINE).isDoing(),
+            null
+    );
 
     public static void register() {
     }

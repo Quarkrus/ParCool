@@ -1,160 +1,175 @@
 package com.alrex.parcool.common.block.zipline;
 
-import com.alrex.parcool.common.entity.zipline.ZiplineRopeEntity;
-import com.alrex.parcool.common.item.Items;
 import com.alrex.parcool.common.item.zipline.ZiplineRopeItem;
+import com.alrex.parcool.common.zipline.ILoadedZiplineHolderProvider;
+import com.alrex.parcool.common.zipline.Zipline;
+import com.alrex.parcool.common.zipline.ZiplineInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ZiplineHookTileEntity extends BlockEntity {
+    @OnlyIn(Dist.CLIENT)
+    private class RenderAbleZiplineIterator implements Iterator<Zipline> {
+        private RenderAbleZiplineIterator() {
+            this.iterator = connections.entrySet().iterator();
+            this.nextItem = findNextItem();
+        }
+
+        private final Iterator<Map.Entry<BlockPos, ZiplineInfo>> iterator;
+        @Nullable
+        private Zipline nextItem;
+
+        @Override
+        public boolean hasNext() {
+            return nextItem != null;
+        }
+
+        @Override
+        public Zipline next() {
+            var tmp = nextItem;
+            nextItem = findNextItem();
+            return tmp;
+        }
+
+        @Nullable
+        private Zipline findNextItem() {
+            var level = getLevel();
+            if (level == null) return null;
+            while (iterator.hasNext()) {
+                var item = iterator.next();
+                var endPos = item.getKey();
+                if (getBlockPos().compareTo(endPos) < 0) {
+                    if (!level.isLoaded(endPos)) continue;
+                    if (!(level.getBlockEntity(endPos) instanceof ZiplineHookTileEntity endHook)) continue;
+                    var shape = item.getValue().type().getZipline(getHookPoint(), endHook.getHookPoint());
+                    return new Zipline(shape, item.getValue(), getBlockPos(), endPos);
+                }
+            }
+            return null;
+        }
+    }
 
     private final TreeMap<BlockPos, ZiplineInfo> connections = new TreeMap<>();
 
-    //OnlyIn Logical Server
-    private final TreeMap<BlockPos, ZiplineRopeEntity> connectionEntities = new TreeMap<>();
+    public ZiplineHookTileEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state) {
+        super(blockEntityType, pos, state);
+    }
 
-    public ZiplineHookTileEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, net.minecraft.world.level.block.state.BlockState p_155230_) {
-        super(p_155228_, p_155229_, p_155230_);
+    @OnlyIn(Dist.CLIENT)
+    public Iterator<Zipline> getRenderAbleZiplines() {
+        return new RenderAbleZiplineIterator();
+    }
+
+    @Override
+    public AABB getRenderBoundingBox() {
+        return INFINITE_EXTENT_AABB;
     }
 
     public Set<BlockPos> getConnectionPoints() {
         return connections.keySet();
     }
 
-    private TreeMap<BlockPos, ZiplineInfo> getConnectionInfo() {
+    public Map<BlockPos, ZiplineInfo> getConnections() {
         return connections;
     }
 
-    public List<ItemStack> removeAllConnection() {
-        if (level == null) return Collections.EMPTY_LIST;
-        getConnectionPoints().stream()
-                .filter(level::isLoaded)
-                .map(level::getBlockEntity)
-                .map(it -> it instanceof ZiplineHookTileEntity ? (ZiplineHookTileEntity) it : null)
-                .filter(Objects::nonNull)
-                .forEach(it -> it.onPairHookRegistrationRemoved(this));
-        List<ItemStack> itemStacks = Collections.EMPTY_LIST;
-        if (!level.isClientSide()) {
-            connectionEntities.values().forEach((it) -> it.remove(Entity.RemovalReason.DISCARDED));
-            itemStacks = getConnectionInfo().values().stream().map(it -> {
-                ItemStack stack = new ItemStack(Items.ZIPLINE_ROPE::get);
-                ZiplineRopeItem.setColor(stack, it.getColor());
-                return stack;
-            }).collect(Collectors.toList());
-        }
-        connectionEntities.clear();
-        getConnectionInfo().clear();
-        setChanged();
-        return itemStacks;
-    }
-
-    private void onPairHookRegistrationRemoved(ZiplineHookTileEntity removedPair) {
-        getConnectionPoints().remove(removedPair.getBlockPos());
-        connectionEntities.remove(removedPair.getBlockPos());
-        setChanged();
-    }
-
-    private void onPairHookUnloaded(ZiplineHookTileEntity removedPair) {
-        connectionEntities.remove(removedPair.getBlockPos());
-    }
-
-    @Override
-    public void onChunkUnloaded() {
-        super.onChunkUnloaded();
-        if (level != null) {
-            getConnectionPoints().stream()
-                    .filter(level::isLoaded)
-                    .map(level::getBlockEntity)
-                    .map(it -> it instanceof ZiplineHookTileEntity ? (ZiplineHookTileEntity) it : null)
-                    .filter(Objects::nonNull)
-                    .forEach(it -> it.onPairHookUnloaded(this));
-            if (!level.isClientSide()) {
-                connectionEntities.values().forEach((it) -> it.remove(Entity.RemovalReason.DISCARDED));
-            }
-            connectionEntities.clear();
-        }
-    }
-
-    public Vec3 getActualZiplinePoint(@Nullable BlockPos connected) {
+    public Vec3 getHookPoint() {
         if (level == null)
-            new Vec3(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
-        BlockState state = level.getBlockState(this.getBlockPos());
-        Block block = state.getBlock();
-        if (block instanceof ZiplineHookBlock) {
-            return ((ZiplineHookBlock) block).getActualZiplinePoint(this.getBlockPos(), state);
+            return new Vec3(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
+        var state = level.getBlockState(this.getBlockPos());
+        var block = state.getBlock();
+        if (block instanceof ZiplineHookBlock ziplineHookBlock) {
+            return ziplineHookBlock.getActualZiplinePoint(this.getBlockPos(), state);
         }
         return new Vec3(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
     }
 
+    protected void addConnection(BlockPos target, ZiplineInfo info) {
+        if (level == null) return;
+        var blockEntity = level.getBlockEntity(target);
+        if (blockEntity instanceof ZiplineHookTileEntity) {
+            this.connections.put(target, info);
+            notifyBlockUpdated();
+        }
+    }
+
     public boolean connectTo(ZiplineHookTileEntity target, ZiplineInfo info) {
-        if (this == target) return false;
-
-        if (level != null && !level.isClientSide()) {
-            if (this.getConnectionPoints().stream().anyMatch(target.getBlockPos()::equals)) {
-                return false;
-            }
-            ZiplineRopeEntity ropeEntity = spawnRope(level, target, info);
-            if (ropeEntity != null) {
-                this.getConnectionInfo().put(target.getBlockPos(), info);
-                this.setChanged();
-                target.getConnectionInfo().put(this.getBlockPos(), info);
-                target.setChanged();
-
-                return true;
-            }
-        }
-        return false;
+        if (connections.containsKey(target.getBlockPos())) return false;
+        this.addConnection(target.getBlockPos(), info);
+        target.addConnection(this.getBlockPos(), info);
+        return true;
     }
 
-    @Nullable
-    private ZiplineRopeEntity spawnRope(Level level, ZiplineHookTileEntity target, ZiplineInfo info) {
-        if (level.isClientSide()) return null;
-        if (target.connectionEntities.containsKey(this.getBlockPos())) return null;
-
-        ZiplineRopeEntity entity = new ZiplineRopeEntity(level, getBlockPos(), target.getBlockPos(), info);
-        boolean result = level.addFreshEntity(entity);
-        if (result) {
-            this.connectionEntities.put(target.getBlockPos(), entity);
-            target.connectionEntities.put(this.getBlockPos(), entity);
-        }
-        return result ? entity : null;
+    protected Optional<ZiplineInfo> removeConnection(BlockPos target) {
+        var info = connections.remove(target);
+        notifyBlockUpdated();
+        return info != null ? Optional.of(info) : Optional.empty();
     }
 
-    private void saveTo(CompoundTag nbt) {
+    public Optional<ZiplineInfo> removeConnectionFrom(ZiplineHookTileEntity hookTileEntity) {
+        if (this == hookTileEntity) return Optional.empty();
+        var info = this.removeConnection(hookTileEntity.getBlockPos());
+        hookTileEntity.removeConnection(this.getBlockPos());
+        return info;
+    }
+
+    public List<ItemStack> removeAllConnections() {
+        if (level == null) return Collections.emptyList();
+        var itemStacks = new ArrayList<ItemStack>(connections.size());
+        for (var entry : connections.entrySet()) {
+            var entity = level.getBlockEntity(entry.getKey());
+            if (entity instanceof ZiplineHookTileEntity hookTileEntity) {
+                hookTileEntity.removeConnectionFrom(hookTileEntity)
+                        .map(ZiplineRopeItem::from)
+                        .ifPresent(itemStacks::add);
+            }
+        }
+        return itemStacks;
+    }
+
+    @Override
+    public void saveAdditional(@Nonnull CompoundTag nbt) {
+        super.saveAdditional(nbt);
+
         var connections = new ListTag();
-        for (Map.Entry<BlockPos, ZiplineInfo> infoEntry : getConnectionInfo().entrySet()) {
+        for (Map.Entry<BlockPos, ZiplineInfo> infoEntry : getConnections().entrySet()) {
             var entryTag = new CompoundTag();
             var pos = getBlockPos();
             entryTag.putInt("rX", infoEntry.getKey().getX() - pos.getX());
             entryTag.putInt("rY", infoEntry.getKey().getY() - pos.getY());
             entryTag.putInt("rZ", infoEntry.getKey().getZ() - pos.getZ());
-            entryTag.put("Info", infoEntry.getValue().save());
+            entryTag.put("info", infoEntry.getValue().save());
             connections.add(entryTag);
         }
-        nbt.put("Connection", connections);
+        nbt.put("connection", connections);
     }
 
-    private void restoreFrom(CompoundTag nbt) {
-        Tag connections = nbt.get("Connection");
-        if (!(connections instanceof ListTag listConnections)) {
-            return;
-        }
-        getConnectionInfo().clear();
+    @Override
+    public void load(@Nonnull CompoundTag nbt) {
+        super.load(nbt);
+
+        Tag connectionsTag = nbt.get("connection");
+        if (!(connectionsTag instanceof ListTag listConnections)) return;
+
+        connections.clear();
 
         for (Tag entry : listConnections) {
             if (!(entry instanceof CompoundTag cTag))
@@ -167,63 +182,51 @@ public class ZiplineHookTileEntity extends BlockEntity {
                         cTag.getInt("rY"),
                         cTag.getInt("rZ")
                 );
-            } else if (cTag.contains("X") && cTag.contains("Y") && cTag.contains("Z")) {
-                pos = new BlockPos(cTag.getInt("X"), cTag.getInt("Y"), cTag.getInt("Z"));
-            } else
-                continue;
-            ZiplineInfo info = ZiplineInfo.load(cTag.get("Info"));
-            getConnectionInfo().put(pos, info);
+            } else continue;
+            var info = ZiplineInfo.load(cTag.get("info"));
+            connections.put(pos, info);
         }
     }
 
+    @Nullable
     @Override
-    public void saveAdditional(@Nonnull CompoundTag nbt) {
-        super.saveAdditional(nbt);
-        saveTo(nbt);
-    }
-
-    @Override
-    public void load(@Nonnull CompoundTag nbt) {
-        super.load(nbt);
-        restoreFrom(nbt);
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Nonnull
     @Override
     public CompoundTag getUpdateTag() {
         var nbt = super.getUpdateTag();
-        saveTo(nbt);
+        saveAdditional(nbt);
         return nbt;
     }
 
-    @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.handleUpdateTag(tag);
-        restoreFrom(tag);
+    private void notifyBlockUpdated() {
+        setChanged();
+        if (level != null) level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 8);
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, BlockEntity entity) {
-        if (!(entity instanceof ZiplineHookTileEntity self)) return;
 
-        if (level != null && !level.isClientSide()) {
-            self.connectionEntities.values().removeIf(it -> !it.isAlive());
-            if (self.connectionEntities.size() < self.getConnectionPoints().size()) {
-                List<ZiplineHookTileEntity> tileEntities = self.getConnectionPoints()
-                        .stream()
-                        .filter(it -> !self.connectionEntities.containsKey(it))
-                        .filter(level::isLoaded)
-                        .map(level::getBlockEntity)
-                        .map(it -> it instanceof ZiplineHookTileEntity ? (ZiplineHookTileEntity) it : null)
-                        .filter(Objects::nonNull)
-                        .toList();
-                tileEntities.forEach(it -> {
-                    if (it.getConnectionPoints().contains(self.getBlockPos())) {
-                        self.spawnRope(level, it, self.getConnectionInfo().get(it.getBlockPos()));
-                    } else {
-                        self.getConnectionPoints().remove(it.getBlockPos());
-                        self.setChanged();
-                    }
-                });
+    @OnlyIn(Dist.CLIENT)
+    public static void tick(Level level, BlockPos blockPos, BlockState blockState, BlockEntity blockEntity) {
+        if (level instanceof ILoadedZiplineHolderProvider provider && blockEntity instanceof ZiplineHookTileEntity hookTileEntity) {
+            var ziplineHolder = provider.getZiplineHolder();
+            var removedItems = new LinkedList<BlockPos>();
+            for (var connection : hookTileEntity.connections.entrySet()) {
+                var endPos = connection.getKey();
+                if (!level.isLoaded(endPos)) continue;
+                if (!(level.getBlockEntity(endPos) instanceof ZiplineHookTileEntity endHook)) {
+                    removedItems.add(endPos);
+                    continue;
+                }
+                if (hookTileEntity.getBlockPos().compareTo(endPos) < 0) {
+                    var shape = connection.getValue().type().getZipline(hookTileEntity.getHookPoint(), endHook.getHookPoint());
+                    ziplineHolder.notifyZiplineAlive(new Zipline(shape, connection.getValue(), hookTileEntity.getBlockPos(), endPos));
+                }
+            }
+            for (var removedItem : removedItems) {
+                hookTileEntity.connections.remove(removedItem);
             }
         }
     }

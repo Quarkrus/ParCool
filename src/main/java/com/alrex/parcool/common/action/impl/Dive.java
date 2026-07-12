@@ -13,6 +13,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 
+import java.util.List;
+
 public class Dive extends ContinuableAction implements ActionExtension.JumpListener {
     private final SynchronizedDataHolder dataHolder;
     private final SynchronizedProperty<Float> propertyYSpeedOnBeginning;
@@ -23,7 +25,7 @@ public class Dive extends ContinuableAction implements ActionExtension.JumpListe
     private boolean jumped;
 
     public Dive(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry);
+        super(parkourability, entry, List.of(ParCoolActions.RIDE_ZIPLINE));
         dataHolder = SynchronizedDataHolder.create(entry,
                 propertyYSpeedOnBeginning = SynchronizedProperty.newFloat()
         );

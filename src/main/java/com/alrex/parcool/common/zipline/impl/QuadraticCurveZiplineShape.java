@@ -1,30 +1,30 @@
 package com.alrex.parcool.common.zipline.impl;
 
-import com.alrex.parcool.common.zipline.Zipline;
+import com.alrex.parcool.common.zipline.ZiplineShape;
 import net.minecraft.world.phys.Vec3;
 
-public class QuadraticCurveZipline extends Zipline {
-    public QuadraticCurveZipline(Vec3 point1, Vec3 point2) {
+public class QuadraticCurveZiplineShape extends ZiplineShape {
+    public QuadraticCurveZiplineShape(Vec3 point1, Vec3 point2) {
         super(point1, point2);
     }
 
     @Override
     public Vec3 getMidPointOffsetFromStart(float t) {
-        double x = getOffsetToEndFromStart().x() * t;
-        double z = getOffsetToEndFromStart().z() * t;
-        double y = getOffsetToEndFromStart().y() * t * t;
+        double x = getOffsetFromStartToEnd().x() * t;
+        double z = getOffsetFromStartToEnd().z() * t;
+        double y = getOffsetFromStartToEnd().y() * t * t;
         return new Vec3(x, y, z);
     }
 
     @Override
     public float getSlope(float t) {
-        return (float) (2 * t * getOffsetToEndFromStart().y() / getHorizontalDistance());
+        return (float) (2 * t * getOffsetFromStartToEnd().y() / getHorizontalDistance());
     }
 
     @Override
     public float getParameter(Vec3 position) {
-        double offsetX = getOffsetToEndFromStart().x();
-        double offsetZ = getOffsetToEndFromStart().z();
+        double offsetX = getOffsetFromStartToEnd().x();
+        double offsetZ = getOffsetFromStartToEnd().z();
         return (float) (((position.x() - getStartPos().x()) * offsetX + (position.z() - getStartPos().z()) * offsetZ) /
                 (getHorizontalDistance() * getHorizontalDistance()));
     }
@@ -43,7 +43,7 @@ public class QuadraticCurveZipline extends Zipline {
     public double getMovedPositionByParameterApproximately(float currentT, float movement) {
         //Movement along a quadratic curve is difficult to calculate mathematically precisely
         double xzLength = getHorizontalDistance();
-        double a = getOffsetToEndFromStart().y() / (xzLength * xzLength);
+        double a = getOffsetFromStartToEnd().y() / (xzLength * xzLength);
 
         // use linear interpolation for avoiding division by zero
         if (Math.abs(a) < 0.005) {

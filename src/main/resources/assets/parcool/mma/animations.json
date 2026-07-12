@@ -44,13 +44,13 @@
   {
     "name": "parcool:back_flip",
     "fade_in_duration": 2,
-    "fade_out_duration": 5,
+    "fade_out_duration": 2,
     "main": "parcool:back_flip_group.json"
   },
   {
     "name": "parcool:front_flip",
     "fade_in_duration": 2,
-    "fade_out_duration": 5,
+    "fade_out_duration": 2,
     "main": "parcool:front_flip_group.json"
   },
   {
@@ -154,5 +154,11 @@
     "fade_in_duration": 4,
     "fade_out_duration": 5,
     "main": "parcool:front_flip_group.json"
+  },
+  {
+    "name": "parcool:ride_zipline",
+    "fade_in_duration": 6,
+    "fade_out_duration": 6,
+    "main": "parcool:ride_zipline_group.json"
   }
 ]

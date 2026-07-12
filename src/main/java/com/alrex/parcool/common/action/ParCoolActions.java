@@ -26,12 +26,19 @@ public class ParCoolActions {
     public static final ActionEntry<ChargeJump> CHARGE_JUMP;
     public static final ActionEntry<WallJump> WALL_JUMP;
     public static final ActionEntry<HideInBlock> HIDE_IN_BLOCK;
+    public static final ActionEntry<RideZipline> RIDE_ZIPLINE;
 
     static {
         var builder = new ActionGroup.Builder(ParCool.MOD_ID);
         WALL_JUMP = builder.add("wall_jump", WallJump.class, WallJump::new, new ActionOption()
                 .cost(StaminaConsumption.get(50, 0, 0))
                 .needNotOnGround(true)
+        );
+
+        RIDE_ZIPLINE = builder.add("ride_zipline", RideZipline.class, RideZipline::new, new ActionOption()
+                .cost(StaminaConsumption.get(0, 2, 0))
+                .needNotOnGround(true)
+                .availableInFluid(true)
         );
 
         FAST_RUN = builder.add("fast_run", FastRun.class, FastRun::new, new ActionOption()

@@ -117,6 +117,47 @@ public class ParCoolCodedAnimationComponents {
                 }
             }
     );
+    public static final ID<CodedAnimationComponent> ZIPLINE_SWING_BODY = CodedAnimationComponents.getInstance().register(
+            "builtin/zipline_swing_body",
+            (player, part, progress, partial, mirror) -> {
+                if (part != AnimatableModelPart.BODY && part != AnimatableModelPart.HEAD) return null;
+                var action = Parkourability.get(player).get(ParCoolActions.RIDE_ZIPLINE);
+                var ziplineOffset = action.getZiplineOffset();
+                if (ziplineOffset == null) return null;
+                Vec3 rotationAxis = new Vec3(0, 0, 1)
+                        .yRot((float) (Math.toRadians(Mth.lerp(partial, player.yBodyRotO, player.yBodyRot)) + MathUtil.toYawRadian(new Vec3(ziplineOffset.x(), 0, ziplineOffset.z())) + Math.PI / 2))
+                        .normalize();
+                var pitch = action.getBodyAngle(partial);
+                switch (part) {
+                    case BODY -> {
+                        return new Transform(Vec3f.ZERO, new Vector3f((float) rotationAxis.x, 0, (float) rotationAxis.z).rotation(pitch));
+                    }
+                    case HEAD -> {
+                        return new Transform(Vec3f.ZERO, new Vector3f((float) rotationAxis.x, 0, (float) rotationAxis.z).rotation(-0.5f * pitch));
+                    }
+                    default -> {
+                        return null;
+                    }
+                }
+            }
+    );
+    public static final ID<CodedAnimationComponent> ZIPLINE_SWING_LIMBS = CodedAnimationComponents.getInstance().register(
+            "builtin/zipline_swing_limbs",
+            (player, part, progress, partial, mirror) -> {
+                if (part != AnimatableModelPart.LEFT_LEG && part != AnimatableModelPart.RIGHT_LEG) return null;
+                var action = Parkourability.get(player).get(ParCoolActions.RIDE_ZIPLINE);
+                var ziplineOffset = action.getZiplineOffset();
+                if (ziplineOffset == null) return null;
+                Vec3 rotationAxis = new Vec3(0, 0, 1)
+                        .yRot((float) (Math.toRadians(Mth.lerp(partial, player.yBodyRotO, player.yBodyRot)) + MathUtil.toYawRadian(new Vec3(ziplineOffset.x(), 0, ziplineOffset.z())) + Math.PI / 2))
+                        .normalize();
+                var pitch = action.getBodyAngle(partial);
+                return new Transform(
+                        Vec3f.ZERO, new Vector3f((float) rotationAxis.x, 0, (float) rotationAxis.z).rotation(pitch)
+                );
+            }
+    );
+
     public static void register() {
     }
 }

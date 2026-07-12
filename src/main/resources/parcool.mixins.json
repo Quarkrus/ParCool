@@ -8,7 +8,7 @@
   "client": [
     "client.AbstractClientPlayerMixin",
     "client.CameraMixin",
-    "client.ClientWorldMixin",
+    "client.ClientLevelMixin",
     "client.LivingRendererMixin",
     "client.LocalPlayerMixin",
     "client.OptionsMixin",

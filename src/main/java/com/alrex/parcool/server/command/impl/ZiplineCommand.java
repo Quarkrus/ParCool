@@ -1,9 +1,9 @@
 package com.alrex.parcool.server.command.impl;
 
 import com.alrex.parcool.common.block.zipline.ZiplineHookTileEntity;
-import com.alrex.parcool.common.block.zipline.ZiplineInfo;
 import com.alrex.parcool.common.item.zipline.ZiplineRopeItem;
 import com.alrex.parcool.common.zipline.Zipline;
+import com.alrex.parcool.common.zipline.ZiplineInfo;
 import com.alrex.parcool.common.zipline.ZiplineType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -71,7 +71,7 @@ public class ZiplineCommand {
             var infoTag = CompoundTagArgument.getCompoundTag(context, ARGS_NAME_ZIPLINE_INFO);
             info = ZiplineInfo.load(infoTag);
         } else {
-            info = new ZiplineInfo(ZiplineType.STANDARD, ZiplineRopeItem.DEFAULT_COLOR);
+            info = new ZiplineInfo(ZiplineType.STANDARD, ZiplineRopeItem.DEFAULT_COLOR, (byte) 0);
         }
 
         if (!((ZiplineHookTileEntity) entity).connectTo((ZiplineHookTileEntity) entity2, info)) {

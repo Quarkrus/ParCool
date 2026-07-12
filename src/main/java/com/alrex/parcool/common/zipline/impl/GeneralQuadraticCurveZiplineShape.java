@@ -1,24 +1,24 @@
 package com.alrex.parcool.common.zipline.impl;
 
-import com.alrex.parcool.common.zipline.Zipline;
+import com.alrex.parcool.common.zipline.ZiplineShape;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-public class GeneralQuadraticCurveZipline extends Zipline {
+public class GeneralQuadraticCurveZiplineShape extends ZiplineShape {
 
-    public GeneralQuadraticCurveZipline(Vec3 point1, Vec3 point2, double lowestPointOffset) {
+    public GeneralQuadraticCurveZiplineShape(Vec3 point1, Vec3 point2, double lowestPointOffset) {
         super(point1, point2);
-        double straightDistance = Math.hypot(getHorizontalDistance(), getOffsetToEndFromStart().y());
+        double straightDistance = Math.hypot(getHorizontalDistance(), getOffsetFromStartToEnd().y());
         double yOffsetAtVertex = Math.abs(lowestPointOffset);
 
-        tAtVertex = Math.abs(getOffsetToEndFromStart().y()) < 0.005 ?
+        tAtVertex = Math.abs(getOffsetFromStartToEnd().y()) < 0.005 ?
                 0.5 :
-                (Math.sqrt(yOffsetAtVertex * (yOffsetAtVertex + getOffsetToEndFromStart().y())) - yOffsetAtVertex) / getOffsetToEndFromStart().y();
+                (Math.sqrt(yOffsetAtVertex * (yOffsetAtVertex + getOffsetFromStartToEnd().y())) - yOffsetAtVertex) / getOffsetFromStartToEnd().y();
         distOfXZToVertex = tAtVertex * getHorizontalDistance();
         getMidPointOffsetFromStart$a = Math.abs(tAtVertex - 0.5) < 0.005 ?
                 4 * yOffsetAtVertex :
-                getOffsetToEndFromStart().y() / (1 - 2 * tAtVertex);
-        getMovedPositionByParameterApproximately$a = getOffsetToEndFromStart().y() / (getHorizontalDistance() * getHorizontalDistance());
+                getOffsetFromStartToEnd().y() / (1 - 2 * tAtVertex);
+        getMovedPositionByParameterApproximately$a = getOffsetFromStartToEnd().y() / (getHorizontalDistance() * getHorizontalDistance());
         getDistanceFrom0$offset = getDistance(-distOfXZToVertex, getMovedPositionByParameterApproximately$a);
     }
 
@@ -30,9 +30,9 @@ public class GeneralQuadraticCurveZipline extends Zipline {
     @Override
     public Vec3 getMidPointOffsetFromStart(float t) {
         return new Vec3(
-                getOffsetToEndFromStart().x() * t,
+                getOffsetFromStartToEnd().x() * t,
                 getMidPointOffsetFromStart$a * t * (t - 2 * tAtVertex),
-                getOffsetToEndFromStart().z() * t
+                getOffsetFromStartToEnd().z() * t
         );
     }
 
@@ -43,8 +43,8 @@ public class GeneralQuadraticCurveZipline extends Zipline {
 
     @Override
     public float getParameter(Vec3 position) {
-        double offsetX = getOffsetToEndFromStart().x();
-        double offsetZ = getOffsetToEndFromStart().z();
+        double offsetX = getOffsetFromStartToEnd().x();
+        double offsetZ = getOffsetFromStartToEnd().z();
         return (float) (((position.x() - getStartPos().x()) * offsetX + (position.z() - getStartPos().z()) * offsetZ) /
                 (getHorizontalDistance() * getHorizontalDistance()));
     }
@@ -108,7 +108,7 @@ public class GeneralQuadraticCurveZipline extends Zipline {
     }
 
     @Override
-    public boolean isPossiblyHangable(Vec3 position) {
+    public boolean isPossiblyHangAble(Vec3 position) {
         return new AABB(getStartPos().x(), getMidPoint((float) tAtVertex).y(), getStartPos().z(), getEndPos().x(), getEndPos().y(), getEndPos().z())
                 .inflate(1d)
                 .contains(position);

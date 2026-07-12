@@ -64,9 +64,8 @@ public class ZiplineHookBlock extends DirectionalBlock implements EntityBlock {
     public void onRemove(@Nonnull BlockState state, @Nonnull Level world, @Nonnull BlockPos pos, @Nonnull BlockState p_196243_4_, boolean p_196243_5_) {
         if (!world.isClientSide()) {
             var tileEntity = world.getBlockEntity(pos);
-            if (tileEntity instanceof ZiplineHookTileEntity) {
-                ZiplineHookTileEntity ziplineHookTileEntity = (ZiplineHookTileEntity) tileEntity;
-                List<ItemStack> itemStacks = ziplineHookTileEntity.removeAllConnection();
+            if (tileEntity instanceof ZiplineHookTileEntity ziplineHookTileEntity) {
+                List<ItemStack> itemStacks = ziplineHookTileEntity.removeAllConnections();
                 itemStacks.forEach((it) -> Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), it));
             }
         }
@@ -100,7 +99,7 @@ public class ZiplineHookBlock extends DirectionalBlock implements EntityBlock {
             if (tileEntity instanceof ZiplineHookTileEntity ziplineHookTileEntity) {
                 if (ziplineHookTileEntity.getConnectionPoints().isEmpty()) return InteractionResult.PASS;
 
-                List<ItemStack> itemStacks = ziplineHookTileEntity.removeAllConnection();
+                List<ItemStack> itemStacks = ziplineHookTileEntity.removeAllConnections();
                 if (!itemStacks.isEmpty()) {
                     player.playSound(ParCoolSoundEvents.ZIPLINE_REMOVE.get(), 1, 1);
                 }
@@ -131,6 +130,7 @@ public class ZiplineHookBlock extends DirectionalBlock implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockEntityType<T> type) {
+        if (!level.isClientSide) return null;
         return type == TileEntities.ZIPLINE_HOOK.get() ? ZiplineHookTileEntity::tick : null;
     }
 }

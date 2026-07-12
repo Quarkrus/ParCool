@@ -1,0 +1,20 @@
+{
+  "infinite": true,
+  "components": [
+    {
+      "name": "parcool:ride_zipline_arms.json"
+    },
+    {
+      "name": "parcool:builtin/zipline_swing_body"
+    },
+    {
+      "name": "parcool:builtin/zipline_swing_limbs"
+    },
+    {
+      "name": "parcool:builtin/bob_left_leg"
+    },
+    {
+      "name": "parcool:builtin/bob_right_leg"
+    }
+  ]
+}

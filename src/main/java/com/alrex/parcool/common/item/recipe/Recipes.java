@@ -1,6 +1,7 @@
 package com.alrex.parcool.common.item.recipe;
 
 import com.alrex.parcool.ParCool;
+import com.alrex.parcool.common.item.recipe.special.ZiplineRopeAddPowerRecipe;
 import com.alrex.parcool.common.item.recipe.special.ZiplineRopeDyeRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
@@ -12,6 +13,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class Recipes {
     private static final DeferredRegister<RecipeSerializer<?>> RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, ParCool.MOD_ID);
     public static final RegistryObject<RecipeSerializer<ZiplineRopeDyeRecipe>> ZIPLINE_ROPE_DYE = RECIPES.register("zipline_rope_dye", () -> new SimpleRecipeSerializer<>(ZiplineRopeDyeRecipe::new));
+    public static final RegistryObject<RecipeSerializer<ZiplineRopeAddPowerRecipe>> ZIPLINE_ROPE_POWER = RECIPES.register("zipline_rope_empower", () -> new SimpleRecipeSerializer<>(ZiplineRopeAddPowerRecipe::new));
 
     public static void register(IEventBus bus) {
         RECIPES.register(bus);

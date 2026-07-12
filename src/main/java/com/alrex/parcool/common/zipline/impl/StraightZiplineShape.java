@@ -1,12 +1,11 @@
 package com.alrex.parcool.common.zipline.impl;
 
-import com.alrex.parcool.common.zipline.Zipline;
+import com.alrex.parcool.common.zipline.ZiplineShape;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-public class StraightZipline extends Zipline {
-    public StraightZipline(Vec3 point1, Vec3 point2) {
+public class StraightZiplineShape extends ZiplineShape {
+    public StraightZiplineShape(Vec3 point1, Vec3 point2) {
         super(point1, point2);
     }
 
@@ -16,16 +15,16 @@ public class StraightZipline extends Zipline {
 
     @Override
     public Vec3 getMidPointOffsetFromStart(float t) {
-        return getOffsetToEndFromStart().scale(t);
+        return getOffsetFromStartToEnd().scale(t);
     }
 
     public Vec3 getMidPointOffsetFromStart(double t) {
-        return getOffsetToEndFromStart().scale(t);
+        return getOffsetFromStartToEnd().scale(t);
     }
 
-    private final float slope = (float) (getOffsetToEndFromStart().y() * Mth.fastInvSqrt(
-            getOffsetToEndFromStart().x() * getOffsetToEndFromStart().x()
-                    + getOffsetToEndFromStart().z() * getOffsetToEndFromStart().z()
+    private final float slope = (float) (getOffsetFromStartToEnd().y() * Mth.fastInvSqrt(
+            getOffsetFromStartToEnd().x() * getOffsetFromStartToEnd().x()
+                    + getOffsetFromStartToEnd().z() * getOffsetFromStartToEnd().z()
     ));
 
     @Override
@@ -39,9 +38,9 @@ public class StraightZipline extends Zipline {
     }
 
     public double getParameterD(Vec3 position) {
-        double xOffset = getOffsetToEndFromStart().x();
-        double yOffset = getOffsetToEndFromStart().y();
-        double zOffset = getOffsetToEndFromStart().z();
+        double xOffset = getOffsetFromStartToEnd().x();
+        double yOffset = getOffsetFromStartToEnd().y();
+        double zOffset = getOffsetFromStartToEnd().z();
         double baseXOffset = getStartPos().x() - position.x;
         double baseYOffset = getStartPos().y() - position.y;
         double baseZOffset = getStartPos().z() - position.z;
