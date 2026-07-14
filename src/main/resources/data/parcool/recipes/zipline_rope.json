@@ -1,9 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "wCS",
+    "rCS",
     "SnS",
-    "SCw"
+    "SCr"
   ],
   "key": {
     "n": {
@@ -15,8 +15,8 @@
     "S": {
       "item": "minecraft:string"
     },
-    "w": {
-      "item": "minecraft:stick"
+    "r": {
+      "item": "minecraft:redstone"
     }
   },
   "result": {

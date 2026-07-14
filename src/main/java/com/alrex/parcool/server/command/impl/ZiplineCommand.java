@@ -71,7 +71,7 @@ public class ZiplineCommand {
             var infoTag = CompoundTagArgument.getCompoundTag(context, ARGS_NAME_ZIPLINE_INFO);
             info = ZiplineInfo.load(infoTag);
         } else {
-            info = new ZiplineInfo(ZiplineType.STANDARD, ZiplineRopeItem.DEFAULT_COLOR, (byte) 0);
+            info = new ZiplineInfo(ZiplineType.STANDARD, ZiplineRopeItem.DEFAULT_COLOR);
         }
 
         if (!((ZiplineHookTileEntity) entity).connectTo((ZiplineHookTileEntity) entity2, info)) {

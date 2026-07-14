@@ -1,9 +1,12 @@
 package com.alrex.parcool.common.block.zipline;
 
 import com.alrex.parcool.api.ParCoolSoundEvents;
+import com.alrex.parcool.common.block.BlockStateProperties;
 import com.alrex.parcool.common.block.TileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -24,6 +27,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
@@ -34,10 +38,12 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class ZiplineHookBlock extends DirectionalBlock implements EntityBlock {
+    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
     public ZiplineHookBlock(Properties p_i48440_1_) {
         super(p_i48440_1_);
         registerDefaultState(defaultBlockState().setValue(FACING, Direction.UP));
+        registerDefaultState(defaultBlockState().setValue(POWERED, false));
     }
 
     public Vec3 getActualZiplinePoint(BlockPos pos, BlockState state) {
@@ -46,7 +52,7 @@ public class ZiplineHookBlock extends DirectionalBlock implements EntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> stateBuilder) {
-        stateBuilder.add(FACING);
+        stateBuilder.add(FACING).add(POWERED);
     }
 
     @Override
@@ -61,15 +67,17 @@ public class ZiplineHookBlock extends DirectionalBlock implements EntityBlock {
     }
 
     @Override
-    public void onRemove(@Nonnull BlockState state, @Nonnull Level world, @Nonnull BlockPos pos, @Nonnull BlockState p_196243_4_, boolean p_196243_5_) {
-        if (!world.isClientSide()) {
-            var tileEntity = world.getBlockEntity(pos);
-            if (tileEntity instanceof ZiplineHookTileEntity ziplineHookTileEntity) {
-                List<ItemStack> itemStacks = ziplineHookTileEntity.removeAllConnections();
-                itemStacks.forEach((it) -> Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), it));
+    public void onRemove(@Nonnull BlockState state, @Nonnull Level world, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean p_196243_5_) {
+        if (!state.is(newState.getBlock())) {
+            if (!world.isClientSide()) {
+                var tileEntity = world.getBlockEntity(pos);
+                if (tileEntity instanceof ZiplineHookTileEntity ziplineHookTileEntity) {
+                    List<ItemStack> itemStacks = ziplineHookTileEntity.removeAllConnections();
+                    itemStacks.forEach((it) -> Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), it));
+                }
             }
+            super.onRemove(state, world, pos, newState, p_196243_5_);
         }
-        super.onRemove(state, world, pos, p_196243_4_, p_196243_5_);
     }
 
     @Override
@@ -78,6 +86,42 @@ public class ZiplineHookBlock extends DirectionalBlock implements EntityBlock {
         return direction == facing.getOpposite() && !canSurvive(state, levelAccessor, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, direction, state1, levelAccessor, pos, pos1);
     }
 
+    @Override
+    public void neighborChanged(
+            @Nonnull BlockState state,
+            @Nonnull Level level,
+            @Nonnull BlockPos pos,
+            @Nonnull Block cause,
+            @Nonnull BlockPos changedPos,
+            boolean p_60514_
+    ) {
+        if (!canSurvive(state, level, pos)) return;
+        Direction facing = state.getValue(FACING);
+        BlockPos supportingBlock = pos.relative(facing.getOpposite());
+        if (supportingBlock.equals(changedPos)) {
+            var powered = state.getValue(POWERED);
+            var signal = level.getSignal(changedPos, facing.getOpposite());
+            if (signal > 0) {
+                if (!powered) level.setBlock(pos, state.setValue(POWERED, true), 3);
+            } else {
+                if (powered) level.setBlock(pos, state.setValue(POWERED, false), 3);
+            }
+        }
+    }
+
+    @Override
+    public void onNeighborChange(BlockState state, LevelReader level, BlockPos pos, BlockPos neighbor) {
+    }
+
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource randomSource) {
+        if (state.getValue(POWERED) && randomSource.nextInt(7) == 0) {
+            if (level.getBlockEntity(pos) instanceof ZiplineHookTileEntity hook) {
+                var hookPos = hook.getHookPoint();
+                level.addParticle(DustParticleOptions.REDSTONE, hookPos.x, hookPos.y, hookPos.z, 0.0, randomSource.nextFloat() * 0.1, 0.0);
+            }
+        }
+    }
 
     @Override
     public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {

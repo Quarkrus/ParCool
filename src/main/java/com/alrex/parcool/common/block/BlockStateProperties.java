@@ -5,4 +5,5 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 public class BlockStateProperties {
     public static final BooleanProperty ORTHOGONAL = BooleanProperty.create("orthogonal");
+    public static final BooleanProperty POWERED = BooleanProperty.create("powered");
 }

@@ -122,7 +122,7 @@ public class RideZipline extends ContinuableAction {
     public void onWorkingTickInClient() {
         var player = parkourability.player();
         updateAngle();
-        if (player.tickCount % 2 == 0 && propertyZiplinePowered.getOrDefaultIfNull(false)) {
+        if (propertyZiplinePowered.getOrDefaultIfNull(false)) {
             var playerPos = player.position();
             var particlePos = new Vec3(player.xo, player.yo + 1.1 * player.getBbHeight(), player.zo);
             var posDiffX = player.xo - playerPos.x;
@@ -130,7 +130,7 @@ public class RideZipline extends ContinuableAction {
             player.level.addParticle(
                     DustParticleOptions.REDSTONE,
                     particlePos.x, particlePos.y, particlePos.z,
-                    -0.5 * posDiffX, 0.125 + Math.hypot(posDiffX, posDiffZ) * propertySlope.getOrDefaultIfNull(0f) * 0.5, -0.5 * posDiffZ
+                    -0.5 * posDiffX, 0.25 + Math.hypot(posDiffX, posDiffZ) * propertySlope.getOrDefaultIfNull(0f) * 0.5, -0.5 * posDiffZ
             );
         }
     }
@@ -160,14 +160,14 @@ public class RideZipline extends ContinuableAction {
                 .normalize()
                 .dot(offsetNormalized);
         speed *= player.isInFluidType() ? 0.8 : 0.98;
-        speed += ridingZipline.info().autoAcceleration() * lookAngle.dot(offsetNormalized) * 0.05
+        speed += (ridingZipline.powered() ? 0.04 : 0) * lookAngle.dot(offsetNormalized)
                 + Math.min(moveInputScale * 0.01 * (speedAttr.getValue() / speedAttr.getBaseValue()), 0.08)
                 - gravity * slope * (Mth.fastInvSqrt(slope * slope + 1));
         currentT = (float) ridingZipline.shape().getMovedPositionByParameterApproximately(currentT, (float) speed);
         currentPos = ridingZipline.shape().getMidPoint(currentT);
         propertySlope.set(slope);
         propertyAcceleration.set((float) (speed - oldSpeed));
-        propertyZiplinePowered.set(ridingZipline.info().autoAcceleration() > 0);
+        propertyZiplinePowered.set(ridingZipline.powered());
     }
 
     @OnlyIn(Dist.CLIENT)

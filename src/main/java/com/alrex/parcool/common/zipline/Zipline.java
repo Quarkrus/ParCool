@@ -10,8 +10,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public record Zipline(ZiplineShape shape, ZiplineInfo info, BlockPos start,
-                      BlockPos end) implements Comparable<Zipline> {
+public record Zipline(ZiplineShape shape, ZiplineInfo info, BlockPos start, BlockPos end,
+                      boolean powered) implements Comparable<Zipline> {
 
     public static final double MAXIMUM_HORIZONTAL_DISTANCE = 192.;
     public static final double MAXIMUM_VERTICAL_DISTANCE = MAXIMUM_HORIZONTAL_DISTANCE * 0.51;

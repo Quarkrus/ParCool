@@ -40,7 +40,6 @@ public class ZiplineRopeItem extends Item {
     public static ItemStack from(ZiplineInfo info) {
         var stack = new ItemStack(Items.ZIPLINE_ROPE::get);
         ZiplineRopeItem.setColor(stack, info.color());
-        ZiplineRopeItem.setAutoAcceleration(stack, info.autoAcceleration());
         return stack;
     }
 
@@ -82,9 +81,6 @@ public class ZiplineRopeItem extends Item {
                 lines.add(Component.literal("B : " + format.format(b) + "%").withStyle(ChatFormatting.BLUE));
             */
             lines.add(Component.translatable("parcool.gui.text.zipline.colored").withStyle(ChatFormatting.BLUE));
-        }
-        if (getAutoAcceleration(stack) > 0) {
-            lines.add(Component.translatable("parcool.gui.text.zipline.powered").withStyle(ChatFormatting.YELLOW));
         }
     }
 
@@ -136,7 +132,7 @@ public class ZiplineRopeItem extends Item {
                         return InteractionResult.FAIL;
                     }
                     if (!context.getLevel().isClientSide()) {
-                        if (!startZipEntity.connectTo(endZipEntity, new ZiplineInfo(getZiplineType(stack), getColor(stack), getAutoAcceleration(stack)))) {
+                        if (!startZipEntity.connectTo(endZipEntity, new ZiplineInfo(getZiplineType(stack), getColor(stack)))) {
                             Player player = context.getPlayer();
                             if (player != null) {
                                 player.displayClientMessage(Component.translatable("parcool.message.zipline.already_exist"), true);
@@ -284,26 +280,5 @@ public class ZiplineRopeItem extends Item {
             stack.setTag(tag);
         }
         tag.putByte("zipline_type", (byte) type.ordinal());
-    }
-
-    public static byte getAutoAcceleration(ItemStack stack) {
-        var tag = stack.getTag();
-        if (tag == null || !tag.contains("power")) {
-            return 0;
-        }
-        return tag.getByte("power");
-    }
-
-    public static void setAutoAcceleration(ItemStack stack, byte power) {
-        var tag = stack.getTag();
-        if (tag == null) {
-            tag = new CompoundTag();
-            stack.setTag(tag);
-        }
-        tag.putByte("power", power);
-    }
-
-    public static boolean hasAutoAcceleration(ItemStack stack) {
-        return getAutoAcceleration(stack) > 0;
     }
 }

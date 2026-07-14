@@ -53,6 +53,7 @@ public class ZiplineHookTileEntity extends BlockEntity {
         private Zipline findNextItem() {
             var level = getLevel();
             if (level == null) return null;
+            var thisIsPowered = getBlockState().getValue(ZiplineHookBlock.POWERED);
             while (iterator.hasNext()) {
                 var item = iterator.next();
                 var endPos = item.getKey();
@@ -60,7 +61,8 @@ public class ZiplineHookTileEntity extends BlockEntity {
                     if (!level.isLoaded(endPos)) continue;
                     if (!(level.getBlockEntity(endPos) instanceof ZiplineHookTileEntity endHook)) continue;
                     var shape = item.getValue().type().getZipline(getHookPoint(), endHook.getHookPoint());
-                    return new Zipline(shape, item.getValue(), getBlockPos(), endPos);
+                    var ziplinePowered = thisIsPowered || level.getBlockState(endPos).getValue(ZiplineHookBlock.POWERED);
+                    return new Zipline(shape, item.getValue(), getBlockPos(), endPos, ziplinePowered);
                 }
             }
             return null;
@@ -137,7 +139,7 @@ public class ZiplineHookTileEntity extends BlockEntity {
         for (var entry : connections.entrySet()) {
             var entity = level.getBlockEntity(entry.getKey());
             if (entity instanceof ZiplineHookTileEntity hookTileEntity) {
-                hookTileEntity.removeConnectionFrom(hookTileEntity)
+                this.removeConnectionFrom(hookTileEntity)
                         .map(ZiplineRopeItem::from)
                         .ifPresent(itemStacks::add);
             }
@@ -213,6 +215,7 @@ public class ZiplineHookTileEntity extends BlockEntity {
         if (level instanceof ILoadedZiplineHolderProvider provider && blockEntity instanceof ZiplineHookTileEntity hookTileEntity) {
             var ziplineHolder = provider.getZiplineHolder();
             var removedItems = new LinkedList<BlockPos>();
+            var thisIsPowered = blockState.getValue(ZiplineHookBlock.POWERED);
             for (var connection : hookTileEntity.connections.entrySet()) {
                 var endPos = connection.getKey();
                 if (!level.isLoaded(endPos)) continue;
@@ -221,8 +224,9 @@ public class ZiplineHookTileEntity extends BlockEntity {
                     continue;
                 }
                 if (hookTileEntity.getBlockPos().compareTo(endPos) < 0) {
+                    var ziplinePowered = thisIsPowered || level.getBlockState(endPos).getValue(ZiplineHookBlock.POWERED);
                     var shape = connection.getValue().type().getZipline(hookTileEntity.getHookPoint(), endHook.getHookPoint());
-                    ziplineHolder.notifyZiplineAlive(new Zipline(shape, connection.getValue(), hookTileEntity.getBlockPos(), endPos));
+                    ziplineHolder.notifyZiplineAlive(new Zipline(shape, connection.getValue(), hookTileEntity.getBlockPos(), endPos, ziplinePowered));
                 }
             }
             for (var removedItem : removedItems) {

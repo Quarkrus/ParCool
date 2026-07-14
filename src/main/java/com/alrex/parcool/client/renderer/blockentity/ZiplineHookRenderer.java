@@ -58,7 +58,6 @@ public class ZiplineHookRenderer implements BlockEntityRenderer<ZiplineHookTileE
             PoseStack poseStack,
             MultiBufferSource multiBufferSource
     ) {
-        boolean powered = zipline.info().autoAcceleration() > 0;
         int color = zipline.info().color();
         float r = ((0xFF0000 & color) >> 16) / 255f;
         float g = ((0x00FF00 & color) >> 8) / 255f;
@@ -93,7 +92,7 @@ public class ZiplineHookRenderer implements BlockEntityRenderer<ZiplineHookTileE
             float unitLengthZ = (float) (endOffsetFromStart.z() * invLengthSqrtXZ);
 
             for (int i = 0; i < divisionCount; i++) {
-                float colorScale = i % 2 == 0 ? 1f : (powered ? 0.9f : 0.75f);
+                float colorScale = i % 2 == 0 ? 1f : (zipline.powered() ? 0.9f : 0.75f);
 
                 for (int j = 0; j < 2; j++) {
                     if (render3d) {
