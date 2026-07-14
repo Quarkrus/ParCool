@@ -57,8 +57,8 @@ public class TrickJump extends Action implements ActionExtension.JumpListener {
         if (type != null) {
             PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(
                     switch (type) {
-                        case FRONT_FLIP -> ParCoolAnimations.FRONT_FLIP;
-                        case BACK_FLIP -> ParCoolAnimations.BACK_FLIP;
+                        case FRONT_FLIP -> ParCoolAnimations.TRICK_JUMP_FORWARD;
+                        case BACK_FLIP -> ParCoolAnimations.TRICK_JUMP_BACK;
                     }
             );
         }

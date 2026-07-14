@@ -8,15 +8,13 @@ import com.alrex.parcool.client.animation.system.registration.ID;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class AnimationResource {
     private final Map<ResourceLocation, StaticAnimationComponent> componentMap;
     private final Map<ResourceLocation, AnimationComponentGroup> animationGroupMap;
-    private final Map<ResourceLocation, AnimationSet> animationSetMap;
-    private final Map<ID<AnimationSet>, AnimationSet> idAnimationSetMap;
+    private final Map<ID<AnimationSet>, List<AnimationSet>> idAnimationSetMap;
+    private final Random random = new Random();
 
     public static AnimationResource empty() {
         return new AnimationResource(Collections.EMPTY_MAP, Collections.EMPTY_MAP, Collections.EMPTY_MAP);
@@ -25,13 +23,12 @@ public class AnimationResource {
     public AnimationResource(
             Map<ResourceLocation, StaticAnimationComponent> componentMap,
             Map<ResourceLocation, AnimationComponentGroup> animationGroupMap,
-            Map<ResourceLocation, AnimationSet> animationSetMap
+            Map<ResourceLocation, List<AnimationSet>> animationSetMap
     ) {
         this.componentMap = componentMap;
         this.animationGroupMap = animationGroupMap;
-        this.animationSetMap = animationSetMap;
         this.idAnimationSetMap = new TreeMap<>();
-        for (var mapEntry : this.animationSetMap.entrySet()) {
+        for (var mapEntry : animationSetMap.entrySet()) {
             var entry = AnimationSets.getInstance().get(mapEntry.getKey());
             if (entry != null) {
                 this.idAnimationSetMap.put(entry.id(), mapEntry.getValue());
@@ -41,12 +38,8 @@ public class AnimationResource {
 
     @Nullable
     public AnimationSet getAnimationSet(ID<AnimationSet> id) {
-        return idAnimationSetMap.get(id);
+        var animations = idAnimationSetMap.get(id);
+        if (animations == null) return null;
+        return animations.get(random.nextInt(animations.size()));
     }
-
-    @Nullable
-    public AnimationSet getAnimationSet(ResourceLocation name) {
-        return animationSetMap.get(name);
-    }
-
 }

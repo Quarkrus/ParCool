@@ -60,9 +60,11 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
                     var jsonResult = GSON.<List<JsonAnimationSet>>fromJson(reader, ANIMATION_SETS_TYPE.getType());
                     for (var registration : jsonResult) {
                         animationSetRegistrationMap.put(registration.getName(), registration);
-                        if (registration.getIntro() != null) requestedComponentGroups.add(registration.getIntro());
-                        if (registration.getOutro() != null) requestedComponentGroups.add(registration.getOutro());
-                        requestedComponentGroups.add(registration.getMain());
+                        for (var anim : registration.getAnimations()) {
+                            if (anim.getIntro() != null) requestedComponentGroups.add(anim.getIntro());
+                            if (anim.getOutro() != null) requestedComponentGroups.add(anim.getOutro());
+                            requestedComponentGroups.add(anim.getMain());
+                        }
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -215,46 +217,51 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
         return instances;
     }
 
-    private TreeMap<ResourceLocation, AnimationSet> constructAnimationSets(
+    private TreeMap<ResourceLocation, List<AnimationSet>> constructAnimationSets(
             TreeMap<ResourceLocation, JsonAnimationSet> jsonAnimationSets,
             TreeMap<ResourceLocation, AnimationComponentGroup> componentGroups
     ) {
-        var instances = new TreeMap<ResourceLocation, AnimationSet>();
-        for (var animSetEntry : jsonAnimationSets.entrySet()) {
-            if (animSetEntry.getValue().getMain() == null) {
-                LOGGER.warn("Animation Set [{}] has no main animation", animSetEntry.getKey());
-                continue;
-            }
-            var main = componentGroups.get(animSetEntry.getValue().getMain());
-            if (main == null) {
-                LOGGER.warn("Main animation {} of Animation Set [{}] is not found", animSetEntry.getValue().getMain(), animSetEntry.getKey());
-                continue;
-            }
-            AnimationComponentGroup intro = null;
-            if (animSetEntry.getValue().getIntro() != null) {
-                intro = componentGroups.get(animSetEntry.getValue().getIntro());
-                if (intro == null) {
-                    LOGGER.warn("Animation Set [{}] has intro animation, but it's not found", animSetEntry.getKey());
+        var instances = new TreeMap<ResourceLocation, List<AnimationSet>>();
+        for (var animSetsEntry : jsonAnimationSets.entrySet()) {
+            var animations = animSetsEntry.getValue().getAnimations();
+            var compiledAnimList = new ArrayList<AnimationSet>(animations.size());
+            for (var animSet : animations) {
+                if (animSet.getMain() == null) {
+                    LOGGER.warn("Animation Set [{}] has no main animation", animSetsEntry.getKey());
                     continue;
                 }
-            }
-            AnimationComponentGroup outro = null;
-            if (animSetEntry.getValue().getOutro() != null) {
-                outro = componentGroups.get(animSetEntry.getValue().getOutro());
-                if (outro == null) {
-                    LOGGER.warn("Animation Set [{}] has outro animation, but it's not found", animSetEntry.getKey());
+                var main = componentGroups.get(animSet.getMain());
+                if (main == null) {
+                    LOGGER.warn("Main animation {} of Animation Set [{}] is not found", animSet.getMain(), animSetsEntry.getKey());
                     continue;
                 }
+                AnimationComponentGroup intro = null;
+                if (animSet.getIntro() != null) {
+                    intro = componentGroups.get(animSet.getIntro());
+                    if (intro == null) {
+                        LOGGER.warn("Animation Set [{}] has intro animation, but it's not found", animSetsEntry.getKey());
+                        continue;
+                    }
+                }
+                AnimationComponentGroup outro = null;
+                if (animSet.getOutro() != null) {
+                    outro = componentGroups.get(animSet.getOutro());
+                    if (outro == null) {
+                        LOGGER.warn("Animation Set [{}] has outro animation, but it's not found", animSetsEntry.getKey());
+                        continue;
+                    }
+                }
+                compiledAnimList.add(
+                        new AnimationSet(
+                                animSetsEntry.getKey(),
+                                animSetsEntry.getValue().getFadeInDuration(),
+                                animSetsEntry.getValue().getFadeOutDuration(),
+                                intro, main, outro
+                        )
+                );
             }
-            instances.put(
-                    animSetEntry.getKey(),
-                    new AnimationSet(
-                            animSetEntry.getKey(),
-                            animSetEntry.getValue().getFadeInDuration(),
-                            animSetEntry.getValue().getFadeOutDuration(),
-                            intro, main, outro
-                    )
-            );
+            compiledAnimList.trimToSize();
+            instances.put(animSetsEntry.getKey(), compiledAnimList);
         }
         return instances;
     }

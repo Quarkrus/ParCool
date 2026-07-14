@@ -46,13 +46,13 @@ public class Vault extends ContinuableAction {
     public void onStartInClient() {
         switch (propertyVaultType.getOrDefaultIfNull(Type.KONG)) {
             case KONG:
-                PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.KONG_VAULT);
+                PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.VAULT_FORWARD);
                 break;
             case SPEED_LEFT:
-                PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.SPEED_VAULT);
+                PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.VAULT_SIDE);
                 break;
             case SPEED_RIGHT:
-                PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.SPEED_VAULT, true);
+                PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.VAULT_SIDE, true);
                 break;
         }
     }

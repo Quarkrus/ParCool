@@ -44,13 +44,13 @@ public class ParCoolAnimations {
             (p) -> Parkourability.get(p).get(ParCoolActions.CLIMB_UP).isDoing(),
             null
     );
-    public static final ID<AnimationSet> BACK_FLIP = AnimationSets.getInstance().register(
-            new ResourceLocation(ParCool.MOD_ID, "back_flip"),
+    public static final ID<AnimationSet> TRICK_JUMP_BACK = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "trick_jump_back"),
             (p) -> !p.isOnGround(),
             null
     );
-    public static final ID<AnimationSet> FRONT_FLIP = AnimationSets.getInstance().register(
-            new ResourceLocation(ParCool.MOD_ID, "front_flip"),
+    public static final ID<AnimationSet> TRICK_JUMP_FORWARD = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "trick_jump_forward"),
             (p) -> !p.isOnGround(),
             null
     );
@@ -59,13 +59,13 @@ public class ParCoolAnimations {
             (p) -> Parkourability.get(p).get(ParCoolActions.SLIDE_DOWN).isDoing(),
             null
     );
-    public static final ID<AnimationSet> TAP = AnimationSets.getInstance().registerTimeout(
-            new ResourceLocation(ParCool.MOD_ID, "tap"),
+    public static final ID<AnimationSet> BREAKFALL_NO_MOVE = AnimationSets.getInstance().registerTimeout(
+            new ResourceLocation(ParCool.MOD_ID, "breakfall_no_move"),
             100,
             null
     );
-    public static final ID<AnimationSet> ROLL = AnimationSets.getInstance().registerTimeout(
-            new ResourceLocation(ParCool.MOD_ID, "roll"),
+    public static final ID<AnimationSet> BREAKFALL_FORWARD = AnimationSets.getInstance().registerTimeout(
+            new ResourceLocation(ParCool.MOD_ID, "breakfall_forward"),
             100,
             null
     );
@@ -99,13 +99,13 @@ public class ParCoolAnimations {
             100,
             null
     );
-    public static final ID<AnimationSet> KONG_VAULT = AnimationSets.getInstance().registerTimeout(
-            new ResourceLocation(ParCool.MOD_ID, "kong_vault"),
+    public static final ID<AnimationSet> VAULT_FORWARD = AnimationSets.getInstance().registerTimeout(
+            new ResourceLocation(ParCool.MOD_ID, "vault_forward"),
             100,
             null
     );
-    public static final ID<AnimationSet> SPEED_VAULT = AnimationSets.getInstance().registerTimeout(
-            new ResourceLocation(ParCool.MOD_ID, "speed_vault"),
+    public static final ID<AnimationSet> VAULT_SIDE = AnimationSets.getInstance().registerTimeout(
+            new ResourceLocation(ParCool.MOD_ID, "vault_side"),
             100,
             null
     );

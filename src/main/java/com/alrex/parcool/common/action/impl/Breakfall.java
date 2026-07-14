@@ -63,10 +63,10 @@ public class Breakfall extends Action implements ActionExtension.LandListener {
     public void onStartInClient() {
         switch (propertyWorkingBreakfallType.getOrDefaultIfNull(BreakfallType.NONE)) {
             case TAP:
-                PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.TAP);
+                PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.BREAKFALL_NO_MOVE);
                 return;
             case ROLL:
-                PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.ROLL);
+                PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.BREAKFALL_FORWARD);
         }
     }
 
