@@ -1,13 +1,9 @@
 import com.google.gson.JsonParser
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.google.code.gson:gson:+'
-    }
-}
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.TaskAction
 
 abstract class MinifyJsonTask extends DefaultTask {
     @OutputDirectory
@@ -27,9 +23,4 @@ abstract class MinifyJsonTask extends DefaultTask {
             outFile.text = JsonParser.parseReader(it.newReader()).toString()
         }
     }
-}
-
-tasks.register("minifyJsonResource", MinifyJsonTask) {
-    inputDir = project.file("src/template/resources")
-    outputDir = project.file("src/generated/resources")
 }

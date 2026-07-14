@@ -1,3 +1,5 @@
+import me.modmuss50.mpp.ReleaseType
+
 plugins {
     id 'java'
     id 'eclipse'
@@ -11,12 +13,6 @@ repositories {
     maven { url = 'https://maven.blamejared.com' }
     maven { url = 'https://www.cursemaven.com' }
 }
-
-import me.modmuss50.mpp.ReleaseType
-
-apply from: 'buildscripts/generate_resource.gradle'
-apply from: 'buildscripts/generate_java_source.gradle'
-apply from: 'buildscripts/minify_json_resource.gradle'
 
 compileJava.options.encoding("UTF-8")
 compileTestJava.options.encoding("UTF-8")
@@ -98,6 +94,56 @@ dependencies {
     compileOnly fg.deobf("curse.maven:epic-fight-mod-405076:${epicfight_file_id}")
     //runtimeOnly fg.deobf("curse.maven:epic-fight-mod-405076:${epicfight_file_id}")
 }
+
+tasks.register("minifyJsonResource", MinifyJsonTask) {
+    inputDir = project.file("src/template/resources")
+    outputDir = project.file("src/generated/resources-minified-json")
+}
+
+tasks.register("generateLimitationEntry", ParCoolLimitationGenerationTask) {
+    inputFile = project.file("src/template/data/limitation_entries.json")
+    outputFile = project.file("src/generated/java/com/alrex/parcool/server/limitation/LimitationEntries.java")
+}
+
+tasks.register("generateModMetadata", ProcessResources) {
+    var properties = [
+            minecraft_version       : minecraft_version,
+            minecraft_version_range : minecraft_version_range,
+            forge_version           : forge_version,
+            forge_version_range     : forge_version_range,
+            loader_version_range    : loader_version_range,
+            mod_id                  : 'parcool',
+            mod_name                : 'ParCool',
+            mod_license             : 'Lesser General Public License version 3',
+            mod_version             : mod_version,
+            mod_authors             : 'alRex_U',
+            extern_feathers         : [
+                    mod_id       : 'feathers',
+                    version_range: '[0.1,)'
+            ],
+            extern_shouldersurfing  : [
+                    mod_id       : 'shouldersurfing',
+                    version_range: '[1.19.2-4.11.0,)'
+            ],
+            extern_betterthirdperson: [
+                    mod_id       : 'betterthirdperson',
+                    version_range: '[1.9.0,)'
+            ],
+            extern_epicfight        : [
+                    mod_id       : 'epicfight',
+                    version_range: '[19.5.22,)'
+            ]
+    ]
+    inputs.properties properties
+    expand properties
+    with copySpec {
+        from("src/template/resources") {
+            include 'META-INF/mods.toml'
+        }
+    }
+    into "src/generated/resources"
+}
+
 sourceSets {
     main.java {
         srcDir "src/generated/java"
@@ -106,6 +152,10 @@ sourceSets {
         srcDir tasks.named("generateModMetadata")
         srcDir tasks.named("minifyJsonResource")
     }
+}
+
+compileJava {
+    dependsOn tasks.named("generateLimitationEntry")
 }
 
 jar {

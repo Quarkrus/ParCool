@@ -111,13 +111,6 @@ public class AnimationResourceManager extends SimplePreparableReloadListener<Ani
                 } catch (JsonSyntaxException e) {
                     LOGGER.error("{} on loading AnimationComponent[{}]:{}", e.getClass().getSimpleName(), resourceLocation, e.getMessage());
                 }
-            } else {
-                LOGGER.warn("Requested component [{}] does not exist in resources", compLocation);
-            }
-        }
-        for (var comp : requestedComponents) {
-            if (!animationComponentMap.containsKey(comp)) {
-                LOGGER.warn("Requested animation component [{}] is not found in loaded resources", comp);
             }
         }
         return constructResource(animationSetRegistrationMap, animationComponentGroupMap, animationComponentMap);
