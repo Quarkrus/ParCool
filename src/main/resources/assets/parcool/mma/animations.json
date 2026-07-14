@@ -186,6 +186,9 @@
     "animations": [
       {
         "main": "parcool:kong_vault_group.json"
+      },
+      {
+        "main": "parcool:dash_vault_group.json"
       }
     ]
   },
