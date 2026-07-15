@@ -45,7 +45,7 @@ public class HangOn extends ContinuableAction implements ActionExtension.LeaveFr
     public HangOn(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP, ParCoolActions.DIVE, ParCoolActions.HANG_DOWN));
         dataHolder = SynchronizedDataHolder.create(entry,
-                propertyDirection = SynchronizedProperty.newEnum(InteractingWallDirection.class, (newV, oldV) -> oldDirection = oldV),
+                propertyDirection = SynchronizedProperty.newEnum(InteractingWallDirection.class),
                 propertyFullWall = SynchronizedProperty.newBoolean()
         );
     }
@@ -95,6 +95,12 @@ public class HangOn extends ContinuableAction implements ActionExtension.LeaveFr
     @Override
     public void onStartInClient() {
         PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.HANG_ON);
+        oldDirection = propertyDirection.get();
+    }
+
+    @Override
+    public void onWorkingTickInClient() {
+        oldDirection = propertyDirection.get();
     }
 
     @Override
