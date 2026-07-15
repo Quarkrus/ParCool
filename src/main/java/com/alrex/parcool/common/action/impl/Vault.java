@@ -105,7 +105,7 @@ public class Vault extends ContinuableAction {
         var baseBB = player.getBoundingBox();
         baseBB = baseBB.deflate(baseBB.getXsize() * 0.25, 0, baseBB.getZsize() * 0.25);
 
-        var obstacleCollision = getCollisionVec(player, vaultMovement, baseBB);
+        var obstacleCollision = getCollisionVec(player, vaultMovement, baseBB.move(0, player.getStepHeight(), 0));
         if (!checkHVecDifferent(obstacleCollision, vaultMovement)) return false; // No obstacles to get over
         var vaultMaxMovement = deltaMovementH.scale(duration);
 
