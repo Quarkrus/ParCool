@@ -2,7 +2,8 @@ package com.alrex.parcool.api.client.gui;
 
 import com.alrex.parcool.api.stamina.AbstractLocalStamina;
 
-public record StaminaDisplayContext(int value, int maxValue, boolean exhausted, boolean infinite, boolean justFilled) {
+public record StaminaDisplayContext(double value, double maxValue, boolean exhausted, boolean infinite,
+                                    boolean justFilled) {
     public static final StaminaDisplayContext DEFAULT = new StaminaDisplayContext(1, 1, false, false, false);
 
     public StaminaDisplayContext next(AbstractLocalStamina stamina) {

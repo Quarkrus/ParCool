@@ -22,18 +22,6 @@
     }
   },
   "int": {
-    "stamina_limit": {
-      "default": 2000,
-      "min": 300,
-      "priority": "lower",
-      "description": ""
-    },
-    "stamina_recovery": {
-      "default": 5,
-      "min": 1,
-      "priority": "lower",
-      "description": ""
-    },
     "dodge_cool_time": {
       "default": 0,
       "min": 0,

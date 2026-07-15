@@ -10,11 +10,11 @@ public abstract class AbstractLocalStamina implements IReadonlyStamina {
 
     protected final Player owner;
 
-    public abstract void setValue(int value);
+    public abstract void setValue(double value);
 
-    public abstract void consume(int value);
+    public abstract void consume(double value);
 
-    public abstract void recover(int value);
+    public abstract void recover(double value);
 
     public boolean isInfinite() {
         return owner.isCreative() || owner.isSpectator() || owner.hasEffect(ParCoolMobEffects.INEXHAUSTIBLE.get());

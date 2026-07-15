@@ -37,7 +37,7 @@ public class LightStaminaHUD extends GuiComponent implements IStaminaHUD {
 		var player = parkourability.player();
 		final boolean inexhaustible = player.hasEffect(ParCoolMobEffects.INEXHAUSTIBLE.get());
 
-		float staminaScale = Mth.lerp(partialTick, oldContext.value(), currentContext.value()) / currentContext.maxValue();
+		float staminaScale = (float) (Mth.lerp(partialTick, oldContext.value(), currentContext.value()) / currentContext.maxValue());
 		if (staminaScale < 0) staminaScale = 0;
 		if (staminaScale > 1) staminaScale = 1;
 		staminaScale *= 10f;

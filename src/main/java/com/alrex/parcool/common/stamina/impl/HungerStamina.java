@@ -11,26 +11,26 @@ public class HungerStamina extends AbstractLocalStamina {
     }
 
     @Override
-    public void setValue(int value) {
+    public void setValue(double value) {
     }
 
     @Override
-    public void consume(int value) {
+    public void consume(double value) {
         //TODO
         if (isInfinite()) return;
     }
 
     @Override
-    public void recover(int value) {
+    public void recover(double value) {
     }
 
     @Override
-    public int max() {
+    public double max() {
         return 20;
     }
 
     @Override
-    public int value() {
+    public double value() {
         return owner.getFoodData().getFoodLevel();
     }
 

@@ -17,8 +17,8 @@ public record StaminaPacket(UUID playerID, boolean fromClient, ReadonlyStamina s
 		public void encode(StaminaPacket staminaPacket, FriendlyByteBuf packet) {
 			packet.writeUUID(staminaPacket.playerID);
 			packet.writeBoolean(staminaPacket.fromClient);
-			packet.writeInt(staminaPacket.stamina.value());
-			packet.writeInt(staminaPacket.stamina.max());
+			packet.writeDouble(staminaPacket.stamina.value());
+			packet.writeDouble(staminaPacket.stamina.max());
 			packet.writeBoolean(staminaPacket.stamina.isExhausted());
 			packet.writeBoolean(staminaPacket.stamina.imposePenalty());
 		}
@@ -28,7 +28,7 @@ public record StaminaPacket(UUID playerID, boolean fromClient, ReadonlyStamina s
 			return new StaminaPacket(
 					packet.readUUID(),
 					packet.readBoolean(),
-					new ReadonlyStamina(packet.readInt(), packet.readInt(), packet.readBoolean(), packet.readBoolean())
+					new ReadonlyStamina(packet.readDouble(), packet.readDouble(), packet.readBoolean(), packet.readBoolean())
 			);
 		}
 

@@ -1,9 +1,9 @@
 package com.alrex.parcool.api.stamina;
 
 public interface IReadonlyStamina {
-    int max();
+    double max();
 
-    int value();
+    double value();
 
     boolean isExhausted();
 

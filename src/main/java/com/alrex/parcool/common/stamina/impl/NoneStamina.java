@@ -11,13 +11,13 @@ public class NoneStamina extends AbstractLocalStamina {
     }
 
     @Override
-    public int max() {
-        return 1;
+    public double max() {
+        return 1.;
     }
 
     @Override
-    public int value() {
-        return 1;
+    public double value() {
+        return 1.;
     }
 
     @Override
@@ -26,15 +26,15 @@ public class NoneStamina extends AbstractLocalStamina {
     }
 
     @Override
-    public void setValue(int value) {
+    public void setValue(double value) {
     }
 
     @Override
-    public void consume(int value) {
+    public void consume(double value) {
     }
 
     @Override
-    public void recover(int value) {
+    public void recover(double value) {
     }
 
     @Override
