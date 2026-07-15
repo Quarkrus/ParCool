@@ -1,0 +1,15 @@
+{
+  "duration": 14,
+  "components": [
+    {
+      "name": "parcool:side_flip.json",
+      "mirror": true,
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "max": 12
+        }
+      }
+    }
+  ]
+}

@@ -86,6 +86,15 @@
     "animations": [
       {
         "main": "parcool:front_flip_group.json"
+      },
+      {
+        "main": "parcool:front_flip_group.json"
+      },
+      {
+        "main": "parcool:side_flip_group.json"
+      },
+      {
+        "main": "parcool:side_flip_mirror_group.json"
       }
     ]
   },
