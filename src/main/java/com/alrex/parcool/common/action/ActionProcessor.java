@@ -27,24 +27,23 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class ActionProcessor {
-	private final StaminaSynchronizationDepot clientStaminaDepot = new StaminaSynchronizationDepot();
 	private final StaminaSynchronizationDepot serverStaminaDepot = new StaminaSynchronizationDepot();
-	private final ActionSynchronizationDepot clientActionDepot = new ActionSynchronizationDepot();
 	private final ActionSynchronizationDepot serverActionDepot = new ActionSynchronizationDepot();
 
-	public StaminaSynchronizationDepot getStaminaSyncDepot(LogicalSide side) {
-		return side == LogicalSide.CLIENT ? clientStaminaDepot : serverStaminaDepot;
+	public StaminaSynchronizationDepot getStaminaSyncDepot() {
+		return serverStaminaDepot;
 	}
 
-	public ActionSynchronizationDepot getActionSyncDepot(LogicalSide side) {
-		return side == LogicalSide.CLIENT ? clientActionDepot : serverActionDepot;
+	public ActionSynchronizationDepot getActionSyncDepot() {
+		return serverActionDepot;
 	}
 
 	@SubscribeEvent
 	public void onTickLevel(TickEvent.LevelTickEvent event) {
 		if (event.phase == TickEvent.Phase.START) return;
-		getStaminaSyncDepot(event.side).tick();
-		getActionSyncDepot(event.side).tick();
+		if (event.side.isClient()) return;
+		getStaminaSyncDepot().tick();
+		getActionSyncDepot().tick();
 	}
 
 	@SubscribeEvent
@@ -94,14 +93,16 @@ public class ActionProcessor {
 		}
 		if (list.isEmpty()) return;
 
-		var packet = new ActionStateSetPacket(parkourability.player().getUUID());
+		var packet = side == LogicalSide.CLIENT
+				? ActionStateSetPacket.fromClient(parkourability.player().getUUID())
+				: ActionStateSetPacket.fromServer(parkourability.player().getUUID());
 		for (var subPacket : list) {
 			packet.add(subPacket);
 		}
 		if (side.isClient()) {
 			ParCool.CONNECTION.send(PacketDistributor.SERVER.noArg(), packet);
 		} else {
-			getActionSyncDepot(side).requestSync(packet);
+			getActionSyncDepot().requestSync(packet);
 		}
 	}
 

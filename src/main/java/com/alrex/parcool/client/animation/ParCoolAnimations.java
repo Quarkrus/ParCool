@@ -54,6 +54,11 @@ public class ParCoolAnimations {
             (p) -> !p.isOnGround(),
             null
     );
+    public static final ID<AnimationSet> STRIDE_JUMP = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "stride"),
+            (p) -> !p.isOnGround(),
+            null
+    );
     public static final ID<AnimationSet> SLIDE_DOWN = AnimationSets.getInstance().register(
             new ResourceLocation(ParCool.MOD_ID, "slide_down"),
             (p) -> Parkourability.get(p).get(ParCoolActions.SLIDE_DOWN).isDoing(),

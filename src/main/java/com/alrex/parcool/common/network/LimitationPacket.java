@@ -43,7 +43,7 @@ public record LimitationPacket(UUID playerID, boolean serverLimitation, boolean 
     @OnlyIn(Dist.CLIENT)
     public void handleInPhysicalClient(Supplier<NetworkEvent.Context> contextSupplier) {
         var context = contextSupplier.get();
-        var player = NetworkUtil.getPlayerInPhysicalClient(playerID, context);
+        var player = NetworkUtil.getPlayerInPhysicalClient(playerID, context, clientLimitation());
         if (player == null) return;
         handle(player, context);
     }

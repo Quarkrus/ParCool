@@ -116,9 +116,6 @@ public class WorkingAnimationSet {
     }
 
     public void enter(AnimationPhase phase) {
-        if (this.phase == phase) {
-            return;
-        }
         phase = switch (phase) {
             case INTRO -> introAnimation != null ? AnimationPhase.INTRO : AnimationPhase.MAIN;
             case OUTRO -> outroAnimation != null ? AnimationPhase.OUTRO : AnimationPhase.END;
@@ -126,6 +123,7 @@ public class WorkingAnimationSet {
         };
         this.phase = phase;
         this.currentAnimation = getAnimation(phase);
+        if (this.currentAnimation != null) this.currentAnimation.reset();
         this.tickInPhase = 0;
     }
 

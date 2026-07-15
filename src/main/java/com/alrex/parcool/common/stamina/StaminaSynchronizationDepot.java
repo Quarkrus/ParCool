@@ -31,7 +31,7 @@ public class StaminaSynchronizationDepot {
     private MultiStaminaPacket packToPacket() {
         var packet = new MultiStaminaPacket();
         for (var entry : map.entrySet()) {
-            packet.add(new StaminaPacket(entry.getKey(), entry.getValue()));
+            packet.add(new StaminaPacket(entry.getKey(), false, entry.getValue()));
         }
         map.clear();
         return packet;

@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class NetworkUtil {
     @Nullable
-    public static Player getPlayerInPhysicalClient(UUID playerID, NetworkEvent.Context context) {
+    public static Player getPlayerInPhysicalClient(UUID playerID, NetworkEvent.Context context, boolean castByClient) {
         boolean isInLogicalServer = context.getDirection().getReceptionSide() == LogicalSide.SERVER;
         if (isInLogicalServer) {
             var player = context.getSender();
@@ -22,7 +22,9 @@ public class NetworkUtil {
         } else {
             var world = Minecraft.getInstance().level;
             if (world == null) return null;
-            return world.getPlayerByUUID(playerID);
+            var player = world.getPlayerByUUID(playerID);
+            if (castByClient && player != null && player.isLocalPlayer()) return null;
+            return player;
         }
     }
 

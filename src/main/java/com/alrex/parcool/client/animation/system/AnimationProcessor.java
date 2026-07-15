@@ -36,25 +36,25 @@ public class AnimationProcessor {
     }
 
     public void start(ID<AnimationSet> id, boolean mirror) {
-        if (!startIfNotWorking(id, mirror)) {
-            var entry = getWorkingAnimator(id);
-            if (entry == null) return;
-            entry.animator.enter(AnimationPhase.INTRO);
+        var entry = getWorkingAnimator(id);
+        if (entry != null) {
+            remove(entry);
         }
+
+        startIfNotWorking(id, mirror);
     }
 
-    public boolean startIfNotWorking(ID<AnimationSet> id, boolean mirror) {
-        if (isWorking(id)) return false;
+    public void startIfNotWorking(ID<AnimationSet> id, boolean mirror) {
+        if (isWorking(id)) return;
 
         var animEntry = AnimationSets.getInstance().get(id);
-        if (animEntry == null) return true;
+        if (animEntry == null) return;
         var newAnimationSet = AnimationResourceManager.getInstance().getResource().getAnimationSet(id);
-        if (newAnimationSet == null) return true;
+        if (newAnimationSet == null) return;
         if (animEntry.parent() != null) {
             startIfNotWorking(animEntry.parent().id(), mirror);
         }
         animators.add(new WorkingAnimationEntry(animEntry, new WorkingAnimationSet(newAnimationSet, animEntry.controllerSupplier().apply(owner), mirror)));
-        return true;
     }
 
     private void remove(WorkingAnimationEntry entry) {

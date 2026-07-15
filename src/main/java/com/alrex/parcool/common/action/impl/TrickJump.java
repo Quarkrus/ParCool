@@ -17,12 +17,13 @@ import java.util.List;
 
 public class TrickJump extends Action implements ActionExtension.JumpListener {
     public enum Type {
-        FORWARD, BACK;
+        FORWARD, BACK, STRIDE
     }
 
     private final SynchronizedDataHolder dataHolder;
     private final SynchronizedProperty<Type> propertyTrickType;
     private boolean jumped;
+    private boolean strideMirror;
 
     public TrickJump(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry, List.of(ParCoolActions.DIVE));
@@ -41,9 +42,15 @@ public class TrickJump extends Action implements ActionExtension.JumpListener {
             propertyTrickType.set(Type.BACK);
             return true;
         }
-        if (parkourability.get(ParCoolActions.FAST_RUN).isDoing() && parkourability.player().getRandom().nextInt(8) != 0) {
-            propertyTrickType.set(Type.FORWARD);
-            return true;
+        if (parkourability.get(ParCoolActions.FAST_RUN).isDoing()) {
+            if (parkourability.getAdditionalProperties().getOnGroundDurations().lastDurationDoing() < 3) {
+                propertyTrickType.set(Type.STRIDE);
+                return true;
+            }
+            if (parkourability.player().getRandom().nextInt(8) != 0) {
+                propertyTrickType.set(Type.FORWARD);
+                return true;
+            }
         }
         duration = ParCoolKeyBinds.getMovementInput(LogicalMovement.FORWARD).getPressedDuration();
         if (0 <= duration && duration < 5) {
@@ -61,12 +68,17 @@ public class TrickJump extends Action implements ActionExtension.JumpListener {
     @Override
     public void onStartInClient() {
         var type = propertyTrickType.get();
-        if (type != null) {
+        if (type == null) return;
+        if (type == Type.STRIDE) {
+            strideMirror = !strideMirror;
             PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(
-                    switch (type) {
-                        case FORWARD -> ParCoolAnimations.TRICK_JUMP_FORWARD;
-                        case BACK -> ParCoolAnimations.TRICK_JUMP_BACK;
-                    }
+                    ParCoolAnimations.STRIDE_JUMP, strideMirror
+            );
+        } else {
+            PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(
+                    type == Type.FORWARD
+                            ? ParCoolAnimations.TRICK_JUMP_FORWARD
+                            : ParCoolAnimations.TRICK_JUMP_BACK
             );
         }
     }

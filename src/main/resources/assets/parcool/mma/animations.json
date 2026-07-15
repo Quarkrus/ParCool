@@ -99,6 +99,16 @@
     ]
   },
   {
+    "name": "parcool:stride",
+    "fade_in_duration": 2,
+    "fade_out_duration": 5,
+    "animations": [
+      {
+        "main": "parcool:stride_group.json"
+      }
+    ]
+  },
+  {
     "name": "parcool:slide_down",
     "fade_in_duration": 5,
     "fade_out_duration": 5,

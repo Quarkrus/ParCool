@@ -16,24 +16,36 @@ import java.util.function.Supplier;
 
 public class ActionStateSetPacket extends MultiComposablePacket<ActionStatePacket> {
     private final UUID playerID;
+    private final boolean castedByClient;
     public static final IHandler<ActionStateSetPacket> HANDLER = new Handler();
 
-    public ActionStateSetPacket(UUID playerID) {
+    public static ActionStateSetPacket fromClient(UUID playerID) {
+        return new ActionStateSetPacket(playerID, true);
+    }
+
+    public static ActionStateSetPacket fromServer(UUID playerID) {
+        return new ActionStateSetPacket(playerID, false);
+    }
+
+    private ActionStateSetPacket(UUID playerID, boolean castedByClient) {
         super(ActionStatePacket.HANDLER);
         this.playerID = playerID;
+        this.castedByClient = castedByClient;
     }
 
     private static class Handler implements IHandler<ActionStateSetPacket> {
         @Override
         public void encode(ActionStateSetPacket actionStateSetPacket, FriendlyByteBuf packet) {
             packet.writeUUID(actionStateSetPacket.playerID);
+            packet.writeBoolean(actionStateSetPacket.castedByClient);
             MultiComposablePacket.encode(actionStateSetPacket, packet);
         }
 
         @Override
         public ActionStateSetPacket decode(FriendlyByteBuf packet) {
             var id = packet.readUUID();
-            return ActionStateSetPacket.decode(() -> new ActionStateSetPacket(id), packet);
+            var byClient = packet.readBoolean();
+            return ActionStateSetPacket.decode(() -> new ActionStateSetPacket(id, byClient), packet);
         }
 
         @Override
@@ -41,17 +53,17 @@ public class ActionStateSetPacket extends MultiComposablePacket<ActionStatePacke
             var player = NetworkUtil.getPlayerInPhysicalServer(actionStateSetPacket.playerID, contextSupplier.get());
             if (player == null) return;
             processPlayer(actionStateSetPacket, player);
-            ParCool.getActionProcessor().getActionSyncDepot(LogicalSide.SERVER).requestSync(actionStateSetPacket);
+            ParCool.getActionProcessor().getActionSyncDepot().requestSync(actionStateSetPacket);
         }
 
         @Override
         public void handleInPhysicalClient(ActionStateSetPacket actionStateSetPacket, Supplier<NetworkEvent.Context> contextSupplier) {
             var context = contextSupplier.get();
-            var player = NetworkUtil.getPlayerInPhysicalClient(actionStateSetPacket.playerID, context);
+            var player = NetworkUtil.getPlayerInPhysicalClient(actionStateSetPacket.playerID, context, actionStateSetPacket.castedByClient);
             if (player == null) return;
             processPlayer(actionStateSetPacket, player);
             if (context.getDirection().getReceptionSide() == LogicalSide.SERVER) {
-                ParCool.getActionProcessor().getActionSyncDepot(LogicalSide.SERVER).requestSync(actionStateSetPacket);
+                ParCool.getActionProcessor().getActionSyncDepot().requestSync(actionStateSetPacket);
             }
         }
 

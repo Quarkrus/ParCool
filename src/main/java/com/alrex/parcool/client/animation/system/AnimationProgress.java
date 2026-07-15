@@ -52,7 +52,7 @@ public abstract class AnimationProgress {
     }
 
     void reset() {
-        progress = 0;
+        oldProgress = progress = 0;
     }
 
     public interface Constructor<T extends AnimationProgress> {

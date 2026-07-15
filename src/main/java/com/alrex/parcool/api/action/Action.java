@@ -88,7 +88,10 @@ public abstract class Action {
 	/// Please use <code>canStart</code> method as long as possible
 	public void startExplicitly() {
 		start();
-		var packet = new ActionStateSetPacket(parkourability.player().getUUID());
+		var player = parkourability.player();
+		var packet = player.level.isClientSide()
+				? ActionStateSetPacket.fromClient(parkourability.player().getUUID())
+				: ActionStateSetPacket.fromServer(parkourability.player().getUUID());
 		packet.add(new ActionStatePacket(
 				entry.id().getNamespace(),
 				Collections.singletonList(getSynchronizedData().packToEntry(ActionStatePacket.Type.START, entry))

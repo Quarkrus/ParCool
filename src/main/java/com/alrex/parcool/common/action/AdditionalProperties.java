@@ -11,12 +11,14 @@ public class AdditionalProperties {
 
 	public static class StatusTick {
 		private int duration;
+		private int lastDuration;
 		private boolean doing;
 
 		private void update(boolean doing) {
 			if (this.doing == doing) {
 				duration++;
 			} else {
+				lastDuration = duration;
 				duration = 0;
 			}
 			this.doing = doing;
@@ -28,6 +30,14 @@ public class AdditionalProperties {
 
 		public int durationNotDoing() {
 			return !doing ? duration : 0;
+		}
+
+		public int lastDurationDoing() {
+			return !doing ? lastDuration : 0;
+		}
+
+		public int lastDurationNotDoing() {
+			return doing ? lastDuration : 0;
 		}
 	}
 

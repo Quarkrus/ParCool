@@ -51,6 +51,9 @@ public class WorkingAnimation implements IWorkingAnimation {
     public void reset() {
         tick = 0;
         finished = false;
+        for (var component : components) {
+            component.progress().reset();
+        }
     }
 
     @Override

@@ -2,12 +2,11 @@
   "duration": 14,
   "components": [
     {
-      "name": "parcool:front_flip.json",
+      "name": "parcool:stride.json",
       "progress": {
         "name": "parcool:time",
         "args": {
-          "max": 15,
-          "scale": 1.071
+          "max": 13
         }
       }
     }

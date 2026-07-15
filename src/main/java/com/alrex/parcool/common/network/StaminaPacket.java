@@ -11,11 +11,12 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public record StaminaPacket(UUID playerID, ReadonlyStamina stamina) {
+public record StaminaPacket(UUID playerID, boolean fromClient, ReadonlyStamina stamina) {
 	public static final IHandler<StaminaPacket> HANDLER = new IHandler<StaminaPacket>() {
 		@Override
 		public void encode(StaminaPacket staminaPacket, FriendlyByteBuf packet) {
 			packet.writeUUID(staminaPacket.playerID);
+			packet.writeBoolean(staminaPacket.fromClient);
 			packet.writeInt(staminaPacket.stamina.value());
 			packet.writeInt(staminaPacket.stamina.max());
 			packet.writeBoolean(staminaPacket.stamina.isExhausted());
@@ -26,30 +27,31 @@ public record StaminaPacket(UUID playerID, ReadonlyStamina stamina) {
 		public StaminaPacket decode(FriendlyByteBuf packet) {
 			return new StaminaPacket(
 					packet.readUUID(),
+					packet.readBoolean(),
 					new ReadonlyStamina(packet.readInt(), packet.readInt(), packet.readBoolean(), packet.readBoolean())
 			);
 		}
 
 		@Override
 		public void handleInPhysicalServer(StaminaPacket staminaPacket, Supplier<NetworkEvent.Context> contextSupplier) {
-			var player = NetworkUtil.getPlayerInPhysicalClient(staminaPacket.playerID, contextSupplier.get());
+			var player = NetworkUtil.getPlayerInPhysicalServer(staminaPacket.playerID, contextSupplier.get());
 			if (player == null) return;
 			var parkourability = Parkourability.get(player);
 			parkourability.updateStaminaInRemote(staminaPacket.stamina);
 
-			ParCool.getActionProcessor().getStaminaSyncDepot(LogicalSide.SERVER).requestSync(player.getUUID(), staminaPacket.stamina);
+			ParCool.getActionProcessor().getStaminaSyncDepot().requestSync(player.getUUID(), staminaPacket.stamina);
 		}
 
 		@Override
 		public void handleInPhysicalClient(StaminaPacket staminaPacket, Supplier<NetworkEvent.Context> contextSupplier) {
 			var context = contextSupplier.get();
-			var player = NetworkUtil.getPlayerInPhysicalClient(staminaPacket.playerID, context);
+			var player = NetworkUtil.getPlayerInPhysicalClient(staminaPacket.playerID, context, staminaPacket.fromClient);
 			if (player == null) return;
 			var parkourability = Parkourability.get(player);
 			parkourability.updateStaminaInRemote(staminaPacket.stamina);
 
 			if (context.getDirection().getReceptionSide() == LogicalSide.SERVER) {
-				ParCool.getActionProcessor().getStaminaSyncDepot(LogicalSide.SERVER).requestSync(player.getUUID(), staminaPacket.stamina);
+				ParCool.getActionProcessor().getStaminaSyncDepot().requestSync(player.getUUID(), staminaPacket.stamina);
 			}
 		}
 	};
