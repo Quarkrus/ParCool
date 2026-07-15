@@ -62,6 +62,9 @@ public class ParCoolActions {
                 SKYDIVE = builder.add("skydive", Skydive.class, Skydive::new, new ActionOption()
                         .parent(DIVE).needParentWorking(true)
                 );
+                TRICK_JUMP = builder.add("trick_jump", TrickJump.class, TrickJump::new, new ActionOption()
+                        .parent(DIVE).needParentWorking(false)
+                );
             }
         }
 
@@ -104,7 +107,6 @@ public class ParCoolActions {
                 .needOnGround(true)
                 .cost(StaminaConsumption.get(50, 0, 0))
         );
-        TRICK_JUMP = builder.add("trick_jump", TrickJump.class, TrickJump::new);
         BREAKFALL = builder.add("breakfall", Breakfall.class, Breakfall::new, new ActionOption()
                 .triggeredSide(LogicalSide.SERVER)
                 .cost(StaminaConsumption.get(50, 0, 0))

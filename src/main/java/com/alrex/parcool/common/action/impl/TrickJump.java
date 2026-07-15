@@ -10,11 +10,14 @@ import com.alrex.parcool.client.input.LogicalMovement;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.ActionExtension;
+import com.alrex.parcool.common.action.ParCoolActions;
 import net.minecraft.client.player.AbstractClientPlayer;
+
+import java.util.List;
 
 public class TrickJump extends Action implements ActionExtension.JumpListener {
     public enum Type {
-        FRONT_FLIP, BACK_FLIP;
+        FORWARD, BACK;
     }
 
     private final SynchronizedDataHolder dataHolder;
@@ -22,7 +25,7 @@ public class TrickJump extends Action implements ActionExtension.JumpListener {
     private boolean jumped;
 
     public TrickJump(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry);
+        super(parkourability, entry, List.of(ParCoolActions.DIVE));
         dataHolder = SynchronizedDataHolder.create(entry,
                 propertyTrickType = SynchronizedProperty.newEnum(Type.class)
         );
@@ -35,12 +38,16 @@ public class TrickJump extends Action implements ActionExtension.JumpListener {
 
         var duration = ParCoolKeyBinds.getMovementInput(LogicalMovement.BACKWARD).getPressedDuration();
         if (0 <= duration && duration < 5) {
-            propertyTrickType.set(Type.BACK_FLIP);
+            propertyTrickType.set(Type.BACK);
+            return true;
+        }
+        if (parkourability.get(ParCoolActions.FAST_RUN).isDoing() && parkourability.player().getRandom().nextInt(8) != 0) {
+            propertyTrickType.set(Type.FORWARD);
             return true;
         }
         duration = ParCoolKeyBinds.getMovementInput(LogicalMovement.FORWARD).getPressedDuration();
         if (0 <= duration && duration < 5) {
-            propertyTrickType.set(Type.FRONT_FLIP);
+            propertyTrickType.set(Type.FORWARD);
             return true;
         }
         return false;
@@ -57,8 +64,8 @@ public class TrickJump extends Action implements ActionExtension.JumpListener {
         if (type != null) {
             PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(
                     switch (type) {
-                        case FRONT_FLIP -> ParCoolAnimations.TRICK_JUMP_FORWARD;
-                        case BACK_FLIP -> ParCoolAnimations.TRICK_JUMP_BACK;
+                        case FORWARD -> ParCoolAnimations.TRICK_JUMP_FORWARD;
+                        case BACK -> ParCoolAnimations.TRICK_JUMP_BACK;
                     }
             );
         }
