@@ -17,34 +17,23 @@ public class ActionSet implements Iterable<Action> {
         for (var group : registry.getRegisteredGroups().entrySet()) {
             actions.put(group.getKey(), group.getValue().actions().stream().map(it -> (Action) it.createInstance(parkourability)).toList());
         }
-        var list = new LinkedList<Action>();
-        Queue<ActionEntry<?>> queue = new LinkedList<>();
-        for (var actionList : actions.values()) {
-            for (var action : actionList) {
-                if (action.getEntry().parent() == null) {
-                    queue.add(action.getEntry());
-                }
-            }
-        }
         var extListenerLists = new ArrayList<Tuple<Class<? extends ActionExtension>, LinkedList<ActionExtension>>>();
         for (var extType : ActionExtension.EXTENSIONS) {
             extListenerLists.add(new Tuple<>(extType, new LinkedList<>()));
         }
-        while (!queue.isEmpty()) {
-            var entry = queue.poll();
-            var action = actions.get(entry.id().getNamespace()).get(entry.index());
-            list.add(action);
+        var listForIteration = new ArrayList<Action>();
+        for (var entry : registry.getProcessingOrder()) {
+            var action = get(entry);
+            listForIteration.add(action);
+
             for (var extListenerList : extListenerLists) {
                 if (extListenerList.getA().isAssignableFrom(action.getClass())) {
                     extListenerList.getB().add((ActionExtension) action);
                 }
             }
-            for (var child : entry.children()) {
-                queue.add(child);
-            }
         }
         extHandlers = extListenerLists.stream().map(it -> createHandler(it.getA(), it.getB())).toList();
-        iterationList = Collections.unmodifiableList(list);
+        iterationList = Collections.unmodifiableList(listForIteration);
     }
 
     private <T extends ActionExtension> ActionExtension.Handler<T> createHandler(Class<T> clazz, LinkedList<?> list) {

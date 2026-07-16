@@ -4,15 +4,18 @@ import net.minecraft.world.entity.Pose;
 import net.minecraftforge.fml.LogicalSide;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ActionOption {
     public record Value(
             StaminaConsumption defaultCost,
             @Nullable ActionEntry<? extends ContinuableAction> parent,
             @Nullable Pose neededPose,
+            Set<ActionEntry<? extends Action>> beforeProcessedActions,
             boolean needOnGround,
             boolean needNotOnGround,
-            boolean needParentWorking,
             boolean availableInFluid,
             boolean availableWithFallFlying,
             LogicalSide triggeredSide
@@ -22,9 +25,9 @@ public class ActionOption {
     private StaminaConsumption staminaConsumption = StaminaConsumption.ZERO;
     @Nullable
     private ActionEntry<? extends ContinuableAction> parent = null;
+    private final TreeSet<ActionEntry<? extends Action>> beforeProcessedActions = new TreeSet<>();
     @Nullable
     private Pose neededPose = Pose.STANDING;
-    private boolean needParentWorking = false;
     private boolean availableInFluid = false;
     private boolean availableWithFallFlying = false;
     private boolean needOnGround = false;
@@ -33,7 +36,7 @@ public class ActionOption {
 
     public Value build() {
         return new Value(
-                staminaConsumption, parent, neededPose, needOnGround, needNotOnGround, needParentWorking, availableInFluid, availableWithFallFlying, triggeredSide
+                staminaConsumption, parent, neededPose, beforeProcessedActions, needOnGround, needNotOnGround, availableInFluid, availableWithFallFlying, triggeredSide
         );
     }
 
@@ -47,11 +50,7 @@ public class ActionOption {
 
     public ActionOption parent(ActionEntry<? extends ContinuableAction> parentAction) {
         this.parent = parentAction;
-        return this;
-    }
-
-    public ActionOption needParentWorking(boolean needParent) {
-        this.needParentWorking = needParent;
+        this.beforeProcessedActions.add(parentAction);
         return this;
     }
 
@@ -82,6 +81,12 @@ public class ActionOption {
 
     public ActionOption triggeredSide(LogicalSide side) {
         this.triggeredSide = side;
+        return this;
+    }
+
+    @SafeVarargs
+    public final ActionOption processedAfter(ActionEntry<? extends Action>... actions) {
+        this.beforeProcessedActions.addAll(Arrays.asList(actions));
         return this;
     }
 }

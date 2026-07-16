@@ -70,7 +70,7 @@ public abstract class ContinuableAction extends Action {
     public void finish() {
         if (!doing) return;
         for (var child : entry.children()) {
-            if (parkourability.get(child) instanceof ContinuableAction continuableAction && child.option().needParentWorking()) {
+            if (parkourability.get(child) instanceof ContinuableAction continuableAction) {
                 continuableAction.finish();
             }
         }

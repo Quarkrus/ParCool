@@ -24,4 +24,8 @@ public class BasicRegistry<KEY extends Comparable<KEY>, VALUE> {
     public void freeze() {
         this.frozen = true;
     }
+
+    public boolean isFrozen() {
+        return frozen;
+    }
 }

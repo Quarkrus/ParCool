@@ -111,11 +111,9 @@ public abstract class Action {
 		) {
 			return false;
 		}
-		if (entry.option().needParentWorking()) {
-			var parent = entry.parent();
-			if (parent != null && !parkourability.get(parent).isDoing()) {
-				return false;
-			}
+		var parent = entry.parent();
+		if (parent != null && !parkourability.get(parent).isDoing()) {
+			return false;
 		}
 		if (exclusiveActions != null) {
 			for (var exclusiveAction : exclusiveActions) {
