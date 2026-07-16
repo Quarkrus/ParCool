@@ -149,6 +149,11 @@ public class ParCoolAnimations {
             (p) -> Parkourability.get(p).get(ParCoolActions.RIDE_ZIPLINE).isDoing(),
             null
     );
+    public static final ID<AnimationSet> WALL_RUN = AnimationSets.getInstance().registerTimeout(
+            new ResourceLocation(ParCool.MOD_ID, "wall_run"),
+            50,
+            null
+    );
 
     public static void register() {
     }

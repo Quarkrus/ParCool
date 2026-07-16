@@ -72,7 +72,7 @@
   {
     "name": "parcool:trick_jump_back",
     "fade_in_duration": 2,
-    "fade_out_duration": 4,
+    "fade_out_duration": 6,
     "animations": [
       {
         "main": "parcool:back_flip_group.json"
@@ -288,6 +288,16 @@
     "animations": [
       {
         "main": "parcool:ride_zipline_group.json"
+      }
+    ]
+  },
+  {
+    "name": "parcool:wall_run",
+    "fade_in_duration": 1,
+    "fade_out_duration": 4,
+    "animations": [
+      {
+        "main": "parcool:wall_run_group.json"
       }
     ]
   }

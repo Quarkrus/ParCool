@@ -1,12 +1,13 @@
 {
-  "duration": 16,
+  "duration": 12,
   "components": [
     {
-      "name": "parcool:back_flip.json",
+      "name": "parcool:wall_run.json",
       "progress": {
         "name": "parcool:time",
         "args": {
-          "max": 14
+          "max": 15,
+          "scale": 1.25
         }
       }
     }

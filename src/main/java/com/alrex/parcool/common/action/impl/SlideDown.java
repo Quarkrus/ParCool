@@ -49,7 +49,7 @@ public class SlideDown extends ContinuableAction implements ActionExtension.Leav
 
     @Override
     public boolean canStart() {
-        if (tickSinceCanceled < 3) {
+        if (tickSinceCanceled < 3 || parkourability.player().getDeltaMovement().y >= -1e-4) {
             return false;
         }
         if (ParCoolKeyBinds.SLIDE_DOWN.key().isDown()) {

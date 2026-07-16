@@ -11,8 +11,11 @@ import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.ActionExtension;
 import com.alrex.parcool.common.action.ParCoolActions;
+import com.alrex.parcool.util.EntityUtil;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.world.entity.Entity;
 
+import java.util.Collections;
 import java.util.List;
 
 public class TrickJump extends Action implements ActionExtension.JumpListener {
@@ -43,6 +46,10 @@ public class TrickJump extends Action implements ActionExtension.JumpListener {
             return true;
         }
         if (parkourability.get(ParCoolActions.FAST_RUN).isDoing()) {
+            var player = parkourability.player();
+            var vec = EntityUtil.getHorizontalLookAngle(player).scale(3.5);
+            var collideVec = Entity.collideBoundingBox(player, vec, player.getBoundingBox().deflate(0.1), player.level, Collections.emptyList());
+            if (Math.abs(vec.x - collideVec.x) > 1e-4 || Math.abs(vec.z - collideVec.z) > 1e-4) return false;
             if (parkourability.getAdditionalProperties().getOnGroundDurations().lastDurationDoing() < 3) {
                 propertyTrickType.set(Type.STRIDE);
                 return true;

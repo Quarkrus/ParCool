@@ -40,6 +40,7 @@ public class AnimationResource {
     public AnimationSet getAnimationSet(ID<AnimationSet> id) {
         var animations = idAnimationSetMap.get(id);
         if (animations == null) return null;
+        if (animations.isEmpty()) return null;
         return animations.get(random.nextInt(animations.size()));
     }
 }
