@@ -19,6 +19,7 @@ public class ParCoolActions {
     public static final ActionEntry<HangDown> HANG_DOWN;
     public static final ActionEntry<Dodge> DODGE;
     public static final ActionEntry<ClimbUp> CLIMB_UP;
+    public static final ActionEntry<Castaway> CASTAWAY;
     public static final ActionEntry<TrickJump> TRICK_JUMP;
     public static final ActionEntry<SlideDown> SLIDE_DOWN;
     public static final ActionEntry<Breakfall> BREAKFALL;
@@ -101,13 +102,19 @@ public class ParCoolActions {
                 .cost(StaminaConsumption.get(50, 0, 0))
         );
 
+        CASTAWAY = builder.add("castaway", Castaway.class, Castaway::new, new ActionOption()
+                .processedAfter(HANG_ON)
+                .needNotOnGround(true)
+                .cost(StaminaConsumption.get(20, 0, 0))
+        );
+
         HANG_DOWN = builder.add("hang_down", HangDown.class, HangDown::new, new ActionOption()
                 .processedAfter(HANG_ON)
                 .needNotOnGround(true)
         );
 
         SLIDE_DOWN = builder.add("slide_down", SlideDown.class, SlideDown::new, new ActionOption()
-                .processedAfter(HANG_ON)
+                .processedAfter(HANG_ON, CLIMB_UP, CASTAWAY)
                 .needNotOnGround(true)
                 .cost(StaminaConsumption.get(0, 1, 0))
         );

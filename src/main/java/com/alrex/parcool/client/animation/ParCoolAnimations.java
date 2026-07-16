@@ -154,6 +154,11 @@ public class ParCoolAnimations {
             50,
             null
     );
+    public static final ID<AnimationSet> CASTAWAY = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "castaway"),
+            (p) -> !p.isOnGround(),
+            null
+    );
 
     public static void register() {
     }

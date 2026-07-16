@@ -1,0 +1,14 @@
+{
+  "duration": 14,
+  "components": [
+    {
+      "name": "parcool:castaway.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "max": 12
+        }
+      }
+    }
+  ]
+}

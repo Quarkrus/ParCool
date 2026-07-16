@@ -300,5 +300,15 @@
         "main": "parcool:wall_run_group.json"
       }
     ]
+  },
+  {
+    "name": "parcool:castaway",
+    "fade_in_duration": 1,
+    "fade_out_duration": 5,
+    "animations": [
+      {
+        "main": "parcool:castaway_group.json"
+      }
+    ]
   }
 ]

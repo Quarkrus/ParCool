@@ -28,7 +28,7 @@ public class SlideDown extends ContinuableAction implements ActionExtension.Leav
     private short tickSinceCanceled = 0;
 
     public SlideDown(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP, ParCoolActions.HANG_ON, ParCoolActions.DIVE));
+        super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP, ParCoolActions.HANG_ON, ParCoolActions.DIVE, ParCoolActions.CASTAWAY));
         dataHolder = SynchronizedDataHolder.create(entry,
                 propertyDirection = SynchronizedProperty.newEnum(InteractingWallDirection.class)
         );

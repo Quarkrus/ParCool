@@ -3,6 +3,7 @@ package com.alrex.parcool.common.action.impl;
 import com.alrex.parcool.api.action.*;
 import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
+import com.alrex.parcool.client.input.LogicalMovement;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.ActionExtension;
@@ -40,10 +41,10 @@ public class HangOn extends ContinuableAction implements ActionExtension.LeaveFr
     private HangState currentHangState;
     @Nullable
     private HangState startingHangState;
-    private short tickSinceCanceled = 0;
+    private short cooldown = 0;
 
     public HangOn(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP, ParCoolActions.DIVE, ParCoolActions.HANG_DOWN));
+        super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP, ParCoolActions.DIVE, ParCoolActions.HANG_DOWN, ParCoolActions.CASTAWAY));
         dataHolder = SynchronizedDataHolder.create(entry,
                 propertyDirection = SynchronizedProperty.newEnum(InteractingWallDirection.class),
                 propertyFullWall = SynchronizedProperty.newBoolean()
@@ -52,12 +53,12 @@ public class HangOn extends ContinuableAction implements ActionExtension.LeaveFr
 
     @Override
     public boolean canStart() {
-        return tickSinceCanceled >= 3 && ParCoolKeyBinds.HANG.key().isDown() && (startingHangState = getHangState()) != null;
+        return cooldown == 0 && ParCoolKeyBinds.HANG.key().isDown() && (startingHangState = getHangState()) != null;
     }
 
     @Override
     public boolean canContinue() {
-        return tickSinceCanceled >= 3 && ParCoolKeyBinds.HANG.key().isDown() && currentHangState != null && !ParCoolKeyBinds.JUMP.state().isJustPressed();
+        return cooldown == 0 && ParCoolKeyBinds.HANG.key().isDown() && currentHangState != null && !ParCoolKeyBinds.JUMP.state().isJustPressed();
     }
 
     @Override
@@ -127,13 +128,19 @@ public class HangOn extends ContinuableAction implements ActionExtension.LeaveFr
 
     @Override
     public void onTickInLocalClient() {
-        if (tickSinceCanceled < 255) tickSinceCanceled++;
+        if (cooldown > 0) cooldown--;
     }
 
     @Override
     public void onStopInLocalClient() {
-        if (tickSinceCanceled >= 3 && currentHangState != null && ParCoolKeyBinds.JUMP.state().isJustPressed()) {
-            parkourability.request(ParCoolActions.CLIMB_UP, new ClimbUp.RequestContext(this.currentHangState));
+        if (cooldown == 0 && currentHangState != null && ParCoolKeyBinds.JUMP.state().isJustPressed()) {
+            if (currentHangState.direction().asVec().dot(EntityUtil.getHorizontalLookAngle(parkourability.player())) > 0.98
+                    && ParCoolKeyBinds.getMovementInput(LogicalMovement.BACKWARD).isDown()
+            ) {
+                parkourability.request(ParCoolActions.CASTAWAY, new Castaway.RequestContext(this.currentHangState));
+            } else {
+                parkourability.request(ParCoolActions.CLIMB_UP, new ClimbUp.RequestContext(this.currentHangState));
+            }
         }
     }
 
@@ -168,7 +175,7 @@ public class HangOn extends ContinuableAction implements ActionExtension.LeaveFr
 
     @Override
     public void onLeaveFromWall() {
-        tickSinceCanceled = 0;
+        cooldown = 3;
     }
 
     private record AnimationData(
