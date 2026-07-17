@@ -7,13 +7,19 @@ import com.alrex.parcool.client.input.LogicalMovement;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.ActionExtension;
+import com.alrex.parcool.common.action.BehaviorEnforcer;
 import com.alrex.parcool.common.action.ParCoolActions;
+import com.alrex.parcool.util.EntityUtil;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
 import java.util.List;
 
 public class Dodge extends ContinuableAction implements ActionExtension.AttackedListener {
+    private static final BehaviorEnforcer.ID ID_CANCEL_GET_OFF_BLOCK = BehaviorEnforcer.newID();
+
     private final SynchronizedDataHolder dataHolder;
     private final SynchronizedProperty<AnimationType> propertyAnimationType;
 
@@ -56,7 +62,7 @@ public class Dodge extends ContinuableAction implements ActionExtension.Attacked
 
     @Override
     public void onStartInClient() {
-        switch (propertyAnimationType.get()) {
+        switch (propertyAnimationType.getOrDefaultIfNull(AnimationType.FRONT)) {
             case BACK:
                 PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.DODGE_BACK);
                 break;
@@ -70,6 +76,22 @@ public class Dodge extends ContinuableAction implements ActionExtension.Attacked
                 PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.DODGE_RIGHT, true);
                 break;
         }
+    }
+
+    @Override
+    public void onStartInLocalClient() {
+        var player = parkourability.player();
+        var moveDirection = EntityUtil.getHorizontalLookAngle(player);
+        var speed = EntityUtil.getHorizontalMaximumSpeed(player);
+        moveDirection = switch (propertyAnimationType.getOrDefaultIfNull(AnimationType.FRONT)) {
+            case FRONT -> moveDirection;
+            case BACK -> moveDirection.reverse();
+            case LEFT -> moveDirection.yRot(Mth.HALF_PI);
+            case RIGHT -> moveDirection.yRot(-Mth.HALF_PI);
+        };
+        var moveVec = moveDirection.scale(speed);
+        parkourability.getBehaviorEnforcer().setMarkerEnforcingDeltaMovement(this::isDoing, () -> new Vec3(moveVec.x, player.getDeltaMovement().y, moveVec.z));
+        parkourability.getBehaviorEnforcer().addMarkerEnforcingNoDescendingFromEdge(ID_CANCEL_GET_OFF_BLOCK, this::isDoing);
     }
 
     @Override
