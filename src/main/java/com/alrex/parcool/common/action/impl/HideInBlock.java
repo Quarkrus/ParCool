@@ -34,7 +34,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class HideInBlock extends ContinuableAction implements ActionExtension.VisibilityListener, ActionExtension.LandListener {
+public class HideInBlock extends ContinuableAction implements ActionExtension.VisibilityListener, ActionExtension.LandListener, ActionExtension.BlockChangedInClientListener {
     private static final BehaviorEnforcer.ID ID_CANCEL_SHOW_NAME = BehaviorEnforcer.newID();
     private static final BehaviorEnforcer.ID ID_CANCEL_SNEAK = BehaviorEnforcer.newID();
     private static final BehaviorEnforcer.ID ID_NO_PHYSICS = BehaviorEnforcer.newID();
@@ -352,6 +352,21 @@ public class HideInBlock extends ContinuableAction implements ActionExtension.Vi
     public void onLand(LivingFallEvent event) {
         if (parkourability.get(ParCoolActions.DIVE).isDoing()) {
             startingFromDive = true;
+        }
+    }
+
+    @Override
+    public void onChangeBlock(BlockPos pos) {
+        if (isDoing()) {
+            var blockPos1 = propertyHidingAreaEdge1.get();
+            var blockPos2 = propertyHidingAreaEdge2.get();
+            if (blockPos1 == null || blockPos2 == null) return;
+            if (blockPos1.getX() <= pos.getX() && pos.getX() <= blockPos2.getX()
+                    && blockPos1.getY() <= pos.getY() && pos.getY() <= blockPos2.getY()
+                    && blockPos1.getZ() <= pos.getZ() && pos.getZ() <= blockPos2.getZ()
+            ) {
+                hidingBlockChanged = true;
+            }
         }
     }
 }

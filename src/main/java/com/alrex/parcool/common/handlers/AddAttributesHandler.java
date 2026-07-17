@@ -11,5 +11,8 @@ public class AddAttributesHandler {
     public static void onAddAttributes(EntityAttributeModificationEvent event) {
         event.add(EntityType.PLAYER, ParCoolAttributes.MAX_STAMINA.get());
         event.add(EntityType.PLAYER, ParCoolAttributes.STAMINA_RECOVERY.get());
+        event.add(EntityType.PLAYER, ParCoolAttributes.BREAKFALL_DAMAGE_REDUCTION.get());
+        event.add(EntityType.PLAYER, ParCoolAttributes.FAST_RUN_SPEED.get());
+        event.add(EntityType.PLAYER, ParCoolAttributes.HORIZONTAL_WALL_RUN_DURATION.get());
     }
 }

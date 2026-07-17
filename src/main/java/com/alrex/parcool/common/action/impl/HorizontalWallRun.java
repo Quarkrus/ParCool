@@ -1,5 +1,6 @@
 package com.alrex.parcool.common.action.impl;
 
+import com.alrex.parcool.api.ParCoolAttributes;
 import com.alrex.parcool.api.action.*;
 import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
@@ -73,10 +74,16 @@ public class HorizontalWallRun extends ContinuableAction implements ActionExtens
 
     @Override
     public void onStartInLocalClient() {
+        var player = parkourability.player();
+        var durationAttr = player.getAttribute(ParCoolAttributes.HORIZONTAL_WALL_RUN_DURATION.get());
+        if (durationAttr == null) return;
+        var duration = durationAttr.getValue();
         parkourability.getBehaviorEnforcer().setMarkerEnforcingDeltaMovement(this::isDoing, () -> {
             var wallDirection = propertyDirection.get();
             if (wallDirection == null) return null;
-            return parkourability.player().getDeltaMovement().add(wallDirection.asVec().scale(1 / 16d)).multiply(1, 0, 1);
+            return player.getDeltaMovement()
+                    .add(wallDirection.asVec().scale(1 / 16d))
+                    .multiply(1, getDoingTick() < duration ? 0 : Math.min(1f, (getDoingTick() - duration) / duration), 1);
         });
     }
 

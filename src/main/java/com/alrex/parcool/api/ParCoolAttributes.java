@@ -15,6 +15,7 @@ public class ParCoolAttributes {
 
     public static final RegistryObject<Attribute> BREAKFALL_DAMAGE_REDUCTION = register("parcool.breakfall.damage_reduction", 0.4, 0, 1);
     public static final RegistryObject<Attribute> FAST_RUN_SPEED = register("parcool.fast_run.speed", 0.02, 0, 10);
+    public static final RegistryObject<Attribute> HORIZONTAL_WALL_RUN_DURATION = register("parcool.horizontal_wall_run.duration", 20, 0, 10000);
 
     private static RegistryObject<Attribute> register(String name, double defaultValue, double min, double max) {
         return ATTRIBUTES.register(name, () -> new RangedAttribute("attribute.name." + name, defaultValue, min, max).setSyncable(true));
