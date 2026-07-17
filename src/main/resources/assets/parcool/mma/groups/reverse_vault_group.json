@@ -1,0 +1,14 @@
+{
+  "duration": 15,
+  "components": [
+    {
+      "name": "parcool:reverse_vault.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "max": 15
+        }
+      }
+    }
+  ]
+}

@@ -218,6 +218,9 @@
     "animations": [
       {
         "main": "parcool:speed_vault_group.json"
+      },
+      {
+        "main": "parcool:reverse_vault_group.json"
       }
     ]
   },

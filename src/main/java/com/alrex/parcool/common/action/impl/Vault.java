@@ -8,6 +8,7 @@ import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.util.EntityUtil;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
@@ -15,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class Vault extends ContinuableAction {
     private enum Type {
-        KONG, SPEED_LEFT, SPEED_RIGHT
+        FORWARD, LEFT, RIGHT
     }
 
     private static final int MAX_DURATION = 9;
@@ -44,14 +45,14 @@ public class Vault extends ContinuableAction {
 
     @Override
     public void onStartInClient() {
-        switch (propertyVaultType.getOrDefaultIfNull(Type.KONG)) {
-            case KONG:
+        switch (propertyVaultType.getOrDefaultIfNull(Type.FORWARD)) {
+            case FORWARD:
                 PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.VAULT_FORWARD);
                 break;
-            case SPEED_LEFT:
+            case LEFT:
                 PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.VAULT_SIDE);
                 break;
-            case SPEED_RIGHT:
+            case RIGHT:
                 PlayerAnimator.get((AbstractClientPlayer) parkourability.player()).start(ParCoolAnimations.VAULT_SIDE, true);
                 break;
         }
@@ -121,22 +122,22 @@ public class Vault extends ContinuableAction {
         this.vaultHeight = (float) vaultingHeight;
         this.obstacleDistance = obstacleCollision;
         this.propertyDuration.set((byte) duration);
-        this.propertyVaultType.set(getVaultType(vaultMovement));
+        this.propertyVaultType.set(getVaultType(vaultMovement, player.level.random));
         return true;
     }
 
-    private static Type getVaultType(Vec3 movementVec) {
+    private static Type getVaultType(Vec3 movementVec, RandomSource randomSource) {
         movementVec = movementVec.normalize();
         var xAbs = Math.abs(movementVec.x);
-        if (xAbs > 0.9848 || xAbs < 0.1736) { // 0.9848 is cos(10 degrees), 0.1736 is cos(80 degrees)
-            return Type.KONG;
+        if ((xAbs > 0.9848 || xAbs < 0.1736) && randomSource.nextInt(8) != 0) { // 0.9848 is cos(10 degrees), 0.1736 is cos(80 degrees)
+            return Type.FORWARD;
         }
         if (0 < movementVec.z) {
             return movementVec.z < movementVec.x || (movementVec.x < 0 && -movementVec.x < movementVec.z)
-                    ? Type.SPEED_RIGHT : Type.SPEED_LEFT;
+                    ? Type.RIGHT : Type.LEFT;
         }
         return movementVec.x < movementVec.z || (movementVec.x > 0 && -movementVec.x > movementVec.z)
-                ? Type.SPEED_RIGHT : Type.SPEED_LEFT;
+                ? Type.RIGHT : Type.LEFT;
     }
 
     private static boolean checkHVecDifferent(Vec3 a, Vec3 b) {
