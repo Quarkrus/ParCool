@@ -44,7 +44,13 @@ public class HangOn extends ContinuableAction implements ActionExtension.LeaveFr
     private short cooldown = 0;
 
     public HangOn(Parkourability parkourability, ActionEntry<? extends Action> entry) {
-        super(parkourability, entry, List.of(ParCoolActions.CLIMB_UP, ParCoolActions.DIVE, ParCoolActions.HANG_DOWN, ParCoolActions.CASTAWAY));
+        super(parkourability, entry, List.of(
+                ParCoolActions.CLIMB_UP,
+                ParCoolActions.DIVE,
+                ParCoolActions.HANG_DOWN,
+                ParCoolActions.CASTAWAY,
+                ParCoolActions.POLE_CLIMB
+        ));
         dataHolder = SynchronizedDataHolder.create(entry,
                 propertyDirection = SynchronizedProperty.newEnum(InteractingWallDirection.class),
                 propertyFullWall = SynchronizedProperty.newBoolean()

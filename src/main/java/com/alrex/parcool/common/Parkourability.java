@@ -4,7 +4,7 @@ import com.alrex.parcool.ParCool;
 import com.alrex.parcool.api.action.Action;
 import com.alrex.parcool.api.action.ActionEntry;
 import com.alrex.parcool.api.action.StaminaConsumption;
-import com.alrex.parcool.api.stamina.IReadonlyStamina;
+import com.alrex.parcool.api.stamina.IReadableStamina;
 import com.alrex.parcool.common.action.*;
 import com.alrex.parcool.common.info.ActionInfo;
 import com.alrex.parcool.common.info.CompiledLimitation;
@@ -33,7 +33,7 @@ public class Parkourability {
 	private final ActionSet actions;
 	private final TreeMap<ActionEntry<?>, Object> requestedContexts = new TreeMap<>();
 	private final Player player;
-	private IReadonlyStamina stamina;
+	private IReadableStamina stamina;
 
 	public Parkourability(Player player, ActionRegistry registry) {
 		this.player = player;
@@ -87,7 +87,7 @@ public class Parkourability {
 		return info.getServerLimitation();
 	}
 
-	public IReadonlyStamina getStamina() {
+	public IReadableStamina getStamina() {
 		return stamina;
 	}
 

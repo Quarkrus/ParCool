@@ -62,6 +62,8 @@ public class AnimationProgresses extends AnimationRegistry<AnimationProgress, An
     public final ID<AnimationProgress> TIME = register("time", (player) -> 1);
     public final ID<AnimationProgress> VELOCITY = register("velocity", (player) -> (float) EntityUtil.getPositionDifference(player).length());
     public final ID<AnimationProgress> VELOCITY_H = register("velocity_h", (player) -> (float) Math.min(EntityUtil.getHorizontalPositionDifference(player).length(), EntityUtil.getHorizontalMaximumSpeed(player)));
+    public final ID<AnimationProgress> VELOCITY_V = register("velocity_v", (player) -> (float) Math.abs(player.position().y - player.yo));
     public final ID<AnimationProgress> VELOCITY_FORWARD = register("velocity_forward", (player) -> (float) Math.min(EntityUtil.getHorizontalPositionDifference(player).dot(EntityUtil.getHorizontalLookAngle(player)), EntityUtil.getHorizontalMaximumSpeed(player)));
     public final ID<AnimationProgress> VELOCITY_LEFT = register("velocity_left", (player) -> (float) Math.min(EntityUtil.getHorizontalPositionDifference(player).dot(EntityUtil.getHorizontalLookAngle(player).yRot(Mth.HALF_PI)), EntityUtil.getHorizontalMaximumSpeed(player)));
+    public final ID<AnimationProgress> VELOCITY_UP = register("velocity_up", (player) -> (float) (player.position().y - player.yo));
 }

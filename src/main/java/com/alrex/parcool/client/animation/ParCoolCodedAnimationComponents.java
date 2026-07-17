@@ -74,6 +74,15 @@ public class ParCoolCodedAnimationComponents {
                 return lockBody(player, facingDirection, partial);
             }
     );
+    public static final ID<CodedAnimationComponent> POLE_CLIMB_LOCK_BODY = CodedAnimationComponents.getInstance().register(
+            "builtin/pole_climb_lock_body",
+            (player, part, progress, partial, mirror) -> {
+                if (part != AnimatableModelPart.BODY) return null;
+                var vec = Parkourability.get(player).get(ParCoolActions.POLE_CLIMB).getWallVec();
+                if (vec == null) return null;
+                return lockBody(player, vec, partial);
+            }
+    );
     public static final ID<CodedAnimationComponent> HANG_DOWN_ROTATE_BODY = CodedAnimationComponents.getInstance().register(
             "builtin/hang_down_rotate_body",
             (player, part, progress, partial, mirror) -> {

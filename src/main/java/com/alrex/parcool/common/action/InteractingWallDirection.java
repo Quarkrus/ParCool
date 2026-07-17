@@ -58,6 +58,10 @@ public enum InteractingWallDirection {
         return protrusion;
     }
 
+    public boolean alongToAxis() {
+        return !oblique && !protrusion;
+    }
+
     @Nullable
     public static InteractingWallDirection get(int signX, int signZ, boolean protrusion) {
         for (var direction : InteractingWallDirection.values()) {

@@ -1,6 +1,6 @@
 package com.alrex.parcool.api.stamina;
 
-public interface IReadonlyStamina {
+public interface IReadableStamina {
     double max();
 
     double value();

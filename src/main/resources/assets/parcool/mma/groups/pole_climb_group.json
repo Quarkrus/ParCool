@@ -1,0 +1,19 @@
+{
+  "infinite": true,
+  "components": [
+    {
+      "name": "parcool:pole_climb.json",
+      "progress": {
+        "name": "parcool:velocity_up",
+        "args": {
+          "loop": true,
+          "max": 12,
+          "scale": 3.8
+        }
+      }
+    },
+    {
+      "name": "parcool:builtin/pole_climb_lock_body"
+    }
+  ]
+}

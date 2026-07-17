@@ -29,6 +29,7 @@ public class ParCoolActions {
     public static final ActionEntry<HideInBlock> HIDE_IN_BLOCK;
     public static final ActionEntry<RideZipline> RIDE_ZIPLINE;
     public static final ActionEntry<WallRun> WALL_RUN;
+    public static final ActionEntry<PoleClimb> POLE_CLIMB;
 
     static {
         var builder = new ActionGroup.Builder(ParCool.MOD_ID);
@@ -113,8 +114,13 @@ public class ParCoolActions {
                 .needNotOnGround(true)
         );
 
+        POLE_CLIMB = builder.add("pole_climb", PoleClimb.class, PoleClimb::new, new ActionOption()
+                .processedAfter(HANG_ON)
+                .cost(StaminaConsumption.get(0, 1, 0))
+        );
+
         SLIDE_DOWN = builder.add("slide_down", SlideDown.class, SlideDown::new, new ActionOption()
-                .processedAfter(HANG_ON, CLIMB_UP, CASTAWAY)
+                .processedAfter(HANG_ON, CLIMB_UP, CASTAWAY, POLE_CLIMB)
                 .needNotOnGround(true)
                 .cost(StaminaConsumption.get(0, 1, 0))
         );

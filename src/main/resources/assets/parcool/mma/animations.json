@@ -313,5 +313,15 @@
         "main": "parcool:castaway_group.json"
       }
     ]
+  },
+  {
+    "name": "parcool:pole_climb",
+    "fade_in_duration": 3,
+    "fade_out_duration": 5,
+    "animations": [
+      {
+        "main": "parcool:pole_climb_group.json"
+      }
+    ]
   }
 ]

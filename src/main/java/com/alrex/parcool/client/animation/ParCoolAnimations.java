@@ -159,6 +159,11 @@ public class ParCoolAnimations {
             (p) -> !p.isOnGround(),
             null
     );
+    public static final ID<AnimationSet> POLE_CLIMB = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "pole_climb"),
+            (p) -> Parkourability.get(p).get(ParCoolActions.POLE_CLIMB).isDoing(),
+            null
+    );
 
     public static void register() {
     }
