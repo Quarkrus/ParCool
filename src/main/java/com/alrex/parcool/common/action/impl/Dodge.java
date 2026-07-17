@@ -51,7 +51,7 @@ public class Dodge extends ContinuableAction implements ActionExtension.Attacked
 
     @Override
     public boolean canContinue() {
-        return getDoingTick() < 20;
+        return getDoingTick() < 15;
     }
 
     @Override

@@ -32,7 +32,7 @@
   {
     "name": "parcool:dodge_front",
     "fade_in_duration": 5,
-    "fade_out_duration": 3,
+    "fade_out_duration": 2,
     "animations": [
       {
         "main": "parcool:dodge_front_group.json"
@@ -42,7 +42,7 @@
   {
     "name": "parcool:dodge_back",
     "fade_in_duration": 2,
-    "fade_out_duration": 5,
+    "fade_out_duration": 3,
     "animations": [
       {
         "main": "parcool:dodge_back_group.json"
