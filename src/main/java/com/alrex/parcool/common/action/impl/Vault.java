@@ -121,6 +121,9 @@ public class Vault extends ContinuableAction {
         }
         this.vaultHeight = (float) vaultingHeight;
         this.obstacleDistance = obstacleCollision;
+        if (this.obstacleDistance.lengthSqr() < Mth.square(player.getBbWidth() * 1.5)) {
+            this.obstacleDistance = obstacleDistance.normalize().scale(player.getBbWidth() * 1.5);
+        }
         this.propertyDuration.set((byte) duration);
         this.propertyVaultType.set(getVaultType(vaultMovement, player.level.random));
         return true;
