@@ -9,8 +9,10 @@ import com.alrex.parcool.client.hud.HUDRegistry;
 import com.alrex.parcool.client.input.ParCoolKeyBinds;
 import com.alrex.parcool.common.handlers.InputHandler;
 import com.alrex.parcool.common.handlers.OpenSettingsParCoolHandler;
-import com.alrex.parcool.common.network.*;
-import com.alrex.parcool.config.ParCoolConfig;
+import com.alrex.parcool.common.network.ActionStateSetPacket;
+import com.alrex.parcool.common.network.MultiActionStateSetPacket;
+import com.alrex.parcool.common.network.MultiStaminaPacket;
+import com.alrex.parcool.common.network.StaminaPacket;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -20,10 +22,6 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientProxy extends CommonProxy {
-	@Override
-	public boolean ParCoolIsActive() {
-		return ParCoolConfig.Client.PARCOOL_IS_ACTIVE.get();
-	}
 
 	@Override
 	public void init() {
@@ -45,11 +43,6 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void registerMessages(SimpleChannel instance) {
 		int index = 0;
-		instance.messageBuilder(LimitationPacket.class, index++)
-				.encoder(LimitationPacket::encode)
-				.decoder(LimitationPacket::decode)
-				.consumerMainThread(LimitationPacket::handleInPhysicalClient)
-				.add();
 		instance.messageBuilder(StaminaPacket.class, index++)
 				.noResponse()
 				.decoder(StaminaPacket.HANDLER::decode)

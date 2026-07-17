@@ -2,6 +2,7 @@ package com.alrex.parcool;
 
 import com.alrex.parcool.api.ParCoolAttributes;
 import com.alrex.parcool.api.ParCoolMobEffects;
+import com.alrex.parcool.api.ParCoolPotions;
 import com.alrex.parcool.api.ParCoolSoundEvents;
 import com.alrex.parcool.api.action.RegisterParCoolActionEvent;
 import com.alrex.parcool.api.stamina.RegisterParCoolStaminaTypeEvent;
@@ -18,7 +19,6 @@ import com.alrex.parcool.common.handlers.AddAttributesHandler;
 import com.alrex.parcool.common.item.Items;
 import com.alrex.parcool.common.item.recipe.Recipes;
 import com.alrex.parcool.common.potion.PotionRecipeRegistry;
-import com.alrex.parcool.api.ParCoolPotions;
 import com.alrex.parcool.common.stamina.StaminaTypeRegistry;
 import com.alrex.parcool.common.stamina.StaminaTypes;
 import com.alrex.parcool.config.ParCoolConfig;
@@ -26,19 +26,14 @@ import com.alrex.parcool.extern.AdditionalMods;
 import com.alrex.parcool.proxy.ClientProxy;
 import com.alrex.parcool.proxy.CommonProxy;
 import com.alrex.parcool.proxy.ServerProxy;
-import com.alrex.parcool.server.command.CommandRegistry;
-import com.alrex.parcool.server.limitation.LimitationRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.server.ServerAboutToStartEvent;
-import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -67,7 +62,7 @@ public class ParCool {
 	private static final ActionRegistry actionRegistry = new ActionRegistry();
 	private static final StaminaTypeRegistry staminaTypeRegistry = new StaminaTypeRegistry();
 	private static final ActionProcessor actionProcessor = new ActionProcessor();
-	private static LimitationRegistry limitationRegistry = new LimitationRegistry();
+	private static ParCoolConfig config;
 
 	public static ActionRegistry getActionRegistry() {
 		return actionRegistry;
@@ -77,13 +72,13 @@ public class ParCool {
 		return staminaTypeRegistry;
 	}
 
+	public static ParCoolConfig getConfig() {
+		return config;
+	}
+
 	public static ActionProcessor getActionProcessor() {
 		return actionProcessor;
 	}
-
-    public static LimitationRegistry getLimitationRegistry() {
-        return limitationRegistry;
-    }
 
 	public ParCool() {
 		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -97,8 +92,6 @@ public class ParCool {
 
 		PROXY.init();
 		MinecraftForge.EVENT_BUS.register(actionProcessor);
-        MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
-        MinecraftForge.EVENT_BUS.addListener(this::onServerStopping);
 
 		ParCoolMobEffects.register(eventBus);
 		ParCoolPotions.register(eventBus);
@@ -114,11 +107,8 @@ public class ParCool {
 		staminaTypeRegistry.freeze();
 		FMLJavaModLoadingContext.get().getModEventBus().post(new RegisterParCoolActionEvent(actionRegistry));
 		actionRegistry.freeze();
-		ParCoolConfig.submitRegistries(actionRegistry, staminaTypeRegistry);
-
-		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParCoolConfig.Client.BUILT_CONFIG);
-		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParCoolConfig.getClientConfigLimitation().getBuiltConfig(), "parcool-client-limitation.toml");
-		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ParCoolConfig.getServerConfigLimitation().getBuiltConfig(), "parcool-server-limitation.toml");
+		config = new ParCoolConfig(actionRegistry, staminaTypeRegistry);
+		config.register(ModLoadingContext.get());
 	}
 
 	private void loaded(FMLLoadCompleteEvent event) {
@@ -129,7 +119,6 @@ public class ParCool {
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
-		CommandRegistry.registerArgumentTypes(event);
 		PROXY.registerMessages(CONNECTION);
 	}
 
@@ -141,14 +130,5 @@ public class ParCool {
 
     private void registerResource(final RegisterClientReloadListenersEvent event) {
         event.registerReloadListener(AnimationResourceManager.getInstance());
-	}
-
-	public void onServerStarting(ServerAboutToStartEvent event) {
-		limitationRegistry.onServerStarting(event);
-	}
-
-	public void onServerStopping(ServerStoppingEvent event) {
-		limitationRegistry.onServerStopping(event);
-		limitationRegistry = new LimitationRegistry();
 	}
 }

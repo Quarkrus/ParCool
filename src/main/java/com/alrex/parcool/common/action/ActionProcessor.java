@@ -6,14 +6,9 @@ import com.alrex.parcool.api.action.ContinuableAction;
 import com.alrex.parcool.api.action.ParCoolActionEvent;
 import com.alrex.parcool.api.stamina.AbstractLocalStamina;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.common.info.CompiledLimitation;
 import com.alrex.parcool.common.network.ActionStatePacket;
 import com.alrex.parcool.common.network.ActionStateSetPacket;
-import com.alrex.parcool.common.network.LimitationPacket;
 import com.alrex.parcool.common.stamina.StaminaSynchronizationDepot;
-import com.alrex.parcool.config.ParCoolConfig;
-import com.alrex.parcool.server.limitation.Limitation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -59,9 +54,6 @@ public class ActionProcessor {
 			onTick$doPreprocessInServer(parkourability);
 		}
 
-		if (player.isLocalPlayer()) {
-			onTick$checkLimitationSynchronization(player, parkourability);
-		}
         parkourability.getAdditionalProperties().onTick();
 		for (Action action : parkourability.getActions()) {
 			MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.Tick.Pre(player, action));
@@ -103,22 +95,6 @@ public class ActionProcessor {
 			ParCool.CONNECTION.send(PacketDistributor.SERVER.noArg(), packet);
 		} else {
 			getActionSyncDepot().requestSync(packet);
-		}
-	}
-
-    @OnlyIn(Dist.CLIENT)
-	private void onTick$checkLimitationSynchronization(Player player, Parkourability parkourability) {
-		if (player.isLocalPlayer() && player.tickCount > 127 && player.tickCount % 256 == 0 && !parkourability.getServerLimitation().isSynced()) {
-			ParCool.CONNECTION.send(
-					PacketDistributor.SERVER.noArg(),
-					new LimitationPacket(player.getUUID(), false, true,
-							CompiledLimitation.compile(Limitation.readFromConfig(
-									ParCoolConfig.getClientConfigLimitation(),
-									ParCool.getActionRegistry(),
-									ParCool.getStaminaTypeRegistry())
-							)
-					)
-			);
 		}
 	}
 

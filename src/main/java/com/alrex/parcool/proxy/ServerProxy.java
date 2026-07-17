@@ -1,6 +1,9 @@
 package com.alrex.parcool.proxy;
 
-import com.alrex.parcool.common.network.*;
+import com.alrex.parcool.common.network.ActionStateSetPacket;
+import com.alrex.parcool.common.network.MultiActionStateSetPacket;
+import com.alrex.parcool.common.network.MultiStaminaPacket;
+import com.alrex.parcool.common.network.StaminaPacket;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -10,11 +13,6 @@ public class ServerProxy extends CommonProxy {
 	@Override
 	public void registerMessages(SimpleChannel instance) {
 		int index = 0;
-		instance.messageBuilder(LimitationPacket.class, index++)
-				.encoder(LimitationPacket::encode)
-				.decoder(LimitationPacket::decode)
-				.consumerMainThread(LimitationPacket::handleInPhysicalServer)
-				.add();
 		instance.messageBuilder(StaminaPacket.class, index++)
 				.noResponse()
 				.decoder(StaminaPacket.HANDLER::decode)

@@ -1,9 +1,9 @@
 package com.alrex.parcool.client.hud.stamina;
 
+import com.alrex.parcool.ParCool;
 import com.alrex.parcool.api.ParCoolMobEffects;
 import com.alrex.parcool.api.client.gui.StaminaDisplayContext;
 import com.alrex.parcool.common.Parkourability;
-import com.alrex.parcool.config.ParCoolConfig;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiComponent;
@@ -47,8 +47,8 @@ public class LightStaminaHUD extends GuiComponent implements IStaminaHUD {
 
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 		RenderSystem.setShaderTexture(0, TEXTURE_LOCATION);
-		int baseX = width / 2 + 91 + ParCoolConfig.Client.STAMINA_HUD_HORIZONTAL_OFFSET.get();
-		int baseY = height - gui.rightHeight + ParCoolConfig.Client.STAMINA_HUD_VERTICAL_OFFSET.get();
+		int baseX = width / 2 + 91 + ParCool.getConfig().client().staminaHud.offsetHorizontal().get();
+		int baseY = height - gui.rightHeight + ParCool.getConfig().client().staminaHud.offsetVertical().get();
 		for (int i = 0; i < 10; i++) {
 			int x = baseX - i * 8 - 9;
 			int offsetY = 0;

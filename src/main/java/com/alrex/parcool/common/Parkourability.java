@@ -6,14 +6,8 @@ import com.alrex.parcool.api.action.ActionEntry;
 import com.alrex.parcool.api.action.StaminaConsumption;
 import com.alrex.parcool.api.stamina.IReadableStamina;
 import com.alrex.parcool.common.action.*;
-import com.alrex.parcool.common.info.ActionInfo;
-import com.alrex.parcool.common.info.CompiledLimitation;
 import com.alrex.parcool.common.stamina.ReadonlyStamina;
 import com.alrex.parcool.common.stamina.StaminaTypes;
-import com.alrex.parcool.config.ParCoolConfig;
-import com.alrex.parcool.server.limitation.ILimitationEntry;
-import com.alrex.parcool.server.limitation.Limitation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
@@ -27,7 +21,6 @@ public class Parkourability {
 		return null;
 	}
 
-	private final ActionInfo info = new ActionInfo();
 	private final AdditionalProperties properties;
 	private final BehaviorEnforcer enforcer = new BehaviorEnforcer();
 	private final ActionSet actions;
@@ -40,21 +33,12 @@ public class Parkourability {
 		this.actions = new ActionSet(this, registry);
 		this.properties = new AdditionalProperties(player);
 		if (player.isLocalPlayer()) {
-			this.info.setClientLimitation(CompiledLimitation.compile(
-					Limitation.readFromConfig(
-							ParCoolConfig.getClientConfigLimitation(),
-							ParCool.getActionRegistry(),
-							ParCool.getStaminaTypeRegistry()
-					)
-			));
-            this.stamina = ParCool.getStaminaTypeRegistry().getRegistry()
-                    .get(StaminaTypes.PARCOOL_STAMINA.id())
-                    .provider()
-                    .newInstance(player, null);
-		} else {
-			if (player instanceof ServerPlayer) {
-				this.info.setServerLimitation(ParCool.getLimitationRegistry().getLimitationSet(player.getUUID()));
+			var staminaProvider = ParCool.getStaminaTypeRegistry().getRegistry().get(ParCool.getConfig().server().getStaminaTypeID());
+			if (staminaProvider == null) {
+				staminaProvider = ParCool.getStaminaTypeRegistry().getRegistry().get(StaminaTypes.PARCOOL_STAMINA.id());
 			}
+			this.stamina = staminaProvider.provider().newInstance(player, null);
+		} else {
 			this.stamina = ReadonlyStamina.DEFAULT;
 		}
 	}
@@ -79,14 +63,6 @@ public class Parkourability {
 		return enforcer;
 	}
 
-	public ActionInfo getActionInfo() {
-		return info;
-	}
-
-	public CompiledLimitation getServerLimitation() {
-		return info.getServerLimitation();
-	}
-
 	public IReadableStamina getStamina() {
 		return stamina;
 	}
@@ -98,7 +74,7 @@ public class Parkourability {
 	}
 
 	public boolean permit(ActionEntry<?> actionEntry) {
-		return getActionInfo().getServerLimitation().get(actionEntry).possible() && getActionInfo().getClientLimitation().get(actionEntry).possible();
+		return ParCool.getConfig().server().get(actionEntry).permit().get();
 	}
 
 	/// Request the action start.
@@ -122,26 +98,14 @@ public class Parkourability {
 	}
 
 	public void copyFrom(Parkourability original) {
-		getActionInfo().setClientLimitation(original.getActionInfo().getClientLimitation());
-		getActionInfo().setServerLimitation(original.getActionInfo().getServerLimitation());
 	}
 
-	public boolean getLimitedValue(ILimitationEntry.Bool entry) {
-		return entry.select(getActionInfo().getClientLimitation().get(entry), getActionInfo().getServerLimitation().get(entry));
-	}
-
-	public int getLimitedValue(ILimitationEntry.Int entry) {
-		return entry.select(getActionInfo().getClientLimitation().get(entry), getActionInfo().getServerLimitation().get(entry));
-	}
-
-	public double getLimitedValue(ILimitationEntry.Real entry) {
-		return entry.select(getActionInfo().getClientLimitation().get(entry), getActionInfo().getServerLimitation().get(entry));
-	}
-
-	public int getCost(ActionEntry<?> entry, StaminaConsumption.Type type) {
-		return Math.max(
-				getActionInfo().getClientLimitation().get(entry).cost().get(type),
-				getActionInfo().getServerLimitation().get(entry).cost().get(type)
-		);
+	public double getCost(ActionEntry<?> entry, StaminaConsumption.Type type) {
+		var config = ParCool.getConfig().server().get(entry);
+		return switch (type) {
+			case START -> config.costOnStart().get();
+			case WORKING -> config.costOnWorking().get();
+			case FINISH -> config.costOnFinish().get();
+		};
 	}
 }

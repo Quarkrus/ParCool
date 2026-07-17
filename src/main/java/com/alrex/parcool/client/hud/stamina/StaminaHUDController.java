@@ -1,10 +1,10 @@
 package com.alrex.parcool.client.hud.stamina;
 
+import com.alrex.parcool.ParCool;
 import com.alrex.parcool.api.client.gui.RenderParCoolHUDEvent;
 import com.alrex.parcool.api.client.gui.StaminaDisplayContext;
-import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.api.stamina.AbstractLocalStamina;
-import com.alrex.parcool.config.ParCoolConfig;
+import com.alrex.parcool.common.Parkourability;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -50,13 +50,13 @@ public class StaminaHUDController implements IGuiOverlay {
 		if (player == null) return;
 		Parkourability parkourability = Parkourability.get(player);
 
-		if (tickValueNotChange > 40 && !ParCoolConfig.Client.STAMINA_HUD_SHOW_ALWAYS.get()) {
+		if (tickValueNotChange > 40 && !ParCool.getConfig().client().staminaHud.showAlways().get()) {
 			return;
 		}
 		if (MinecraftForge.EVENT_BUS.post(new RenderParCoolHUDEvent.Render.Stamina.Pre(gui, poseStack, partialTick, width, height, currentContext, oldContext)))
 			return;
 
-		if (ParCoolConfig.Client.STAMINA_HUD_TYPE.get() == HUDType.Light) {
+		if (ParCool.getConfig().client().staminaHud.type().get() == HUDType.Light) {
 			lightStaminaHUD.render(gui, poseStack, parkourability, currentContext, oldContext, partialTick, width, height);
 		}
 

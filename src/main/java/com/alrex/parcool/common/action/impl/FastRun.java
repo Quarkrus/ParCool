@@ -8,7 +8,6 @@ import com.alrex.parcool.client.animation.system.PlayerAnimator;
 import com.alrex.parcool.common.Parkourability;
 import com.alrex.parcool.common.action.BehaviorEnforcer;
 import com.alrex.parcool.common.action.ParCoolActions;
-import com.alrex.parcool.server.limitation.LimitationEntries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
@@ -66,7 +65,7 @@ public class FastRun extends ContinuableAction {
                 attr.addTransientModifier(new AttributeModifier(
                         FAST_RUNNING_MODIFIER_UUID,
                         FAST_RUNNING_MODIFIER_NAME,
-                        parkourability.getLimitedValue(LimitationEntries.Real.FASTRUN_SPEED_MODIFIER),
+                        0.02,
                         AttributeModifier.Operation.ADDITION
                 ));
             }

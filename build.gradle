@@ -100,11 +100,6 @@ tasks.register("minifyJsonResource", MinifyJsonTask) {
     outputDir = project.file("src/generated/resources-minified-json")
 }
 
-tasks.register("generateLimitationEntry", ParCoolLimitationGenerationTask) {
-    inputFile = project.file("src/template/data/limitation_entries.json")
-    outputFile = project.file("src/generated/java/com/alrex/parcool/server/limitation/LimitationEntries.java")
-}
-
 tasks.register("generateModMetadata", ProcessResources) {
     var properties = [
             minecraft_version       : minecraft_version,
@@ -152,10 +147,6 @@ sourceSets {
         srcDir tasks.named("generateModMetadata")
         srcDir tasks.named("minifyJsonResource")
     }
-}
-
-compileJava {
-    dependsOn tasks.named("generateLimitationEntry")
 }
 
 jar {
