@@ -96,7 +96,8 @@ public class WorkingAnimation implements IWorkingAnimation {
                     switch (method) {
                         case ADD ->
                                 map.put(modelPart, transform.append(componentTransform, blendingValue, modelPart == AnimatableModelPart.BODY));
-                        case SET -> map.put(modelPart, transform.morph(componentTransform, blendingValue, true));
+                        case SET ->
+                                map.put(modelPart, transform.morph(componentTransform, blendingValue, modelPart == AnimatableModelPart.BODY));
                     }
                 }
             }

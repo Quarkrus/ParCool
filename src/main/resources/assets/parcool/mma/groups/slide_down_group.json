@@ -2,18 +2,45 @@
   "infinite": true,
   "components": [
     {
-      "name": "parcool:hang_left_to_wall.json",
-      "blend": {
-        "name": "parcool:builtin/slide_down_left_to_wall",
-        "method": "set"
+      "name": "parcool:slide_down_front.json",
+      "progress": {
+        "name": "parcool:builtin/velocity_v",
+        "args": {
+          "loop": true,
+          "max": 10,
+          "scale": 4.5
+        }
       }
     },
     {
-      "name": "parcool:hang_left_to_wall.json",
+      "name": "parcool:slide_down_side.json",
+      "blend": {
+        "name": "parcool:builtin/slide_down_left_to_wall",
+        "method": "set"
+      },
+      "progress": {
+        "name": "parcool:builtin/velocity_v",
+        "args": {
+          "loop": true,
+          "max": 6,
+          "scale": 3.5
+        }
+      }
+    },
+    {
+      "name": "parcool:slide_down_side.json",
       "mirror": true,
       "blend": {
         "name": "parcool:builtin/slide_down_right_to_wall",
         "method": "set"
+      },
+      "progress": {
+        "name": "parcool:builtin/velocity_v",
+        "args": {
+          "loop": true,
+          "max": 6,
+          "scale": 3.5
+        }
       }
     },
     {
