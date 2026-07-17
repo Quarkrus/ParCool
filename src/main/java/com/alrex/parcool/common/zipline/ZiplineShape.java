@@ -86,6 +86,8 @@ public abstract class ZiplineShape {
 
     public abstract double getSquaredDistanceApproximately(Vec3 position, double yDistanceScale);
 
+    public abstract double getLength();
+
     public boolean isPossiblyHangAble(Vec3 position) {
         return new AABB(getStartPos().x(), getStartPos().y(), getStartPos().z(), getEndPos().x(), getEndPos().y(), getEndPos().z())
                 .inflate(1d)

@@ -139,11 +139,12 @@ public class ZiplineHookTileEntity extends BlockEntity {
         for (var entry : connections.entrySet()) {
             var entity = level.getBlockEntity(entry.getKey());
             if (entity instanceof ZiplineHookTileEntity hookTileEntity) {
-                this.removeConnectionFrom(hookTileEntity)
+                hookTileEntity.removeConnection(this.getBlockPos())
                         .map(ZiplineRopeItem::from)
                         .ifPresent(itemStacks::add);
             }
         }
+        connections.clear();
         return itemStacks;
     }
 

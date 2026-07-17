@@ -1,5 +1,6 @@
 package com.alrex.parcool.common.action.impl;
 
+import com.alrex.parcool.api.ParCoolAttributes;
 import com.alrex.parcool.api.action.Action;
 import com.alrex.parcool.api.action.ActionEntry;
 import com.alrex.parcool.api.action.ContinuableAction;
@@ -59,13 +60,15 @@ public class FastRun extends ContinuableAction {
         var player = parkourability.player();
         var attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (attr == null) return;
+        var modifierAttr = player.getAttribute(ParCoolAttributes.FAST_RUN_SPEED.get());
+        if (modifierAttr == null) return;
         var modifier = attr.getModifier(FAST_RUNNING_MODIFIER_UUID);
         if (isDoing()) {
             if (modifier == null) {
                 attr.addTransientModifier(new AttributeModifier(
                         FAST_RUNNING_MODIFIER_UUID,
                         FAST_RUNNING_MODIFIER_NAME,
-                        0.02,
+                        modifierAttr.getValue(),
                         AttributeModifier.Operation.ADDITION
                 ));
             }

@@ -10,8 +10,15 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class ParCoolAttributes {
     private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.ATTRIBUTES, ParCool.MOD_ID);
-    public static final RegistryObject<Attribute> MAX_STAMINA = ATTRIBUTES.register("parcool.max_stamina", () -> new RangedAttribute("attribute.name.parcool.max_stamina", 2000, 10, 10000).setSyncable(true));
-    public static final RegistryObject<Attribute> STAMINA_RECOVERY = ATTRIBUTES.register("parcool.stamina_recovery", () -> new RangedAttribute("attribute.name.parcool.stamina_recovery", 10, 1, 10000).setSyncable(true));
+    public static final RegistryObject<Attribute> MAX_STAMINA = register("parcool.max_stamina", 2000, 10, 10000);
+    public static final RegistryObject<Attribute> STAMINA_RECOVERY = register("parcool.stamina_recovery", 10, 1, 10000);
+
+    public static final RegistryObject<Attribute> BREAKFALL_DAMAGE_REDUCTION = register("parcool.breakfall.damage_reduction", 0.4, 0, 1);
+    public static final RegistryObject<Attribute> FAST_RUN_SPEED = register("parcool.fast_run.speed", 0.02, 0, 10);
+
+    private static RegistryObject<Attribute> register(String name, double defaultValue, double min, double max) {
+        return ATTRIBUTES.register(name, () -> new RangedAttribute("attribute.name." + name, defaultValue, min, max).setSyncable(true));
+    }
 
     public static void register(IEventBus bus) {
         ATTRIBUTES.register(bus);

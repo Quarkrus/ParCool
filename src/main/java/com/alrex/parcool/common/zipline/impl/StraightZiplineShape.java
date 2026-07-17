@@ -62,4 +62,9 @@ public class StraightZiplineShape extends ZiplineShape {
         double yOffset = (mostNearPoint.y - position.y) * yDistanceScale;
         return xOffset * xOffset + zOffset * zOffset + yOffset * yOffset;
     }
+
+    @Override
+    public double getLength() {
+        return getStartPos().subtract(getEndPos()).length();
+    }
 }

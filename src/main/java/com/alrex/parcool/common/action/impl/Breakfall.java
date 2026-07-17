@@ -1,5 +1,6 @@
 package com.alrex.parcool.common.action.impl;
 
+import com.alrex.parcool.api.ParCoolAttributes;
 import com.alrex.parcool.api.action.*;
 import com.alrex.parcool.client.animation.ParCoolAnimations;
 import com.alrex.parcool.client.animation.system.PlayerAnimator;
@@ -51,10 +52,16 @@ public class Breakfall extends Action implements ActionExtension.LandListener {
     public void onLand(LivingFallEvent event) {
         var breakfallType = propertyInputBreakfallType.get();
         if (breakfallType == null || breakfallType == BreakfallType.NONE) return;
+        var attr = parkourability.player().getAttribute(ParCoolAttributes.BREAKFALL_DAMAGE_REDUCTION.get());
+        if (attr == null) return;
         if (isPossible() && !MinecraftForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(parkourability.player(), this))) {
-            event.setDamageMultiplier(event.getDamageMultiplier() * 0.5f);
-            propertyWorkingBreakfallType.set(breakfallType);
+            var damageReduction = attr.getValue();
+            event.setDamageMultiplier(event.getDamageMultiplier() * (float) (1. - damageReduction));
+            if (event.getDistance() < 15 * damageReduction) {
+                event.setCanceled(true);
+            }
 
+            propertyWorkingBreakfallType.set(breakfallType);
             startExplicitly();
         }
     }

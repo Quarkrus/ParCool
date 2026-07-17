@@ -8,7 +8,6 @@ public class GeneralQuadraticCurveZiplineShape extends ZiplineShape {
 
     public GeneralQuadraticCurveZiplineShape(Vec3 point1, Vec3 point2, double lowestPointOffset) {
         super(point1, point2);
-        double straightDistance = Math.hypot(getHorizontalDistance(), getOffsetFromStartToEnd().y());
         double yOffsetAtVertex = Math.abs(lowestPointOffset);
 
         tAtVertex = Math.abs(getOffsetFromStartToEnd().y()) < 0.005 ?
@@ -49,7 +48,7 @@ public class GeneralQuadraticCurveZiplineShape extends ZiplineShape {
                 (getHorizontalDistance() * getHorizontalDistance()));
     }
 
-    private double getDistance(double xzLen, double a) {
+    private static double getDistance(double xzLen, double a) {
         double r = Math.sqrt(1 + 4 * a * a * xzLen * xzLen);
         return 0.5 * (xzLen * r + Math.log(Math.abs(2 * a * xzLen + r)) / (2 * a));
     }
@@ -95,6 +94,14 @@ public class GeneralQuadraticCurveZiplineShape extends ZiplineShape {
             }
         }
         return interim / xzLength;
+    }
+
+    @Override
+    public double getLength() {
+        if (Math.abs(getMovedPositionByParameterApproximately$a) < 0.005) {
+            return getHorizontalDistance();
+        }
+        return getDistanceFrom0(getHorizontalDistance(), getMovedPositionByParameterApproximately$a);
     }
 
     @Override
