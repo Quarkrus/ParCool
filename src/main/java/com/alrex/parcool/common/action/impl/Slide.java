@@ -8,11 +8,13 @@ import com.alrex.parcool.common.action.IRequestable;
 import com.alrex.parcool.util.EntityUtil;
 import com.alrex.parcool.util.VectorUtil;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
 public class Slide extends ContinuableAction implements IRequestable<Slide.RequestContext> {
+    private static final int MAX_TICK = 20;
     private final SynchronizedDataHolder dataHolder;
     private final SynchronizedProperty<Vec3> propertyMovingDirection;
     public Slide(Parkourability parkourability, ActionEntry<? extends Action> entry) {
@@ -39,7 +41,7 @@ public class Slide extends ContinuableAction implements IRequestable<Slide.Reque
 
     @Override
     public boolean canContinue() {
-        return getDoingTick() < 20; //TODO : make this configurable
+        return getDoingTick() < MAX_TICK; //TODO : make this configurable
     }
 
     @Override
@@ -54,7 +56,10 @@ public class Slide extends ContinuableAction implements IRequestable<Slide.Reque
         if (movingDirection == null) return;
         parkourability.getBehaviorEnforcer().setMarkerEnforcingDeltaMovement(
                 this::isDoing,
-                () -> new Vec3(movingDirection.x, parkourability.player().getDeltaMovement().y, movingDirection.z)
+                () -> {
+                    var scale = Mth.lerp(getDoingTick() / (double) MAX_TICK, 1., 0.7);
+                    return new Vec3(movingDirection.x * scale, parkourability.player().getDeltaMovement().y, movingDirection.z * scale);
+                }
         );
     }
 
