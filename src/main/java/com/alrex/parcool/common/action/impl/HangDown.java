@@ -13,16 +13,16 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Tuple;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.properties.WallSide;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 public class HangDown extends ContinuableAction {
@@ -46,6 +46,9 @@ public class HangDown extends ContinuableAction {
         }
     }
 
+    private record HangAbleBarInfo(BlockPos pos, HangDown.BarAxis axis, double yCollideDist) {
+    }
+
     private final SynchronizedDataHolder dataHolder;
     private final SynchronizedProperty<BarAxis> propertyHangingBarAxis;
     private final SynchronizedProperty<Float> propertyBodySwingAngleInRad;
@@ -56,6 +59,7 @@ public class HangDown extends ContinuableAction {
     @Nullable
     private BlockPos hangingPos;
     private boolean barNotFound;
+    private double yCollideDist;
     // Only for client
     private float oldAngle;
     private float oldAngularSpeed;
@@ -89,24 +93,24 @@ public class HangDown extends ContinuableAction {
     @Override
     public boolean canStart() {
         var player = parkourability.player();
+        if (0 <= getNotDoingTick() && getNotDoingTick() < 7) return false;
         if (Math.abs(player.getDeltaMovement().y) > 0.2 || !ParCoolKeyBinds.HANG.key().isDown()) return false;
         var hangingBar = getHangAbleBars(player);
         if (hangingBar == null) return false;
 
-        var lookingDirection = EntityUtil.getHorizontalLookAngle(player);
-        var barOrthogonalVec = hangingBar.getB().getOrthogonalVec().dot(lookingDirection) > 0
-                ? hangingBar.getB().getOrthogonalVec()
-                : hangingBar.getB().getOrthogonalVec().reverse();
+        var barOrthogonalVec = hangingBar.axis.getOrthogonalVec().dot(EntityUtil.getHorizontalLookAngle(player)) > 0
+                ? hangingBar.axis.getOrthogonalVec()
+                : hangingBar.axis.getOrthogonalVec().reverse();
         var pos = player.position();
         var speed = barOrthogonalVec.x * (pos.x - player.xo) + barOrthogonalVec.z * (pos.z - player.zo);
-        var playerHeight = player.getBbHeight();
 
-        propertyBodyAngularSpeedInRad.set((float) (speed / playerHeight));
+        propertyBodyAngularSpeedInRad.set((float) (speed / player.getBbHeight()));
         propertyBodySwingAngleInRad.set(0f);
-        propertyHangingBarAxis.set(hangingBar.getB());
+        propertyHangingBarAxis.set(hangingBar.axis);
         propertyJumpOff.set(false);
         barNotFound = false;
-        hangingPos = hangingBar.getA();
+        yCollideDist = hangingBar.yCollideDist;
+        hangingPos = hangingBar.pos;
 
         return true;
     }
@@ -128,7 +132,8 @@ public class HangDown extends ContinuableAction {
                     var currentHangingPos = new Vec3(hangingPos.getX() + 0.5, currentPos.y, hangingPos.getZ() + 0.5);
                     var t = (currentPos.subtract(currentHangingPos).dot(barAxisVec)) / barAxisVec.lengthSqr();
                     var alignedPos = currentHangingPos.add(barAxisVec.scale(t));
-                    return alignedPos.add(barAxisVec.scale(movementLength)).add(0, 0.01, 0);
+
+                    return alignedPos.add(barAxisVec.scale(movementLength)).add(0, yCollideDist - 0.1 + 0.01, 0);
                 }
         );
     }
@@ -158,7 +163,7 @@ public class HangDown extends ContinuableAction {
         var barAxis = propertyHangingBarAxis.get();
         if (barAxis == null) return;
         var orthogonalVec = VectorUtil.reverseIfInReverseDirection(EntityUtil.getHorizontalLookAngle(player), barAxis.getOrthogonalVec());
-        float angle = propertyBodySwingAngleInRad.getOrDefaultIfNull(0f);
+        float angle = Mth.clamp(propertyBodySwingAngleInRad.getOrDefaultIfNull(0f), -Mth.PI / 4f, Mth.PI / 4f);
         var sinAngle = Math.sin(angle);
         var cosAngle = Math.cos(angle);
         var finishedPos = player.position();
@@ -170,9 +175,9 @@ public class HangDown extends ContinuableAction {
         );
         if (propertyJumpOff.getOrDefaultIfNull(false)) {
             var movement = new Vec3(
-                    orthogonalVec.x * cosAngle,
+                    orthogonalVec.x * cosAngle * 1.5,
                     Math.abs(sinAngle),
-                    orthogonalVec.z * cosAngle
+                    orthogonalVec.z * cosAngle * 1.5
             ).scale(2. * playerHeight * propertyBodyAngularSpeedInRad.getOrDefaultIfNull(0f));
             parkourability.getBehaviorEnforcer().setMarkerEnforcingMovePoint(
                     () -> getNotDoingTick() <= 5,
@@ -226,11 +231,14 @@ public class HangDown extends ContinuableAction {
         propertyBodyAngularSpeedInRad.set(angularSpeedInRad);
         var hangingBar = getHangAbleBars(player);
         if (hangingBar != null) {
-            propertyHangingBarAxis.set(hangingBar.getB());
+            propertyHangingBarAxis.set(hangingBar.axis);
+            hangingPos = hangingBar.pos;
+            yCollideDist = hangingBar.yCollideDist;
         } else {
             barNotFound = true;
+            hangingPos = null;
+            yCollideDist = 0;
         }
-        hangingPos = hangingBar != null ? hangingBar.getA() : null;
     }
 
     @Override
@@ -271,22 +279,19 @@ public class HangDown extends ContinuableAction {
     }
 
     @Nullable
-    private static Tuple<BlockPos, HangDown.BarAxis> getHangAbleBars(LivingEntity entity) {
-        final double bbWidth = entity.getBbWidth() / 4;
-        final double bbHeight = 0.35;
+    private static HangAbleBarInfo getHangAbleBars(LivingEntity entity) {
         var level = entity.level;
-        var bb = new AABB(
-                entity.getX() - bbWidth,
-                entity.getY() + entity.getBbHeight(),
-                entity.getZ() - bbWidth,
-                entity.getX() + bbWidth,
-                entity.getY() + entity.getBbHeight() + bbHeight,
-                entity.getZ() + bbWidth
-        );
-        if (level.noCollision(entity, bb)) return null;
+        var collideDistY = Entity.collideBoundingBox(
+                entity,
+                new Vec3(0, 1., 0),
+                entity.getBoundingBox().deflate(0.05, 0, 0.05),
+                entity.level,
+                Collections.emptyList()
+        ).y;
+        if (Math.abs(collideDistY - 1.) < 1e-5) return null;
         var pos = new BlockPos(
                 Mth.floor(entity.getX()),
-                Mth.floor(entity.getY() + entity.getBbHeight() + 0.4),
+                Mth.floor(entity.getY() + entity.getBbHeight() + collideDistY + 0.1),
                 Mth.floor(entity.getZ())
         );
         if (!level.isLoaded(pos)) return null;
@@ -333,6 +338,6 @@ public class HangDown extends ContinuableAction {
             if (xCount > 0 && zCount == 0) axis = HangDown.BarAxis.X;
         }
 
-        return axis != null ? new Tuple<>(pos, axis) : null;
+        return axis != null ? new HangAbleBarInfo(pos, axis, collideDistY) : null;
     }
 }

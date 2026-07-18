@@ -27,6 +27,7 @@ public class FastRun extends ContinuableAction {
         super(parkourability, entry, List.of(
                 ParCoolActions.CRAWL,
                 ParCoolActions.HANG_ON,
+                ParCoolActions.HANG_DOWN,
                 ParCoolActions.DIVE,
                 ParCoolActions.DODGE
         ));

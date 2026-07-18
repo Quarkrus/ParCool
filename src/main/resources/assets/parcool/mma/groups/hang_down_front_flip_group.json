@@ -1,0 +1,18 @@
+{
+  "duration": 14,
+  "components": [
+    {
+      "name": "parcool:front_flip.json",
+      "progress": {
+        "name": "parcool:time",
+        "args": {
+          "max": 15,
+          "scale": 1.071
+        }
+      }
+    },
+    {
+      "name": "parcool:builtin/lock_body"
+    }
+  ]
+}
