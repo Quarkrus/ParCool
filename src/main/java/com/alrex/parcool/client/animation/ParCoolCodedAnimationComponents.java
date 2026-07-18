@@ -83,6 +83,15 @@ public class ParCoolCodedAnimationComponents {
                 return lockBody(player, vec, partial);
             }
     );
+    public static final ID<CodedAnimationComponent> DODGE_LOCK_BODY = CodedAnimationComponents.getInstance().register(
+            "builtin/dodge_lock_body",
+            (player, part, progress, partial, mirror) -> {
+                if (part != AnimatableModelPart.BODY) return null;
+                var vec = Parkourability.get(player).get(ParCoolActions.DODGE).getFacingVec();
+                if (vec == null) return null;
+                return lockBody(player, vec, partial);
+            }
+    );
     public static final ID<CodedAnimationComponent> HANG_DOWN_ROTATE_BODY = CodedAnimationComponents.getInstance().register(
             "builtin/hang_down_rotate_body",
             (player, part, progress, partial, mirror) -> {

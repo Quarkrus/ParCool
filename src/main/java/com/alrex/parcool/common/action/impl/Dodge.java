@@ -10,11 +10,13 @@ import com.alrex.parcool.common.action.ActionExtension;
 import com.alrex.parcool.common.action.BehaviorEnforcer;
 import com.alrex.parcool.common.action.ParCoolActions;
 import com.alrex.parcool.util.EntityUtil;
+import com.alrex.parcool.util.VectorUtil;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class Dodge extends ContinuableAction implements ActionExtension.AttackedListener {
@@ -22,11 +24,13 @@ public class Dodge extends ContinuableAction implements ActionExtension.Attacked
 
     private final SynchronizedDataHolder dataHolder;
     private final SynchronizedProperty<AnimationType> propertyAnimationType;
+    private final SynchronizedProperty<Float> propertyStartedYRot;
 
     public Dodge(Parkourability parkourability, ActionEntry<? extends Action> entry) {
         super(parkourability, entry, List.of(ParCoolActions.FAST_RUN));
         dataHolder = SynchronizedDataHolder.create(entry,
-                propertyAnimationType = SynchronizedProperty.newEnum(AnimationType.class)
+                propertyAnimationType = SynchronizedProperty.newEnum(AnimationType.class),
+                propertyStartedYRot = SynchronizedProperty.newFloat()
         );
     }
 
@@ -50,6 +54,7 @@ public class Dodge extends ContinuableAction implements ActionExtension.Attacked
             }
             if (type == null) return false;
             propertyAnimationType.set(type);
+            propertyStartedYRot.set(parkourability.player().getYRot());
             return true;
         }
         return false;
@@ -101,6 +106,12 @@ public class Dodge extends ContinuableAction implements ActionExtension.Attacked
         if (getDoingTick() < 7) {
             event.setCanceled(true);
         }
+    }
+
+    @Nullable
+    public Vec3 getFacingVec() {
+        var rot = propertyStartedYRot.get();
+        return rot != null ? VectorUtil.fromYawDegree(rot) : null;
     }
 
     private enum AnimationType {
