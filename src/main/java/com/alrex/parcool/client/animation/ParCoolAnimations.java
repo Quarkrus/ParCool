@@ -164,6 +164,11 @@ public class ParCoolAnimations {
             (p) -> Parkourability.get(p).get(ParCoolActions.POLE_CLIMB).isDoing(),
             null
     );
+    public static final ID<AnimationSet> FAST_SWIM = AnimationSets.getInstance().register(
+            new ResourceLocation(ParCool.MOD_ID, "fast_swim"),
+            (p) -> Parkourability.get(p).get(ParCoolActions.FAST_SWIM).isDoing(),
+            null
+    );
 
     public static void register() {
     }

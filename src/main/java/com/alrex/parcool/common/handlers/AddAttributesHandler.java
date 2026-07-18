@@ -13,6 +13,7 @@ public class AddAttributesHandler {
         event.add(EntityType.PLAYER, ParCoolAttributes.STAMINA_RECOVERY.get());
         event.add(EntityType.PLAYER, ParCoolAttributes.BREAKFALL_DAMAGE_REDUCTION.get());
         event.add(EntityType.PLAYER, ParCoolAttributes.FAST_RUN_SPEED.get());
+        event.add(EntityType.PLAYER, ParCoolAttributes.FAST_SWIM_SPEED.get());
         event.add(EntityType.PLAYER, ParCoolAttributes.HORIZONTAL_WALL_RUN_DURATION.get());
     }
 }

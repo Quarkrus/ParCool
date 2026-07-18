@@ -1,0 +1,30 @@
+{
+  "infinite": true,
+  "components": [
+    {
+      "name": "parcool:fast_swim.json",
+      "progress": {
+        "name": "parcool:velocity",
+        "args": {
+          "loop": true,
+          "max": 11.7,
+          "scale": 2
+        }
+      }
+    },
+    {
+      "name": "parcool:fast_swim_legs.json",
+      "progress": {
+        "name": "parcool:velocity",
+        "args": {
+          "loop": true,
+          "max": 12,
+          "scale": 6.1
+        }
+      }
+    },
+    {
+      "name": "parcool:builtin/swim_rotate_body_relative"
+    }
+  ]
+}

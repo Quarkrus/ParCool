@@ -116,6 +116,7 @@ public class AnimationProcessor {
             }
         }
         i--;
+        factors[i] = 1f; // First animation is applied without blending
         var transform = ModelTransform.NO_TRANSFORMATION;
         do {
             var animator = animators.get((animators.size() - 1) - i);

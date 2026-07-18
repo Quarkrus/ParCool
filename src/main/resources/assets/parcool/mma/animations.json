@@ -323,5 +323,15 @@
         "main": "parcool:pole_climb_group.json"
       }
     ]
+  },
+  {
+    "name": "parcool:fast_swim",
+    "fade_in_duration": 6,
+    "fade_out_duration": 10,
+    "animations": [
+      {
+        "main": "parcool:fast_swim_group.json"
+      }
+    ]
   }
 ]

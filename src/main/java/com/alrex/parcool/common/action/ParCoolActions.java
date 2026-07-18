@@ -3,6 +3,7 @@ package com.alrex.parcool.common.action;
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.api.action.*;
 import com.alrex.parcool.common.action.impl.*;
+import net.minecraft.world.entity.Pose;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 
@@ -10,6 +11,7 @@ public class ParCoolActions {
     private static final ActionGroup GROUP;
 
     public static final ActionEntry<FastRun> FAST_RUN;
+    public static final ActionEntry<FastSwim> FAST_SWIM;
     public static final ActionEntry<Vault> VAULT;
     public static final ActionEntry<Dive> DIVE;
     public static final ActionEntry<Skydive> SKYDIVE;
@@ -64,6 +66,13 @@ public class ParCoolActions {
                     .cost(StaminaConsumption.get(0, 3, 0))
             );
         }
+
+        FAST_SWIM = builder.add("fast_swim", FastSwim.class, FastSwim::new, new ActionOption()
+                .availableInFluid(true)
+                .availableNotInFluid(false)
+                .needPose(Pose.SWIMMING)
+                .cost(StaminaConsumption.get(0, 2, 0))
+        );
 
         DIVE = builder.add("dive", Dive.class, Dive::new, new ActionOption()
                 .processedAfter(FAST_RUN)

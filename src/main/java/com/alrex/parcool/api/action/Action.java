@@ -103,6 +103,7 @@ public abstract class Action {
 		var player = parkourability.player();
 		if (parkourability.player().isSpectator() //TODO
 				|| (!entry.option().availableInFluid() && player.isInFluidType())
+				|| (!entry.option().availableNotInFluid() && !player.isInFluidType())
 				|| (!entry.option().availableWithFallFlying() && player.isFallFlying())
 				|| (entry.option().needOnGround() && !player.isOnGround())
 				|| (entry.option().needNotOnGround() && player.isOnGround())

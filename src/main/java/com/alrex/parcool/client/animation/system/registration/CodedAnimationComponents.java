@@ -81,6 +81,22 @@ public class CodedAnimationComponents extends AnimationRegistry<CodedAnimationCo
         var transform = getBobTransform(progress);
         return mirror ? transform.mirror() : transform;
     });
+    public final ID<CodedAnimationComponent> ROTATE_BODY_SWIM = register("builtin/swim_rotate_body", (player, part, progress, partial, mirror) -> {
+        if (part != AnimatableModelPart.BODY) return null;
+        var swimRot = !player.isInWater() && !player.isInFluidType((fluidType, height) -> player.canSwimInFluidType(fluidType)) ? -90.0f : -90.0f - player.getXRot();
+        return new Transform(
+                new Vec3f(0, -0.6f, 0),
+                Vector3f.XP.rotation(Mth.lerp(player.getSwimAmount(partial), 0.0F, (float) Math.toRadians(swimRot)))
+        );
+    });
+    public final ID<CodedAnimationComponent> ROTATE_BODY_SWIM_RELATIVE = register("builtin/swim_rotate_body_relative", (player, part, progress, partial, mirror) -> {
+        if (part != AnimatableModelPart.BODY) return null;
+        var swimRot = !player.isInWater() && !player.isInFluidType((fluidType, height) -> player.canSwimInFluidType(fluidType)) ? 0f : -player.getXRot();
+        return new Transform(
+                new Vec3f(0, -0.6f, 0),
+                Vector3f.XP.rotation(Mth.lerp(player.getSwimAmount(partial), 0.0F, (float) Math.toRadians(swimRot)))
+        );
+    });
 
     private static Transform getShakeTransform(float progress) {
         var zRot = Mth.cos(progress * 0.56f) * 0.6f + 0.05f;
