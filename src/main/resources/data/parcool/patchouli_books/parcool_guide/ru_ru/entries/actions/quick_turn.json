@@ -1,0 +1,16 @@
+﻿{
+  "name": "Быстрый разворот",
+  "icon": "minecraft:iron_helmet",
+  "category": "parcool:category_actions",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Иногда вам может понадобиться быстро повернуться назад. Нажмите всего одну клавишу, чтобы сделать это."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Как использовать",
+      "text": "$(list)Нажмите клавишу 'Быстрый разворот'($(k:parcool.QuickTurn))"
+    }
+  ]
+}

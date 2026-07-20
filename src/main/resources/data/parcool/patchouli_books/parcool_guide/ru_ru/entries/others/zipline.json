@@ -1,0 +1,42 @@
+﻿{
+  "name": "Zipline",
+  "icon": "parcool:zipline_rope",
+  "category": "parcool:category_support_features",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Зиплайн — это элемент паркура, соединяющий две удалённые точки и позволяющий игрокам перемещаться с одного конца на другой."
+    },
+    {
+      "type": "patchouli:image",
+      "border": "true",
+      "images": [
+        "parcool:textures/gui/entries/ride_zipline.png"
+      ]
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Крюк зиплайна",
+      "text": "Сначала определите 2 точки для установки зиплайна. Затем разместите крюки для зиплайна в каждой из них.$(br2)Существует 2 типа крюков для зиплайна: деревянные и железные."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "parcool:wooden_zipline_hook",
+      "recipe2": "parcool:iron_zipline_hook"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Верёвка зиплайна",
+      "text": "Вы установили крюки? Дальше создаём верёвку для зиплайна. Используйте её в присяде, чтобы изменить натяжение верёвки.$(br2)Для установки зиплайна используйте верёвку, чтобы соединить её с двумя крюками. Если всё прошло успешно, то крюки соединятся верёвкой."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "parcool:zipline_rope"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Как использовать",
+      "text": "$(list) Прыгните на зиплайн и нажмите 'Спуск с зиплайна'($(k:parcool.RideZipline))"
+    }
+  ]
+}

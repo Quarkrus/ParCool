@@ -1,0 +1,23 @@
+﻿{
+  "name": "Hide in Block",
+  "icon": "minecraft:hay_block",
+  "category": "parcool:category_actions",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Вы можете прятаться в блоках.$(br2)Врагам сложно найти скрытого игрока. Ник также скрывается от других игроков.$(br2)Можно спрятаться в блоках$(list)Листвы$(list)Сена"
+    },
+    {
+      "type": "patchouli:image",
+      "border": "true",
+      "images": [
+        "parcool:textures/gui/entries/hide_in_block.png"
+      ]
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Как использовать",
+      "text": "$(list) Нажмите клавишу 'Спрятаться'($(k:parcool.HideInBlock)) в присяде возле блока, в который вы хотите спрятаться"
+    }
+  ]
+}

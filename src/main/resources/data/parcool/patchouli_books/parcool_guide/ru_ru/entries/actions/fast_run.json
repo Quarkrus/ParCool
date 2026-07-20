@@ -1,0 +1,24 @@
+﻿{
+  "name": "Быстрый бег",
+  "icon": "minecraft:diamond_boots",
+  "category": "parcool:category_actions",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Быстрый бег",
+      "text": "Теперь вы паркурист! Так что вы можете бегать быстрее, чем раньше. Некоторые другие действия должны использовать бег.$(br)Если вы считаете, что эта функция раздражает, вам может помочь изменение конфигов."
+    },
+    {
+      "type": "patchouli:image",
+      "border": "true",
+      "images": [
+        "parcool:textures/gui/entries/fast_run.png"
+      ]
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Как использовать",
+      "text": "$(list) Продолжайте нажимать или удерживать клавишу 'Быстрый бег'($(k:parcool.FastRun)) во время спринта"
+    }
+  ]
+}
